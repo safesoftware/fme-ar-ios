@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  FMEARBrowser
+//  FMEAR
 //
 //  Created by Angus Lau on 2017-08-24.
 //  Copyright © 2017 Safe Software Inc. All rights reserved.

@@ -64,7 +64,7 @@
 		6B2F710420214B27003812DB /* DocumentIcon-fmear-64x64px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentIcon-fmear-64x64px.png"; sourceTree = "<group>"; };
 		6B2F710520214B28003812DB /* DocumentIcon-fmear-22x29px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentIcon-fmear-22x29px.png"; sourceTree = "<group>"; };
 		6B2F710620214B29003812DB /* DocumentIcon-fmear-44x58px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentIcon-fmear-44x58px.png"; sourceTree = "<group>"; };
-		6BA3AA5E1F4EF66F00CE75E6 /* FMEAR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = FMEAR.app; path = "FME AR.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6BA3AA5E1F4EF66F00CE75E6 /* FME AR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FME AR.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BA3AA611F4EF66F00CE75E6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6BA3AA631F4EF66F00CE75E6 /* DocumentBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBrowserViewController.swift; sourceTree = "<group>"; };
 		6BA3AA651F4EF66F00CE75E6 /* DocumentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentViewController.swift; sourceTree = "<group>"; };
@@ -95,7 +95,7 @@
 		6BA3AAC51F4F053300CE75E6 /* Models.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Models.scnassets; sourceTree = "<group>"; };
 		6BA3AAC71F4F0CAD00CE75E6 /* ViewController+Document.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+Document.swift"; sourceTree = "<group>"; };
 		6BA3AAE81F4F1A3D00CE75E6 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
-		6BA3AB281F4F1BB500CE75E6 /* FMEARBrowser-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FMEARBrowser-Bridging-Header.h"; sourceTree = "<group>"; };
+		6BA3AB281F4F1BB500CE75E6 /* FMEAR-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FMEAR-Bridging-Header.h"; sourceTree = "<group>"; };
 		6BA3AB291F4F1BB600CE75E6 /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SSZipArchive.h; path = SSZipArchive/SSZipArchive.h; sourceTree = "<group>"; };
 		6BA3AB2A1F4F1BB600CE75E6 /* SSZipCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SSZipCommon.h; path = SSZipArchive/SSZipCommon.h; sourceTree = "<group>"; };
 		6BA3AB2B1F4F1BB600CE75E6 /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SSZipArchive.m; path = SSZipArchive/SSZipArchive.m; sourceTree = "<group>"; };
@@ -163,7 +163,7 @@
 			isa = PBXGroup;
 			children = (
 				6BA3AAE81F4F1A3D00CE75E6 /* libz.tbd */,
-				6BA3AA601F4EF66F00CE75E6 /* FMEARBrowser */,
+				6BA3AA601F4EF66F00CE75E6 /* FMEAR */,
 				6BA3AA5F1F4EF66F00CE75E6 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -171,12 +171,12 @@
 		6BA3AA5F1F4EF66F00CE75E6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6BA3AA5E1F4EF66F00CE75E6 /* FMEAR.app */,
+				6BA3AA5E1F4EF66F00CE75E6 /* FME AR.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6BA3AA601F4EF66F00CE75E6 /* FMEARBrowser */ = {
+		6BA3AA601F4EF66F00CE75E6 /* FMEAR */ = {
 			isa = PBXGroup;
 			children = (
 				6B2F710220214AF7003812DB /* Document Icons */,
@@ -201,7 +201,7 @@
 				6BA3AA6E1F4EF66F00CE75E6 /* LaunchScreen.storyboard */,
 				6BA3AA711F4EF66F00CE75E6 /* Info.plist */,
 			);
-			path = FMEARBrowser;
+			path = FMEAR;
 			sourceTree = "<group>";
 		};
 		6BA3AA991F4EF86100CE75E6 /* UI Elements */ = {
@@ -271,7 +271,7 @@
 				6BA3AB2B1F4F1BB600CE75E6 /* SSZipArchive.m */,
 				6BA3AB2A1F4F1BB600CE75E6 /* SSZipCommon.h */,
 				6BA3AB2C1F4F1BB600CE75E6 /* ZipArchive.h */,
-				6BA3AB281F4F1BB500CE75E6 /* FMEARBrowser-Bridging-Header.h */,
+				6BA3AB281F4F1BB500CE75E6 /* FMEAR-Bridging-Header.h */,
 			);
 			path = 3rd;
 			sourceTree = "<group>";
@@ -329,9 +329,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6BA3AA5D1F4EF66F00CE75E6 /* FMEARBrowser */ = {
+		6BA3AA5D1F4EF66F00CE75E6 /* FMEAR */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6BA3AA741F4EF66F00CE75E6 /* Build configuration list for PBXNativeTarget "FMEARBrowser" */;
+			buildConfigurationList = 6BA3AA741F4EF66F00CE75E6 /* Build configuration list for PBXNativeTarget "FMEAR" */;
 			buildPhases = (
 				6BA3AA5A1F4EF66F00CE75E6 /* Sources */,
 				6BA3AA5B1F4EF66F00CE75E6 /* Frameworks */,
@@ -341,9 +341,9 @@
 			);
 			dependencies = (
 			);
-			name = FMEARBrowser;
-			productName = FMEARBrowser;
-			productReference = 6BA3AA5E1F4EF66F00CE75E6 /* FMEAR.app */;
+			name = FMEAR;
+			productName = FMEAR;
+			productReference = 6BA3AA5E1F4EF66F00CE75E6 /* FME AR.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -363,7 +363,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 6BA3AA591F4EF66F00CE75E6 /* Build configuration list for PBXProject "FMEARBrowser" */;
+			buildConfigurationList = 6BA3AA591F4EF66F00CE75E6 /* Build configuration list for PBXProject "FMEAR" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -376,7 +376,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6BA3AA5D1F4EF66F00CE75E6 /* FMEARBrowser */,
+				6BA3AA5D1F4EF66F00CE75E6 /* FMEAR */,
 			);
 		};
 /* End PBXProject section */
@@ -586,11 +586,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = B3R9YZM37G;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = FMEARBrowser/Info.plist;
+				INFOPLIST_FILE = FMEAR/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.safe.fmear;
 				PRODUCT_NAME = "FME AR";
-				SWIFT_OBJC_BRIDGING_HEADER = "FMEARBrowser/3rd/FMEARBrowser-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "FMEAR/3rd/FMEAR-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -606,11 +606,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = B3R9YZM37G;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = FMEARBrowser/Info.plist;
+				INFOPLIST_FILE = FMEAR/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.safe.fmear;
 				PRODUCT_NAME = "FME AR";
-				SWIFT_OBJC_BRIDGING_HEADER = "FMEARBrowser/3rd/FMEARBrowser-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "FMEAR/3rd/FMEAR-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "**/**";
@@ -620,7 +620,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6BA3AA591F4EF66F00CE75E6 /* Build configuration list for PBXProject "FMEARBrowser" */ = {
+		6BA3AA591F4EF66F00CE75E6 /* Build configuration list for PBXProject "FMEAR" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6BA3AA721F4EF66F00CE75E6 /* Debug */,
@@ -629,7 +629,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6BA3AA741F4EF66F00CE75E6 /* Build configuration list for PBXNativeTarget "FMEARBrowser" */ = {
+		6BA3AA741F4EF66F00CE75E6 /* Build configuration list for PBXNativeTarget "FMEAR" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6BA3AA751F4EF66F00CE75E6 /* Debug */,

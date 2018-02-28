@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "6BA3AA5D1F4EF66F00CE75E6"
                BuildableName = "FME AR.app"
-               BlueprintName = "FMEARBrowser"
-               ReferencedContainer = "container:FMEARBrowser.xcodeproj">
+               BlueprintName = "FMEAR"
+               ReferencedContainer = "container:FMEAR.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,8 +35,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6BA3AA5D1F4EF66F00CE75E6"
             BuildableName = "FME AR.app"
-            BlueprintName = "FMEARBrowser"
-            ReferencedContainer = "container:FMEARBrowser.xcodeproj">
+            BlueprintName = "FMEAR"
+            ReferencedContainer = "container:FMEAR.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -59,8 +59,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6BA3AA5D1F4EF66F00CE75E6"
             BuildableName = "FME AR.app"
-            BlueprintName = "FMEARBrowser"
-            ReferencedContainer = "container:FMEARBrowser.xcodeproj">
+            BlueprintName = "FMEAR"
+            ReferencedContainer = "container:FMEAR.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -78,8 +78,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6BA3AA5D1F4EF66F00CE75E6"
             BuildableName = "FME AR.app"
-            BlueprintName = "FMEARBrowser"
-            ReferencedContainer = "container:FMEARBrowser.xcodeproj">
+            BlueprintName = "FMEAR"
+            ReferencedContainer = "container:FMEAR.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
