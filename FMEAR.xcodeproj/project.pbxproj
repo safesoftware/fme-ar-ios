@@ -57,6 +57,7 @@
 		6BA3AB611F4F1D4800CE75E6 /* minishared.c in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AB4E1F4F1D4800CE75E6 /* minishared.c */; };
 		6BA3AB621F4F1D4800CE75E6 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AB501F4F1D4800CE75E6 /* unzip.c */; };
 		6BA3AB631F4F1D4800CE75E6 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AB521F4F1D4800CE75E6 /* zip.c */; };
+		6BA8519720478BA2009D26B4 /* fmeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BA8519620478BA1009D26B4 /* fmeLogo.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -135,6 +136,7 @@
 		6BA3AB511F4F1D4800CE75E6 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
 		6BA3AB521F4F1D4800CE75E6 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
 		6BA3AB531F4F1D4800CE75E6 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		6BA8519620478BA1009D26B4 /* fmeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fmeLogo.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -179,6 +181,7 @@
 		6BA3AA601F4EF66F00CE75E6 /* FMEAR */ = {
 			isa = PBXGroup;
 			children = (
+				6BA8519520478B73009D26B4 /* Images */,
 				6B2F710220214AF7003812DB /* Document Icons */,
 				6BA3AB271F4F1B8E00CE75E6 /* 3rd */,
 				6BA3AAC51F4F053300CE75E6 /* Models.scnassets */,
@@ -326,6 +329,14 @@
 			path = aes;
 			sourceTree = "<group>";
 		};
+		6BA8519520478B73009D26B4 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				6BA8519620478BA1009D26B4 /* fmeLogo.png */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -393,6 +404,7 @@
 				6BA3AAC61F4F053300CE75E6 /* Models.scnassets in Resources */,
 				6B2F710820214B2A003812DB /* DocumentIcon-fmear-64x64px.png in Resources */,
 				6B2F710920214B2A003812DB /* DocumentIcon-fmear-22x29px.png in Resources */,
+				6BA8519720478BA2009D26B4 /* fmeLogo.png in Resources */,
 				6B2F710720214B2A003812DB /* DocumentIcon-fmear-320x320px.png in Resources */,
 				6BA3AA6B1F4EF66F00CE75E6 /* Main.storyboard in Resources */,
 			);
