@@ -74,23 +74,8 @@ extension ViewController: FileManagerDelegate {
                     print("Failed to remove item at '\(zipFile)' with error '\(error)'")
                 }
 
-                var objPath: URL?
-                if let dirEnumerator = fileManager.enumerator(atPath: unzippedFolderUrl.path) {
-                    while let element = dirEnumerator.nextObject() as? String {
-
-                        if element.hasSuffix("obj") && !element.hasPrefix("__MACOSX") {
-                            let path = unzippedFolderUrl.appendingPathComponent(element)
-                            objPath = path
-                        }
-                    }
-                }
+                self.loadModel(path: unzippedFolderUrl)
                 
-                if let objPath = objPath {
-                    self.loadModel(path: objPath)
-                } else {
-                    self.textManager.showAlert(title: "Invalid File", message: "No obj model in the file")
-                }
-
 //                if let dirEnum = fileManager.enumerator(atPath: unzippedFolderUrl.path) {
 //                    var objPath: URL?
 //                    for element in dirEnum {
@@ -153,27 +138,47 @@ extension ViewController: FileManagerDelegate {
         print("Loading model '\(path)'")
         self.textManager.showMessage("Loading model '\(path.lastPathComponent)'")
 
-        let src = SCNSceneSource(url: path, options: [.convertToYUp: false])
-        if let sceneSource = src {
-            self.logSceneSource(sceneSource)
-        }
-
         // The generated normals mess up lighting in some models
         let loadingOptions = [SCNSceneSource.LoadingOption.createNormalsIfAbsent : false]
-        
-        if let scene = src?.scene(options: loadingOptions) {
-            self.logSceneNode(scene.rootNode, level: 0)
-            
-            let containerNode = SCNNode()
-            for childNode in scene.rootNode.childNodes {
-                containerNode.addChildNode(childNode)
+
+        // Go through the directory path and find all the obj models
+        let containerNode = SCNNode()
+        let fileManager = FileManager.default
+        fileManager.delegate = self
+        var numObjFiles : UInt = 0
+        if let dirEnumerator = fileManager.enumerator(atPath: path.path) {
+            while let element = dirEnumerator.nextObject() as? String {
+                
+                if element.hasSuffix("obj") && !element.hasPrefix("__MACOSX") {
+                    let objPath = path.appendingPathComponent(element)
+                    
+                    let src = SCNSceneSource(url: objPath, options: [.convertToYUp: false])
+                    if let sceneSource = src {
+                        self.logSceneSource(sceneSource)
+                    }
+                    
+                    if let scene = src?.scene(options: loadingOptions) {
+                        self.logSceneNode(scene.rootNode, level: 0)
+                        
+                        for childNode in scene.rootNode.childNodes {
+                            containerNode.addChildNode(childNode)
+                        }
+                        
+                        numObjFiles += 1
+                    }
+                }
             }
+        }
+        
+        if (numObjFiles > 0) {
+            
+            self.textManager.showMessage("'\(numObjFiles)' assets found")
             
             let ambientLightNode = SCNNode()
             ambientLightNode.light = SCNLight()
             ambientLightNode.light!.type = .ambient;
             ambientLightNode.light!.color = UIColor.lightGray
-
+            
             let lightNode = SCNNode()
             lightNode.light = SCNLight()
             lightNode.light!.type = .omni
@@ -186,10 +191,8 @@ extension ViewController: FileManagerDelegate {
             containerNode.eulerAngles.x = -Float.pi / 2
             
             let definition = VirtualObjectDefinition(modelName: "model", displayName: "model", particleScaleInfo: [:])
-            
             let object = VirtualObject(definition: definition, childNodes: [containerNode])
             let position = self.focusSquare?.lastPosition ?? float3(0, 0, -5)
-
             self.virtualObjectManager.loadVirtualObject(object, to: position, cameraTransform: cameraTransform)
             if object.parent == nil {
                 self.serialQueue.async {
@@ -198,9 +201,9 @@ extension ViewController: FileManagerDelegate {
                     self.sceneView.scene.rootNode.addChildNode(lightNode)
                 }
             }
-            
-        } else {
-            print("Error creating the scene")
+        }
+        else {
+            self.textManager.showAlert(title: "Invalid File", message: "No model in the file")
         }
         
         self.modelPath = nil;
