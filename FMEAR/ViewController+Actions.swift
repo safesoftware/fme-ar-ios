@@ -12,7 +12,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate {
     
     enum SegueIdentifier: String {
         case showSettings
-        case showObjects
+        case showAssets
     }
     
     // MARK: - Interface Actions
@@ -24,7 +24,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate {
         textManager.cancelScheduledMessage(forType: .contentPlacement)
         
         // Disable objects menu
-        //performSegue(withIdentifier: SegueIdentifier.showObjects.rawValue, sender: button)
+        performSegue(withIdentifier: SegueIdentifier.showAssets.rawValue, sender: button)
     }
     
     /// - Tag: restartExperience
@@ -43,8 +43,9 @@ extension ViewController: UIPopoverPresentationControllerDelegate {
             self.textManager.showMessage("STARTING A NEW SESSION")
             
             self.virtualObjectManager.removeAllVirtualObjects()
-            self.addObjectButton.setImage(#imageLiteral(resourceName: "add"), for: [])
-            self.addObjectButton.setImage(#imageLiteral(resourceName: "addPressed"), for: [.highlighted])
+            self.showAssetsButton.setImage(#imageLiteral(resourceName:"showAssets"), for: [])
+            self.showAssetsButton.setImage(#imageLiteral(resourceName:"showAssetsPressed"), for: [.highlighted])
+            self.showAssetsButton.isEnabled = false
             self.focusSquare?.isHidden = true
             
             self.resetTracking()
@@ -83,9 +84,24 @@ extension ViewController: UIPopoverPresentationControllerDelegate {
         }
         
         guard let identifier = segue.identifier, let segueIdentifer = SegueIdentifier(rawValue: identifier) else { return }
-        if segueIdentifer == .showObjects, let objectsViewController = segue.destination as? VirtualObjectSelectionViewController {
-            objectsViewController.delegate = self
+        if segueIdentifer == .showAssets, let assetViewController = segue.destination as? AssetViewController {
+            assetViewController.delegate = self
+            assetViewController.assets = getAssets()
         }
     }
     
+    func getAssets() -> [Asset] {
+        var assets = [Asset]()
+        
+        if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
+            for childNode in virtualObjectNode.childNodes {
+                if let name = childNode.name {
+                    print("Asset Name = '\(name)' with opacity = \(childNode.opacity)")
+                    assets.append(Asset(name: name, selected: childNode.opacity > 0.2))
+                }
+            }
+        }
+        
+        return assets.sorted()
+    }
 }

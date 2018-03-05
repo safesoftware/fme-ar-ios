@@ -9,6 +9,25 @@ import Foundation
 import SceneKit
 import ARKit
 
+struct Asset: Codable, Equatable, Comparable {
+    var name: String
+    var selected: Bool
+    
+    init(name: String, selected: Bool) {
+        self.name = name
+        self.selected = selected
+    }
+    
+    static func ==(lhs: Asset, rhs: Asset) -> Bool {
+        return lhs.name == rhs.name
+            && lhs.selected == rhs.selected
+    }
+    
+    static func <(lhs: Asset, rhs: Asset) -> Bool {
+        return lhs.name < rhs.name
+    }
+}
+
 struct VirtualObjectDefinition: Codable, Equatable {
     let modelName: String
     let displayName: String

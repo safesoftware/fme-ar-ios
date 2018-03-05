@@ -35,7 +35,7 @@ class ViewController: UIViewController, ARSessionDelegate {
         didSet {
             DispatchQueue.main.async {
                 self.settingsButton.isEnabled = !self.isLoadingObject
-                self.addObjectButton.isEnabled = !self.isLoadingObject
+                self.showAssetsButton.isEnabled = !self.isLoadingObject
                 self.restartExperienceButton.isEnabled = !self.isLoadingObject
             }
         }
@@ -54,7 +54,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     @IBOutlet weak var messagePanel: UIView!
     @IBOutlet weak var messageLabel: UILabel!
     @IBOutlet weak var settingsButton: UIButton!
-    @IBOutlet weak var addObjectButton: UIButton!
+    @IBOutlet weak var showAssetsButton: UIButton!
     @IBOutlet weak var restartExperienceButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var locateButton: UIButton!
@@ -172,10 +172,12 @@ class ViewController: UIViewController, ARSessionDelegate {
 	}
 	
 	override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-		if virtualObjectManager.virtualObjects.isEmpty {
-			chooseObject(addObjectButton)
-			return
-		}
+//        let location = touches.first!.location(in: sceneView)
+//        if addObjectButton.point(inside: location, with: nil) {
+//            chooseObject(addObjectButton)
+//            return
+//        }
+        
 		virtualObjectManager.reactToTouchesEnded(touches, with: event)
 	}
 	

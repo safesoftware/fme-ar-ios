@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13189.4" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13165.3"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -13,7 +13,7 @@
         <!--Document Browser View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="DocumentBrowserViewController" customModule="FMEAR" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="DocumentBrowserViewController" customModule="FME_AR" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -28,7 +28,7 @@
         <!--Document View Controller-->
         <scene sceneID="dkP-xk-x6W">
             <objects>
-                <viewController storyboardIdentifier="DocumentViewController" id="M2k-L8-Olo" customClass="DocumentViewController" customModule="FMEAR" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DocumentViewController" id="M2k-L8-Olo" customClass="DocumentViewController" customModule="FME_AR" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="SIE-Uh-Zny">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -82,7 +82,7 @@
         <!--settingsViewController-->
         <scene sceneID="B6V-PN-S9z">
             <objects>
-                <tableViewController id="qS5-BA-VKT" userLabel="settingsViewController" customClass="SettingsViewController" customModule="FMEAR" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="qS5-BA-VKT" userLabel="settingsViewController" customClass="SettingsViewController" customModule="FME_AR" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="static" style="grouped" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="yvg-LA-G0E">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="220"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -98,13 +98,13 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lCf-sx-Hva">
-                                                    <rect key="frame" x="318" y="7" width="51" height="31"/>
+                                                    <rect key="frame" x="310" y="7" width="51" height="31"/>
                                                     <connections>
                                                         <action selector="didChangeSetting:" destination="qS5-BA-VKT" eventType="valueChanged" id="EWA-0M-Pg5"/>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Assume Infinite Planes" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Cd-80-tZQ">
-                                                    <rect key="frame" x="16" y="15" width="284" height="21"/>
+                                                    <rect key="frame" x="24" y="18" width="268" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -131,13 +131,13 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kg6-yO-hKv">
-                                                    <rect key="frame" x="318" y="7" width="51" height="31"/>
+                                                    <rect key="frame" x="310" y="7" width="51" height="31"/>
                                                     <connections>
                                                         <action selector="didChangeSetting:" destination="qS5-BA-VKT" eventType="valueChanged" id="PYT-vP-je2"/>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pinch To Resize Objects" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7y0-20-gze">
-                                                    <rect key="frame" x="16" y="15" width="261" height="21"/>
+                                                    <rect key="frame" x="24" y="18" width="245" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -173,7 +173,7 @@
         <!--View Controller-->
         <scene sceneID="E48-CC-Cqc">
             <objects>
-                <viewController storyboardIdentifier="ARViewController" id="Py6-ck-70I" customClass="ViewController" customModule="FMEAR" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ARViewController" id="Py6-ck-70I" customClass="ViewController" customModule="FME_AR" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Dkl-Z1-aiT">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -182,28 +182,16 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </sceneKitView>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XOA-Zn-kFv">
-                                <rect key="frame" x="312" y="604" width="48" height="48"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="48" id="1Sm-FA-304"/>
-                                </constraints>
+                                <rect key="frame" x="307" y="541" width="48" height="48"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" notEnabled="YES"/>
+                                </accessibility>
                                 <state key="normal" image="settings">
                                     <color key="titleColor" red="0.85882352939999995" green="0.72941176470000002" blue="0.22352941179999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <state key="highlighted" image="settingsPressed"/>
                                 <connections>
                                     <segue destination="qS5-BA-VKT" kind="popoverPresentation" identifier="showSettings" popoverAnchorView="XOA-Zn-kFv" id="EAB-T5-eiU">
-                                        <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
-                                    </segue>
-                                </connections>
-                            </button>
-                            <button hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eXn-YA-YKa" userLabel="Add Object Button">
-                                <rect key="frame" x="164" y="604" width="48" height="48"/>
-                                <state key="normal" image="add">
-                                    <color key="titleColor" red="0.85882352939999995" green="0.72941176470000002" blue="0.22352941179999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </state>
-                                <connections>
-                                    <action selector="chooseObject:" destination="Py6-ck-70I" eventType="touchUpInside" id="bM2-2h-BuA"/>
-                                    <segue destination="8EZ-PK-ILM" kind="popoverPresentation" identifier="showObjects" popoverAnchorView="eXn-YA-YKa" id="tHr-eF-5xD">
                                         <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                                     </segue>
                                 </connections>
@@ -284,38 +272,55 @@
                                     <action selector="backToDocumentBrowser:" destination="Py6-ck-70I" eventType="touchUpInside" id="fTA-az-M6V"/>
                                 </connections>
                             </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="aRQ-F3-VpC">
+                                <rect key="frame" x="307" y="599" width="48" height="48"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eXn-YA-YKa" userLabel="Add Object Button">
+                                        <rect key="frame" x="0.0" y="0.0" width="48" height="48"/>
+                                        <state key="normal" image="showAssets">
+                                            <color key="titleColor" red="0.85882352939999995" green="0.72941176470000002" blue="0.22352941179999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </state>
+                                        <connections>
+                                            <segue destination="7mk-P8-xvf" kind="popoverPresentation" identifier="showAssets" popoverAnchorView="eXn-YA-YKa" id="Z4h-EY-sZ2">
+                                                <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                            </segue>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="aya-a4-2Pv" firstAttribute="bottom" secondItem="aRQ-F3-VpC" secondAttribute="bottom" constant="20" id="48h-m8-5DQ"/>
+                            <constraint firstItem="aRQ-F3-VpC" firstAttribute="top" secondItem="XOA-Zn-kFv" secondAttribute="bottom" constant="10" id="6qD-7V-jFd"/>
                             <constraint firstItem="GMA-nS-xXC" firstAttribute="top" secondItem="aya-a4-2Pv" secondAttribute="top" constant="2" id="796-19-Igo"/>
-                            <constraint firstItem="eXn-YA-YKa" firstAttribute="top" secondItem="XOA-Zn-kFv" secondAttribute="top" id="7FC-GO-tCN"/>
                             <constraint firstItem="Xj1-pu-AOT" firstAttribute="leading" secondItem="9hL-n4-R2F" secondAttribute="trailing" constant="8" symbolic="YES" id="9Mp-kw-kTl"/>
                             <constraint firstItem="VnN-gI-Ngn" firstAttribute="bottom" secondItem="aya-a4-2Pv" secondAttribute="bottom" id="RiZ-qq-ftz"/>
+                            <constraint firstItem="XOA-Zn-kFv" firstAttribute="trailing" secondItem="aRQ-F3-VpC" secondAttribute="trailing" id="Scm-To-1Qq"/>
                             <constraint firstItem="GMA-nS-xXC" firstAttribute="trailing" secondItem="Dkl-Z1-aiT" secondAttribute="trailingMargin" id="WAB-Cl-9a3"/>
                             <constraint firstItem="GMA-nS-xXC" firstAttribute="leading" secondItem="Xj1-pu-AOT" secondAttribute="trailing" constant="14" id="XGv-Ej-Ltw"/>
                             <constraint firstItem="Xj1-pu-AOT" firstAttribute="centerY" secondItem="GMA-nS-xXC" secondAttribute="centerY" id="ZkK-ac-oGi"/>
-                            <constraint firstItem="aya-a4-2Pv" firstAttribute="trailing" secondItem="XOA-Zn-kFv" secondAttribute="trailing" constant="15" id="bcn-T6-14w"/>
                             <constraint firstItem="mUI-Nh-a1I" firstAttribute="trailing" secondItem="VnN-gI-Ngn" secondAttribute="trailing" id="cXD-mW-s4a"/>
                             <constraint firstItem="VnN-gI-Ngn" firstAttribute="leading" secondItem="Dkl-Z1-aiT" secondAttribute="leading" id="eB5-OW-eBk"/>
                             <constraint firstAttribute="trailing" secondItem="mUI-Nh-a1I" secondAttribute="trailing" id="ffH-bd-OsU"/>
                             <constraint firstItem="9hL-n4-R2F" firstAttribute="leading" secondItem="aya-a4-2Pv" secondAttribute="leading" constant="7" id="h9k-av-SMW"/>
                             <constraint firstItem="VnN-gI-Ngn" firstAttribute="top" secondItem="Dkl-Z1-aiT" secondAttribute="top" id="hu6-BP-d80"/>
-                            <constraint firstItem="aya-a4-2Pv" firstAttribute="bottom" secondItem="eXn-YA-YKa" secondAttribute="bottom" constant="15" id="j46-DI-Vz4"/>
                             <constraint firstItem="Xj1-pu-AOT" firstAttribute="top" secondItem="Dkl-Z1-aiT" secondAttribute="topMargin" constant="-5" id="kqE-Kp-Ydb"/>
                             <constraint firstItem="VnN-gI-Ngn" firstAttribute="top" secondItem="mUI-Nh-a1I" secondAttribute="top" id="nt9-vE-YOI"/>
+                            <constraint firstItem="XOA-Zn-kFv" firstAttribute="leading" secondItem="aRQ-F3-VpC" secondAttribute="leading" id="w4c-Iq-dAN"/>
+                            <constraint firstItem="aya-a4-2Pv" firstAttribute="trailing" secondItem="aRQ-F3-VpC" secondAttribute="trailing" constant="20" id="xZV-04-nzL"/>
                             <constraint firstItem="9hL-n4-R2F" firstAttribute="centerY" secondItem="GMA-nS-xXC" secondAttribute="centerY" id="xrL-RZ-gZ2"/>
-                            <constraint firstItem="VnN-gI-Ngn" firstAttribute="centerX" secondItem="eXn-YA-YKa" secondAttribute="centerX" id="zCT-0w-EMl"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="aya-a4-2Pv"/>
                     </view>
                     <connections>
-                        <outlet property="addObjectButton" destination="eXn-YA-YKa" id="8SX-Te-OqZ"/>
                         <outlet property="backButton" destination="9hL-n4-R2F" id="2de-Hp-ZG2"/>
                         <outlet property="messageLabel" destination="Fop-5d-BfL" id="kz6-qo-fbT"/>
                         <outlet property="messagePanel" destination="Xj1-pu-AOT" id="zZ2-Hj-dXQ"/>
                         <outlet property="restartExperienceButton" destination="GMA-nS-xXC" id="ziw-nT-Bhh"/>
                         <outlet property="sceneView" destination="VnN-gI-Ngn" id="cZF-YY-mIS"/>
                         <outlet property="settingsButton" destination="XOA-Zn-kFv" id="BaZ-Cv-Epj"/>
+                        <outlet property="showAssetsButton" destination="eXn-YA-YKa" id="8SX-Te-OqZ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yxD-bP-iJz" sceneMemberID="firstResponder"/>
@@ -325,14 +330,14 @@
         <!--Virtual Object Selection View Controller-->
         <scene sceneID="O1f-U0-PJx">
             <objects>
-                <tableViewController id="8EZ-PK-ILM" customClass="VirtualObjectSelectionViewController" customModule="FMEAR" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="8EZ-PK-ILM" customClass="VirtualObjectSelectionViewController" customModule="FME_AR" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="45" sectionHeaderHeight="28" sectionFooterHeight="28" id="ATK-AY-avT">
                         <rect key="frame" x="0.0" y="0.0" width="250" height="250"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="ObjectCell" id="gYh-RS-b2g" customClass="ObjectCell" customModule="FMEAR" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="ObjectCell" id="gYh-RS-b2g" customClass="ObjectCell" customModule="FME_AR" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="250" height="45"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gYh-RS-b2g" id="6wV-q3-rOf">
@@ -384,15 +389,52 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ld2-rM-Pvx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-5987" y="237"/>
+            <point key="canvasLocation" x="-6589" y="658"/>
+        </scene>
+        <!--Asset View Controller-->
+        <scene sceneID="OL8-Tf-HtM">
+            <objects>
+                <tableViewController id="7mk-P8-xvf" customClass="AssetViewController" customModule="FME_AR" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsMultipleSelection="YES" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="pNI-s1-KJh">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="assetTableCell" preservesSuperviewLayoutMargins="YES" selectionStyle="blue" indentationWidth="10" reuseIdentifier="assetTableCell" textLabel="H5Q-5f-dpO" style="IBUITableViewCellStyleDefault" id="dAf-Pt-mpf">
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dAf-Pt-mpf" id="pMm-j2-q0a">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="H5Q-5f-dpO">
+                                            <rect key="frame" x="16" y="0.0" width="343" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="7mk-P8-xvf" id="HIY-Aa-Y6V"/>
+                            <outlet property="delegate" destination="7mk-P8-xvf" id="RJv-Iy-nRD"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="3bo-Xd-q4s" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-5887" y="396"/>
         </scene>
     </scenes>
     <resources>
-        <image name="add" width="48" height="48"/>
         <image name="back" width="48" height="48"/>
         <image name="restart" width="20" height="23"/>
         <image name="restartPressed" width="20" height="23"/>
         <image name="settings" width="41" height="48"/>
         <image name="settingsPressed" width="41" height="48"/>
+        <image name="showAssets" width="48" height="48"/>
     </resources>
 </document>

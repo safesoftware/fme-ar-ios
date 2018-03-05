@@ -75,27 +75,6 @@ extension ViewController: FileManagerDelegate {
                 }
 
                 self.loadModel(path: unzippedFolderUrl)
-                
-//                if let dirEnum = fileManager.enumerator(atPath: unzippedFolderUrl.path) {
-//                    var objPath: URL?
-//                    for element in dirEnum {
-//                        print("ELEMENT: \(element)")
-//
-//                        let path = unzippedFolderUrl.appendingPathComponent(element) //URL(fileURLWithPath: element as! String, relativeTo: unzippedFolderUrl)
-//                        print("   PATH: \(path)")
-//
-//                        if path.pathExtension.caseInsensitiveCompare("obj") == .orderedSame {
-//                            objPath = path
-//                        }
-//                    }
-//
-//                    if let objPath = objPath {
-//                        self.loadModel(path: objPath)
-//                    }
-//                } else {
-//                    print("NO FILES OR DIRECTORIES IN '\(unzippedFolderUrl.path)'")
-//                }
-                
             } else {
                 // Make sure to handle the failed import appropriately, e.g., by presenting an error message to the user.
                 print("Failed to open '\(document.fileURL)'")
@@ -140,30 +119,34 @@ extension ViewController: FileManagerDelegate {
 
         // The generated normals mess up lighting in some models
         let loadingOptions = [SCNSceneSource.LoadingOption.createNormalsIfAbsent : false]
+        
+        // Set a name so that we can find this object later
+        let containerNode = SCNNode()
+        containerNode.name = "VirtualObject"
 
         // Go through the directory path and find all the obj models
-        let containerNode = SCNNode()
         let fileManager = FileManager.default
         fileManager.delegate = self
         var numObjFiles : UInt = 0
         if let dirEnumerator = fileManager.enumerator(atPath: path.path) {
             while let element = dirEnumerator.nextObject() as? String {
                 
-                if element.hasSuffix("obj") && !element.hasPrefix("__MACOSX") {
+                if element.hasSuffix(".obj") && !element.hasPrefix("__MACOSX") {
                     let objPath = path.appendingPathComponent(element)
                     
                     let src = SCNSceneSource(url: objPath, options: [.convertToYUp: false])
-                    if let sceneSource = src {
-                        self.logSceneSource(sceneSource)
-                    }
+                    //if let sceneSource = src {
+                    //    self.logSceneSource(sceneSource)
+                    //}
                     
                     if let scene = src?.scene(options: loadingOptions) {
-                        self.logSceneNode(scene.rootNode, level: 0)
                         
-                        for childNode in scene.rootNode.childNodes {
-                            containerNode.addChildNode(childNode)
-                        }
-                        
+                        // Set the node name as the OBJ file name, which should
+                        // be the asset/feature type name from the FME AR writer
+                        scene.rootNode.name = element
+                        scene.rootNode.name?.removeLast(/*.obj*/ 4)
+                        //self.logSceneNode(scene.rootNode, level: 0)
+                        containerNode.addChildNode(scene.rootNode)
                         numObjFiles += 1
                     }
                 }
@@ -192,6 +175,9 @@ extension ViewController: FileManagerDelegate {
             
             let definition = VirtualObjectDefinition(modelName: "model", displayName: "model", particleScaleInfo: [:])
             let object = VirtualObject(definition: definition, childNodes: [containerNode])
+            
+            logSceneNode(object, level: 0)
+    
             let position = self.focusSquare?.lastPosition ?? float3(0, 0, -5)
             self.virtualObjectManager.loadVirtualObject(object, to: position, cameraTransform: cameraTransform)
             if object.parent == nil {
@@ -201,6 +187,8 @@ extension ViewController: FileManagerDelegate {
                     self.sceneView.scene.rootNode.addChildNode(lightNode)
                 }
             }
+            
+            self.showAssetsButton.isEnabled = true
         }
         else {
             self.textManager.showAlert(title: "Invalid File", message: "No model in the file")

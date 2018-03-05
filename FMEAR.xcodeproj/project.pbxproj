@@ -58,6 +58,7 @@
 		6BA3AB621F4F1D4800CE75E6 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AB501F4F1D4800CE75E6 /* unzip.c */; };
 		6BA3AB631F4F1D4800CE75E6 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AB521F4F1D4800CE75E6 /* zip.c */; };
 		6BA8519720478BA2009D26B4 /* fmeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BA8519620478BA1009D26B4 /* fmeLogo.png */; };
+		6BA85199204A3610009D26B4 /* AssetTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA85198204A3610009D26B4 /* AssetTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -137,6 +138,7 @@
 		6BA3AB521F4F1D4800CE75E6 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
 		6BA3AB531F4F1D4800CE75E6 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		6BA8519620478BA1009D26B4 /* fmeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fmeLogo.png; sourceTree = "<group>"; };
+		6BA85198204A3610009D26B4 /* AssetTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -241,6 +243,7 @@
 			children = (
 				6BA3AAA31F4EF86100CE75E6 /* SettingsViewController.swift */,
 				6BA3AAA41F4EF86100CE75E6 /* VirtualObjectSelectionViewController.swift */,
+				6BA85198204A3610009D26B4 /* AssetTableViewController.swift */,
 			);
 			path = "Additional View Controllers";
 			sourceTree = "<group>";
@@ -427,6 +430,7 @@
 				6BA3AB5E1F4F1D4800CE75E6 /* ioapi.c in Sources */,
 				6BA3AAB51F4EF86100CE75E6 /* VirtualObjectManager.swift in Sources */,
 				6BA3AAB71F4EF86100CE75E6 /* ARSCNView+HitTests.swift in Sources */,
+				6BA85199204A3610009D26B4 /* AssetTableViewController.swift in Sources */,
 				6BA3AAB11F4EF86100CE75E6 /* TwoFingerGesture.swift in Sources */,
 				6BA3AAB01F4EF86100CE75E6 /* SingleFingerGesture.swift in Sources */,
 				6BA3AB561F4F1D4800CE75E6 /* aeskey.c in Sources */,
