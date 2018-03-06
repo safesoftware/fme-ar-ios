@@ -73,6 +73,10 @@ class AssetViewController: UITableViewController {
         return assets.count
     }
     
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String {
+        return "\(assets.count) Assets"
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "assetTableCell", for: indexPath)
 

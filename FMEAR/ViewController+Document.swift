@@ -115,7 +115,7 @@ extension ViewController: FileManagerDelegate {
         }
 
         print("Loading model '\(path)'")
-        self.textManager.showMessage("Loading model '\(path.lastPathComponent)'")
+        self.textManager.showMessage("Loading model...")
 
         // The generated normals mess up lighting in some models
         let loadingOptions = [SCNSceneSource.LoadingOption.createNormalsIfAbsent : false]
@@ -155,7 +155,7 @@ extension ViewController: FileManagerDelegate {
         
         if (numObjFiles > 0) {
             
-            self.textManager.showMessage("'\(numObjFiles)' assets found")
+            self.textManager.showMessage("\(numObjFiles) Assets Found")
 
             // Normalize the model to be within a 0.5 meter cube.
             normalize(containerNode, scale: Float(0.5))
