@@ -156,17 +156,7 @@ extension ViewController: FileManagerDelegate {
         if (numObjFiles > 0) {
             
             self.textManager.showMessage("'\(numObjFiles)' assets found")
-            
-            let ambientLightNode = SCNNode()
-            ambientLightNode.light = SCNLight()
-            ambientLightNode.light!.type = .ambient;
-            ambientLightNode.light!.color = UIColor.lightGray
-            
-            let lightNode = SCNNode()
-            lightNode.light = SCNLight()
-            lightNode.light!.type = .omni
-            lightNode.position = SCNVector3(0, 10, 10)
-            
+
             // Normalize the model to be within a 0.5 meter cube.
             normalize(containerNode, scale: Float(0.5))
             
@@ -179,16 +169,27 @@ extension ViewController: FileManagerDelegate {
             logSceneNode(object, level: 0)
     
             let position = self.focusSquare?.lastPosition ?? float3(0, 0, -5)
+            
+            
+            
             self.virtualObjectManager.loadVirtualObject(object, to: position, cameraTransform: cameraTransform)
             if object.parent == nil {
                 self.serialQueue.async {
                     self.sceneView.scene.rootNode.addChildNode(object)
-                    self.sceneView.scene.rootNode.addChildNode(ambientLightNode)
-                    self.sceneView.scene.rootNode.addChildNode(lightNode)
+                    
+                    for (_, lightNode) in self.spotLightNodes.enumerated() {
+                        if (lightNode.light!.type == .spot) {
+                            let constraint = SCNLookAtConstraint(target: object)
+                            constraint.isGimbalLockEnabled = true
+                            lightNode.constraints = [constraint]
+                        }
+                    }
                 }
             }
             
-            self.showAssetsButton.isEnabled = true
+            DispatchQueue.main.async {
+                self.showAssetsButton.isEnabled = true
+            }
         }
         else {
             self.textManager.showAlert(title: "Invalid File", message: "No model in the file")

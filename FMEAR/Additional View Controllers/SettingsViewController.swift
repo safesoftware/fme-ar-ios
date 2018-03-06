@@ -8,12 +8,15 @@ Popover view controller for app settings.
 import UIKit
 
 enum Setting: String {
-    case scaleWithPinchGesture
+//    case scaleWithPinchGesture
     case dragOnInfinitePlanes
+    case estimateLight
     
     static func registerDefaults() {
         UserDefaults.standard.register(defaults: [
-            Setting.dragOnInfinitePlanes.rawValue: true
+            Setting.dragOnInfinitePlanes.rawValue: true,
+//            Setting.scaleWithPinchGesture.rawValue: true,
+            Setting.estimateLight.rawValue: false
         ])
     }
 }
@@ -31,8 +34,9 @@ class SettingsViewController: UITableViewController {
         
     // MARK: - UI Elements
     
-	@IBOutlet weak var scaleWithPinchGestureSwitch: UISwitch!
+//	@IBOutlet weak var scaleWithPinchGestureSwitch: UISwitch!
 	@IBOutlet weak var dragOnInfinitePlanesSwitch: UISwitch!
+    @IBOutlet weak var lightEstimationSwitch: UISwitch!
     
     // MARK: - View Life Cycle
     
@@ -45,8 +49,9 @@ class SettingsViewController: UITableViewController {
         super.viewWillAppear(animated)
         
         let defaults = UserDefaults.standard
-        scaleWithPinchGestureSwitch.isOn = defaults.bool(for: .scaleWithPinchGesture)
+//        scaleWithPinchGestureSwitch.isOn = defaults.bool(for: .scaleWithPinchGesture)
         dragOnInfinitePlanesSwitch.isOn = defaults.bool(for: .dragOnInfinitePlanes)
+        lightEstimationSwitch.isOn = defaults.bool(for: .estimateLight)
     }
     
     override func viewWillLayoutSubviews() {
@@ -58,10 +63,12 @@ class SettingsViewController: UITableViewController {
 	@IBAction func didChangeSetting(_ sender: UISwitch) {
 		let defaults = UserDefaults.standard
 		switch sender {
-            case scaleWithPinchGestureSwitch:
-                defaults.set(sender.isOn, for: .scaleWithPinchGesture)
+//            case scaleWithPinchGestureSwitch:
+//                defaults.set(sender.isOn, for: .scaleWithPinchGesture)
             case dragOnInfinitePlanesSwitch:
                 defaults.set(sender.isOn, for: .dragOnInfinitePlanes)
+            case lightEstimationSwitch:
+                defaults.set(sender.isOn, for: .estimateLight)
             default: break
 		}
 	}

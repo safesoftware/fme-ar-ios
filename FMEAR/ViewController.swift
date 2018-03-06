@@ -14,6 +14,11 @@ class ViewController: UIViewController, ARSessionDelegate {
     var document: UIDocument?
     var documentOpened = false
     var modelPath: URL?
+    var lights = [SCNLight]()
+    var spotLightNodes = [SCNNode]()
+    
+    let kAmbientLightIntesity: CGFloat = 200
+    let kSpotLightIntensity: CGFloat = 500
     
     // MARK: - ARKit Config Properties
     
@@ -23,6 +28,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     let standardConfiguration: ARWorldTrackingConfiguration = {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
+        configuration.isLightEstimationEnabled = true
         return configuration
     }()
     
@@ -101,6 +107,40 @@ class ViewController: UIViewController, ARSessionDelegate {
 	}
 	
     // MARK: - Setup
+
+    func createAmbientLightNode(type: SCNLight.LightType, intensity: CGFloat = 1000) -> SCNNode {
+        let light = SCNLight()
+        light.type = .ambient
+        light.intensity = intensity
+        let lightNode = SCNNode()
+        lightNode.light = light
+        lights.append(light)
+        return lightNode
+    }
+
+    func createSpotLightNode(position: SCNVector3, intensity: CGFloat = 1000) -> SCNNode {
+        let light = SCNLight()
+        light.type = .spot
+        light.intensity = intensity
+        let lightNode = SCNNode()
+        lightNode.light = light
+        lightNode.position = position
+        lights.append(light)
+        return lightNode
+    }
+    
+    func setupLighting() {
+        
+        // Ambient light
+        sceneView.scene.rootNode.addChildNode(createAmbientLightNode(type: .ambient, intensity: kAmbientLightIntesity))
+
+        // Spot lights
+        for position in [SCNVector3(-2, 0, 0), SCNVector3(2, 0, 0), SCNVector3(0, 0, -2), SCNVector3(0, 0, 2)] {
+            let node = createSpotLightNode(position: position, intensity: kSpotLightIntensity)
+            spotLightNodes.append(node)
+            sceneView.scene.rootNode.addChildNode(node)
+        }
+    }
     
 	func setupScene() {
         // Synchronize updates via the `serialQueue`.
@@ -112,12 +152,14 @@ class ViewController: UIViewController, ARSessionDelegate {
 		sceneView.delegate = self
 		sceneView.session = session
 		sceneView.showsStatistics = false
-        
+        setupLighting()
         session.delegate = self
 		
-		sceneView.scene.enableEnvironmentMapWithIntensity(25, queue: serialQueue)
         
-        sceneView.autoenablesDefaultLighting = true
+        
+		//sceneView.scene.enableEnvironmentMapWithIntensity(25, queue: serialQueue)
+        
+        
 		
         // Debug visualizations
 //        sceneView.debugOptions =  [

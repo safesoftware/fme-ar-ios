@@ -121,34 +121,34 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Pinch Gestures" id="SPq-MN-a5s">
+                            <tableViewSection headerTitle="Lighting" id="lqR-8V-6Jl">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="1u5-Ap-D46">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="Zlg-sn-2nU">
                                         <rect key="frame" x="0.0" y="155.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1u5-Ap-D46" id="ENu-cC-dvz">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Zlg-sn-2nU" id="5iC-17-ZTs">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kg6-yO-hKv">
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qcK-rk-hk9">
                                                     <rect key="frame" x="310" y="7" width="51" height="31"/>
                                                     <connections>
-                                                        <action selector="didChangeSetting:" destination="qS5-BA-VKT" eventType="valueChanged" id="PYT-vP-je2"/>
+                                                        <action selector="didChangeSetting:" destination="qS5-BA-VKT" eventType="valueChanged" id="1hz-Ww-fQG"/>
                                                     </connections>
                                                 </switch>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pinch To Resize Objects" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7y0-20-gze">
-                                                    <rect key="frame" x="24" y="18" width="245" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Light Estimation" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Ob-IM-t0X">
+                                                    <rect key="frame" x="24" y="18" width="268" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="kg6-yO-hKv" firstAttribute="leading" secondItem="7y0-20-gze" secondAttribute="trailing" constant="41" id="Fet-IO-zi0"/>
-                                                <constraint firstItem="kg6-yO-hKv" firstAttribute="trailing" secondItem="ENu-cC-dvz" secondAttribute="trailingMargin" id="SIg-WB-9Xa"/>
-                                                <constraint firstItem="7y0-20-gze" firstAttribute="top" secondItem="ENu-cC-dvz" secondAttribute="topMargin" constant="7" id="Xb1-Jw-WHc"/>
-                                                <constraint firstItem="7y0-20-gze" firstAttribute="leading" secondItem="ENu-cC-dvz" secondAttribute="leadingMargin" constant="8" id="bw1-Ba-aRf"/>
-                                                <constraint firstItem="kg6-yO-hKv" firstAttribute="centerY" secondItem="ENu-cC-dvz" secondAttribute="centerY" id="l1p-YG-ErU"/>
+                                                <constraint firstItem="qcK-rk-hk9" firstAttribute="leading" secondItem="7Ob-IM-t0X" secondAttribute="trailing" constant="18" id="6QJ-EN-uoL"/>
+                                                <constraint firstItem="7Ob-IM-t0X" firstAttribute="leading" secondItem="5iC-17-ZTs" secondAttribute="leadingMargin" constant="8" id="GY7-mb-t2h"/>
+                                                <constraint firstItem="7Ob-IM-t0X" firstAttribute="top" secondItem="5iC-17-ZTs" secondAttribute="topMargin" constant="7" id="beu-lq-GhD"/>
+                                                <constraint firstItem="qcK-rk-hk9" firstAttribute="trailing" secondItem="5iC-17-ZTs" secondAttribute="trailingMargin" id="pUE-Db-xuJ"/>
+                                                <constraint firstItem="qcK-rk-hk9" firstAttribute="centerY" secondItem="5iC-17-ZTs" secondAttribute="centerY" id="wIY-uy-WWY"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -163,7 +163,7 @@
                     <size key="freeformSize" width="375" height="220"/>
                     <connections>
                         <outlet property="dragOnInfinitePlanesSwitch" destination="lCf-sx-Hva" id="Yzh-0Y-bMx"/>
-                        <outlet property="scaleWithPinchGestureSwitch" destination="kg6-yO-hKv" id="W1t-vK-cg9"/>
+                        <outlet property="lightEstimationSwitch" destination="qcK-rk-hk9" id="eea-87-Sos"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Sxv-We-6Lq" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -181,11 +181,8 @@
                             <sceneKitView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VnN-gI-Ngn" customClass="ARSCNView">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </sceneKitView>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XOA-Zn-kFv">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XOA-Zn-kFv">
                                 <rect key="frame" x="307" y="541" width="48" height="48"/>
-                                <accessibility key="accessibilityConfiguration">
-                                    <accessibilityTraits key="traits" button="YES" notEnabled="YES"/>
-                                </accessibility>
                                 <state key="normal" image="settings">
                                     <color key="titleColor" red="0.85882352939999995" green="0.72941176470000002" blue="0.22352941179999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>

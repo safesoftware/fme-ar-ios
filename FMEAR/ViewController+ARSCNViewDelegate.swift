@@ -13,11 +13,30 @@ extension ViewController: ARSCNViewDelegate {
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         updateFocusSquare()
         
-        // If light estimation is enabled, update the intensity of the model's lights and the environment map
-        if let lightEstimate = session.currentFrame?.lightEstimate {
-            sceneView.scene.enableEnvironmentMapWithIntensity(lightEstimate.ambientIntensity / 40, queue: serialQueue)
-        } else {
-            sceneView.scene.enableEnvironmentMapWithIntensity(40, queue: serialQueue)
+        // If light estimation is enabled, update the intensity of the model's lights
+        var ambientIntensity: CGFloat = 1000
+        var ambientColorTemperature: CGFloat = 6500
+        let lightEstimationEnabled = UserDefaults.standard.bool(for: .estimateLight)
+        if lightEstimationEnabled {
+            if let lightEstimate = session.currentFrame?.lightEstimate {
+                ambientIntensity = lightEstimate.ambientIntensity
+                ambientColorTemperature = lightEstimate.ambientColorTemperature
+                //print("light estimate: \(ambientIntensity); light temperature: \(ambientColorTemperature)")
+            }
+        }
+        
+        for (_, light) in self.lights.enumerated() {
+            
+            switch light.type {
+            case .ambient:
+                light.intensity = kAmbientLightIntesity * (ambientIntensity / 1000.0)
+            case .spot:
+                light.intensity = kSpotLightIntensity * (ambientIntensity / 1000.0)
+            default:
+                light.intensity = ambientIntensity
+            }
+            
+            light.temperature = ambientColorTemperature
         }
     }
     
