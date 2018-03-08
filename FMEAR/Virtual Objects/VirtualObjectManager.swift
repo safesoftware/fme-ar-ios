@@ -278,7 +278,8 @@ class VirtualObjectManager {
 	                                     objectPos: float3?,
 	                                     infinitePlane: Bool = false) -> (position: float3?, planeAnchor: ARPlaneAnchor?, hitAPlane: Bool) {
 		
-		let dragOnInfinitePlanesEnabled = UserDefaults.standard.bool(for: .dragOnInfinitePlanes)
+		//let dragOnInfinitePlanesEnabled = UserDefaults.standard.bool(for: .dragOnInfinitePlanes)
+        let dragOnInfinitePlanesEnabled = false
 		
 		// -------------------------------------------------------------------------------
 		// 1. Always do a hit test against exisiting plane anchors first.

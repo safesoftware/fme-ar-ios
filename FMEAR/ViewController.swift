@@ -34,7 +34,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     
     // MARK: - Virtual Object Manipulation Properties
     
-    var dragOnInfinitePlanesEnabled = false
+    //var dragOnInfinitePlanesEnabled = false
     var virtualObjectManager: VirtualObjectManager!
     
     var isLoadingObject: Bool = false {
