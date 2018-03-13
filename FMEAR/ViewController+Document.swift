@@ -160,9 +160,6 @@ extension ViewController: FileManagerDelegate {
             // Normalize the model to be within a 0.5 meter cube.
             normalize(containerNode, scale: Float(0.5))
             
-            // Rotate to Y up
-            containerNode.eulerAngles.x = -Float.pi / 2
-            
             let definition = VirtualObjectDefinition(modelName: "model", displayName: "model", particleScaleInfo: [:])
             let object = VirtualObject(definition: definition, childNodes: [containerNode])
             
@@ -341,12 +338,21 @@ extension ViewController: FileManagerDelegate {
         let (minCoord, maxCoord) = sceneNode.boundingBox
         return SCNVector3(maxCoord.x - minCoord.x, maxCoord.y - minCoord.y, maxCoord.z - minCoord.z)
     }
-    
+
     func normalize(_ sceneNode: SCNNode, scale: Float) -> Void {
+        // Rotate to Y up
+        sceneNode.eulerAngles.x = -Float.pi / 2
+
+        // Scale and offset the model so that the model stays on the ground
         let modelDimension = self.dimension(sceneNode)
         let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
         if maxLength > 0 {
-            sceneNode.setUniformScale(scale / maxLength)
+            let effectiveScale = scale / maxLength
+            let (minCoord, maxCoord) = sceneNode.boundingBox
+            sceneNode.setUniformScale(effectiveScale)
+            sceneNode.position = SCNVector3(/*center x*/ -(minCoord.x + maxCoord.x) * 0.5 * effectiveScale,
+                                            /*put the model on the plane*/ -minCoord.z * effectiveScale,
+                                            /*center z, which was y before the rotation*/ (minCoord.y + maxCoord.y) * 0.5 * effectiveScale)
         }
     }
 }
