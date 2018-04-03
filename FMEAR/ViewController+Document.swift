@@ -163,11 +163,19 @@ extension ViewController: FileManagerDelegate {
             let definition = VirtualObjectDefinition(modelName: "model", displayName: "model", particleScaleInfo: [:])
             let object = VirtualObject(definition: definition, childNodes: [containerNode])
             
+            // Scale the virtual object
+            let modelDimension = self.dimension(containerNode)
+            let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
+            if maxLength > 0 {
+                
+                // Scale the model to be within a 0.5 meter cube.
+                let initialScale = Float(0.5) / maxLength
+                object.scale = SCNVector3(initialScale, initialScale, initialScale)
+            }
+            
             logSceneNode(object, level: 0)
     
             let position = self.focusSquare?.lastPosition ?? float3(0, 0, -5)
-            
-            
             
             self.virtualObjectManager.loadVirtualObject(object, to: position, cameraTransform: cameraTransform)
             if object.parent == nil {
@@ -347,12 +355,10 @@ extension ViewController: FileManagerDelegate {
         let modelDimension = self.dimension(sceneNode)
         let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
         if maxLength > 0 {
-            let effectiveScale = scale / maxLength
             let (minCoord, maxCoord) = sceneNode.boundingBox
-            sceneNode.setUniformScale(effectiveScale)
-            sceneNode.position = SCNVector3(/*center x*/ -(minCoord.x + maxCoord.x) * 0.5 * effectiveScale,
-                                            /*put the model on the plane*/ -minCoord.z * effectiveScale,
-                                            /*center z, which was y before the rotation*/ (minCoord.y + maxCoord.y) * 0.5 * effectiveScale)
+            sceneNode.position = SCNVector3(/*center x*/ -(minCoord.x + maxCoord.x) * 0.5,
+                                            /*put the model on the plane*/ -minCoord.z,
+                                            /*center z, which was y before the rotation*/ (minCoord.y + maxCoord.y) * 0.5)
         }
     }
 }
