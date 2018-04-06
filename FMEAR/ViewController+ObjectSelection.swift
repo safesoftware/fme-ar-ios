@@ -12,7 +12,7 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, AssetVie
     
     // MARK: - assetViewControllerDelegate
     func assetViewControllerDelegate(_: AssetViewController, didSelectAsset asset: Asset) {
-        if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
+        if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObjectContent", recursively: true) {
             for childNode in virtualObjectNode.childNodes {
                 if asset.name == childNode.name {
                     let fadeInAction = SCNAction.fadeIn(duration: 0.5)
@@ -23,7 +23,7 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, AssetVie
     }
     
     func assetViewControllerDelegate(_: AssetViewController, didDeselectAsset asset: Asset) {
-        if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
+        if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObjectContent", recursively: true) {
             for childNode in virtualObjectNode.childNodes {
                 if asset.name == childNode.name {
                     let fadeOutAction = SCNAction.fadeOut(duration: 0.5)

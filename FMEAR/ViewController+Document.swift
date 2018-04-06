@@ -122,7 +122,7 @@ extension ViewController: FileManagerDelegate {
         
         // Set a name so that we can find this object later
         let containerNode = SCNNode()
-        containerNode.name = "VirtualObject"
+        containerNode.name = "VirtualObjectContent"
 
         // Go through the directory path and find all the obj models
         let fileManager = FileManager.default
@@ -162,6 +162,7 @@ extension ViewController: FileManagerDelegate {
             
             let definition = VirtualObjectDefinition(modelName: "model", displayName: "model", particleScaleInfo: [:])
             let object = VirtualObject(definition: definition, childNodes: [containerNode])
+            object.name = "VirtualObject"
             
             // Scale the virtual object
             let modelDimension = self.dimension(containerNode)

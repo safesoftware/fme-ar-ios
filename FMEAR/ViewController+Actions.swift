@@ -8,7 +8,7 @@ UI Actions for the main view controller.
 import UIKit
 import SceneKit
 
-extension ViewController: UIPopoverPresentationControllerDelegate {
+extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewControllerDelegate {
     
     enum SegueIdentifier: String {
         case showSettings
@@ -69,6 +69,22 @@ extension ViewController: UIPopoverPresentationControllerDelegate {
         self.dismiss(animated: true, completion: nil)
     }
     
+    // MARK: - SettingsViewControllerDelegate
+    
+    func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float) {
+        if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
+
+            let duration = max(3.0, min(5.0, scale / virtualObjectNode.scale.x))
+            print("Animating scale from '\(virtualObjectNode.scale)' to '\(scale)' in a duration of '\(duration)'")
+            print("Pivot = \(virtualObjectNode.pivot)")
+
+            let scaleAction = SCNAction.scale(to: CGFloat(scale), duration: Double(duration))
+
+            virtualObjectNode.runAction(scaleAction)
+        }
+
+    }
+    
     // MARK: - UIPopoverPresentationControllerDelegate
     
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
@@ -87,13 +103,17 @@ extension ViewController: UIPopoverPresentationControllerDelegate {
         if segueIdentifer == .showAssets, let assetViewController = segue.destination as? AssetViewController {
             assetViewController.delegate = self
             assetViewController.assets = getAssets()
+        } else if segueIdentifer == .showSettings, let settingsViewController = segue.destination as? SettingsViewController {
+            // Update the scale to the current model scale
+            settingsViewController.delegate = self
+            settingsViewController.scale = currentScale()
         }
     }
     
     func getAssets() -> [Asset] {
         var assets = [Asset]()
         
-        if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
+        if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObjectContent", recursively: true) {
             for childNode in virtualObjectNode.childNodes {
                 if let name = childNode.name {
                     print("Asset Name = '\(name)' with opacity = \(childNode.opacity)")

@@ -41,7 +41,7 @@ extension ViewController: ARSCNViewDelegate {
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        print("ADD \(anchor.identifier): \(anchor.transform)")
+        //print("ADD \(anchor.identifier): \(anchor.transform)")
 
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         serialQueue.async {
@@ -51,7 +51,7 @@ extension ViewController: ARSCNViewDelegate {
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-        print("UPDATE \(anchor.identifier): \(anchor.transform)")
+        //print("UPDATE \(anchor.identifier): \(anchor.transform)")
 
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         serialQueue.async {
@@ -61,7 +61,7 @@ extension ViewController: ARSCNViewDelegate {
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didRemove node: SCNNode, for anchor: ARAnchor) {
-        print("REMOVE \(anchor.identifier): \(anchor.transform)")
+        //print("REMOVE \(anchor.identifier): \(anchor.transform)")
 
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         serialQueue.async {

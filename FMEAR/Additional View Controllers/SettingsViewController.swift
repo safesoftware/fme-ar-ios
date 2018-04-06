@@ -30,6 +30,10 @@ extension UserDefaults {
     }
 }
 
+protocol SettingsViewControllerDelegate: class {
+    func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float)
+}
+
 class SettingsViewController: UITableViewController {
         
     // MARK: - UI Elements
@@ -37,12 +41,16 @@ class SettingsViewController: UITableViewController {
 //	@IBOutlet weak var scaleWithPinchGestureSwitch: UISwitch!
 //	@IBOutlet weak var dragOnInfinitePlanesSwitch: UISwitch!
     @IBOutlet weak var lightEstimationSwitch: UISwitch!
+    @IBOutlet weak var scaleLabel: UILabel!
+    @IBOutlet weak var fullScaleButton: UIButton!
+    
+    weak var delegate: SettingsViewControllerDelegate?
+    var scale: Float = 1.0
     
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -52,6 +60,18 @@ class SettingsViewController: UITableViewController {
 //        scaleWithPinchGestureSwitch.isOn = defaults.bool(for: .scaleWithPinchGesture)
 //        dragOnInfinitePlanesSwitch.isOn = defaults.bool(for: .dragOnInfinitePlanes)
         lightEstimationSwitch.isOn = defaults.bool(for: .estimateLight)
+        updateScaleSettings()
+    }
+    
+    func updateScaleSettings() {
+        scaleLabel.text = String(format: "%.3f", scale)
+
+        if (scaleLabel.text == "1.000") {
+            scaleLabel.text = "Full Scale"
+            fullScaleButton.isEnabled = false
+        } else {
+            fullScaleButton.isEnabled = true
+        }
     }
     
     override func viewWillLayoutSubviews() {
@@ -72,5 +92,17 @@ class SettingsViewController: UITableViewController {
             default: break
 		}
 	}
-    
+
+    @IBAction func clicked(_ sender: UIButton) {
+        switch sender {
+        case fullScaleButton:
+            scale = 1.0
+            updateScaleSettings()
+            if delegate != nil {
+                delegate?.settingsViewControllerDelegate(self, didChangeScale: scale)
+            }
+        default:
+            break;   // Do nothing
+        }
+    }
 }

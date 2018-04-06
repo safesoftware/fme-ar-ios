@@ -79,6 +79,14 @@ class ViewController: UIViewController, ARSessionDelegate {
         setupScene()
     }
 
+    func currentScale() -> Float {
+        if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
+            return virtualObjectNode.scale.x
+        } else {
+            return 1.0
+        }
+    }
+    
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		
