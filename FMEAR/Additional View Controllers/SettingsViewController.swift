@@ -34,6 +34,7 @@ protocol SettingsViewControllerDelegate: class {
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleLightEstimation on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeIntensity intensity: Float)
+    func settingsViewControllerDelegate(_: SettingsViewController, didChangeTemperature temperature: Float)
 }
 
 class SettingsViewController: UITableViewController {
@@ -46,15 +47,18 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var scaleLabel: UILabel!
     @IBOutlet weak var fullScaleButton: UIButton!
     @IBOutlet weak var intensitySlider: UISlider!
+    @IBOutlet weak var temperatureSlider: UISlider!
     
     weak var delegate: SettingsViewControllerDelegate?
     var scale: Float = 1.0
     var intensity: Float = 1000
+    var temperature: Float = 6500
     
     let kLightEstimationSection = 0
     let kScaleSection = 1
     let kLightEstimationRow = 0
     let kIntensityRow = 1
+    let kTemperatureRow = 2
     
     // MARK: - View Life Cycle
     
@@ -75,7 +79,9 @@ class SettingsViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.section == kLightEstimationSection && indexPath.row == kIntensityRow && lightEstimationSwitch.isOn {
+        if indexPath.section == kLightEstimationSection &&
+            (indexPath.row == kIntensityRow || indexPath.row == kTemperatureRow) &&
+            lightEstimationSwitch.isOn {
             return 0 // hide the intensity slider since light estimation is on
         } else {
             return super.tableView(tableView, heightForRowAt: indexPath)
@@ -124,6 +130,10 @@ class SettingsViewController: UITableViewController {
         case intensitySlider:
             if delegate != nil {
                 delegate?.settingsViewControllerDelegate(self, didChangeIntensity: sender.value)
+            }
+        case temperatureSlider:
+            if delegate != nil {
+                delegate?.settingsViewControllerDelegate(self, didChangeTemperature: sender.value)
             }
         default:
             break   // Do nothing

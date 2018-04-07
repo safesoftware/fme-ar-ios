@@ -74,9 +74,10 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleLightEstimation on: Bool) {
         if !on {
             // If the light estimation is toggled off, we should reapply the
-            // light intensity to the light nodes since they were using the
-            // light estimation intensity
-            setLightProperties(intensity: lightIntensity)
+            // light intensity and temperature to the light nodes since they were using the
+            // light estimation
+            setLightIntensity(intensity: lightIntensity)
+            setLightTemperature(temperature: lightTemperature)
         }
     }
     
@@ -94,17 +95,27 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     }
     
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeIntensity intensity: Float) {
-        setLightProperties(intensity: CGFloat(intensity))
+        setLightIntensity(intensity: CGFloat(intensity))
     }
     
-    func setLightProperties(intensity: CGFloat = 1000, temperature: CGFloat = 6500) {
+    func settingsViewControllerDelegate(_: SettingsViewController, didChangeTemperature temperature: Float) {
+        setLightTemperature(temperature: CGFloat(temperature))
+    }
+    
+    func setLightIntensity(intensity: CGFloat) {
         lightIntensity = intensity
         for (_, light) in self.lights.enumerated() {
             light.intensity = intensity
+        }
+    }
+
+    func setLightTemperature(temperature: CGFloat) {
+        lightTemperature = temperature
+        for (_, light) in self.lights.enumerated() {
             light.temperature = temperature
         }
     }
-    
+
     // MARK: - UIPopoverPresentationControllerDelegate
     
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {

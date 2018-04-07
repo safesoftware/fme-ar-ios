@@ -127,14 +127,14 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="500" minValue="0.0" maxValue="2000" translatesAutoresizingMaskIntoConstraints="NO" id="NxM-dk-NKf">
-                                                    <rect key="frame" x="108" y="7" width="251" height="30"/>
+                                                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1000" minValue="0.0" maxValue="2000" translatesAutoresizingMaskIntoConstraints="NO" id="NxM-dk-NKf">
+                                                    <rect key="frame" x="188.5" y="7" width="170.5" height="30"/>
                                                     <connections>
                                                         <action selector="didChangeSlider:" destination="qS5-BA-VKT" eventType="valueChanged" id="jnM-F7-Sfw"/>
                                                     </connections>
                                                 </slider>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Intensity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A1d-ge-Let">
-                                                    <rect key="frame" x="16" y="11" width="86" height="21"/>
+                                                    <rect key="frame" x="16" y="11" width="166.5" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="86" id="Fqp-kf-Dfj"/>
                                                     </constraints>
@@ -148,8 +148,43 @@
                                                 <constraint firstItem="A1d-ge-Let" firstAttribute="leading" secondItem="e2i-zi-SAP" secondAttribute="leadingMargin" id="4GU-V5-nB8"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="NxM-dk-NKf" secondAttribute="bottom" constant="-3" id="6NS-Ee-gUt"/>
                                                 <constraint firstItem="A1d-ge-Let" firstAttribute="bottom" secondItem="e2i-zi-SAP" secondAttribute="bottomMargin" constant="-1" id="KBI-Ux-A0t"/>
+                                                <constraint firstItem="A1d-ge-Let" firstAttribute="width" secondItem="NxM-dk-NKf" secondAttribute="width" id="M1d-QW-ktR"/>
                                                 <constraint firstItem="NxM-dk-NKf" firstAttribute="centerY" secondItem="e2i-zi-SAP" secondAttribute="centerY" id="W7E-tC-A01"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="NxM-dk-NKf" secondAttribute="trailing" constant="2" id="i3W-Cq-Blv"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="YLt-M0-sKr">
+                                        <rect key="frame" x="0.0" y="143.5" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="YLt-M0-sKr" id="gj2-C4-DwC">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="6500" minValue="0.0" maxValue="40000" translatesAutoresizingMaskIntoConstraints="NO" id="UYJ-Ct-LOO">
+                                                    <rect key="frame" x="188.5" y="7" width="170.5" height="30"/>
+                                                    <connections>
+                                                        <action selector="didChangeSlider:" destination="qS5-BA-VKT" eventType="valueChanged" id="MgQ-VQ-NbD"/>
+                                                    </connections>
+                                                </slider>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Temperature" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vCa-LS-VZz">
+                                                    <rect key="frame" x="16" y="11" width="166.5" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="86" id="EP3-fQ-pdr"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="UYJ-Ct-LOO" firstAttribute="centerY" secondItem="gj2-C4-DwC" secondAttribute="centerY" id="DvU-2C-O1M"/>
+                                                <constraint firstItem="vCa-LS-VZz" firstAttribute="width" secondItem="UYJ-Ct-LOO" secondAttribute="width" id="HTZ-dA-U9X"/>
+                                                <constraint firstItem="vCa-LS-VZz" firstAttribute="bottom" secondItem="gj2-C4-DwC" secondAttribute="bottomMargin" constant="-1" id="KZz-EC-jLI"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="UYJ-Ct-LOO" secondAttribute="trailing" constant="2" id="SZh-OI-j23"/>
+                                                <constraint firstItem="UYJ-Ct-LOO" firstAttribute="leading" secondItem="vCa-LS-VZz" secondAttribute="trailing" constant="8" symbolic="YES" id="WHU-Se-QgV"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="UYJ-Ct-LOO" secondAttribute="bottom" constant="-3" id="dy0-hx-Vb8"/>
+                                                <constraint firstItem="vCa-LS-VZz" firstAttribute="leading" secondItem="gj2-C4-DwC" secondAttribute="leadingMargin" id="hHz-S1-Ypm"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -158,7 +193,7 @@
                             <tableViewSection headerTitle="Scale" id="Ezf-fw-q4Y">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="vVs-Xn-5lm">
-                                        <rect key="frame" x="0.0" y="199.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="243.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vVs-Xn-5lm" id="5gC-c9-f93">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
@@ -208,6 +243,7 @@
                         <outlet property="intensitySlider" destination="NxM-dk-NKf" id="VSZ-Rb-vAG"/>
                         <outlet property="lightEstimationSwitch" destination="qcK-rk-hk9" id="eea-87-Sos"/>
                         <outlet property="scaleLabel" destination="TaD-zs-azP" id="kpU-8h-zsl"/>
+                        <outlet property="temperatureSlider" destination="UYJ-Ct-LOO" id="JHK-vQ-aai"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Sxv-We-6Lq" userLabel="First Responder" sceneMemberID="firstResponder"/>

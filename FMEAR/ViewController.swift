@@ -16,6 +16,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     var modelPath: URL?
     var lights = [SCNLight]()
     var lightIntensity: CGFloat = 1000
+    var lightTemperature: CGFloat = 6500
     
     
     // MARK: - ARKit Config Properties
