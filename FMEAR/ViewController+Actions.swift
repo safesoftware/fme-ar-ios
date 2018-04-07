@@ -71,6 +71,15 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     
     // MARK: - SettingsViewControllerDelegate
     
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleLightEstimation on: Bool) {
+        if !on {
+            // If the light estimation is toggled off, we should reapply the
+            // light intensity to the light nodes since they were using the
+            // light estimation intensity
+            setLightProperties(intensity: lightIntensity)
+        }
+    }
+    
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float) {
         if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
 
@@ -82,7 +91,18 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
 
             virtualObjectNode.runAction(scaleAction)
         }
-
+    }
+    
+    func settingsViewControllerDelegate(_: SettingsViewController, didChangeIntensity intensity: Float) {
+        setLightProperties(intensity: CGFloat(intensity))
+    }
+    
+    func setLightProperties(intensity: CGFloat = 1000, temperature: CGFloat = 6500) {
+        lightIntensity = intensity
+        for (_, light) in self.lights.enumerated() {
+            light.intensity = intensity
+            light.temperature = temperature
+        }
     }
     
     // MARK: - UIPopoverPresentationControllerDelegate
@@ -107,6 +127,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             // Update the scale to the current model scale
             settingsViewController.delegate = self
             settingsViewController.scale = currentScale()
+            settingsViewController.intensity = Float(lightIntensity)
         }
     }
     

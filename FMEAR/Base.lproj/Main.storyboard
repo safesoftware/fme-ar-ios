@@ -120,12 +120,45 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="Tlj-FK-WLg">
+                                        <rect key="frame" x="0.0" y="99.5" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Tlj-FK-WLg" id="e2i-zi-SAP">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="500" minValue="0.0" maxValue="2000" translatesAutoresizingMaskIntoConstraints="NO" id="NxM-dk-NKf">
+                                                    <rect key="frame" x="108" y="7" width="251" height="30"/>
+                                                    <connections>
+                                                        <action selector="didChangeSlider:" destination="qS5-BA-VKT" eventType="valueChanged" id="jnM-F7-Sfw"/>
+                                                    </connections>
+                                                </slider>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Intensity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A1d-ge-Let">
+                                                    <rect key="frame" x="16" y="11" width="86" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="86" id="Fqp-kf-Dfj"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="NxM-dk-NKf" firstAttribute="leading" secondItem="A1d-ge-Let" secondAttribute="trailing" constant="8" symbolic="YES" id="1cX-9w-uTh"/>
+                                                <constraint firstItem="A1d-ge-Let" firstAttribute="leading" secondItem="e2i-zi-SAP" secondAttribute="leadingMargin" id="4GU-V5-nB8"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="NxM-dk-NKf" secondAttribute="bottom" constant="-3" id="6NS-Ee-gUt"/>
+                                                <constraint firstItem="A1d-ge-Let" firstAttribute="bottom" secondItem="e2i-zi-SAP" secondAttribute="bottomMargin" constant="-1" id="KBI-Ux-A0t"/>
+                                                <constraint firstItem="NxM-dk-NKf" firstAttribute="centerY" secondItem="e2i-zi-SAP" secondAttribute="centerY" id="W7E-tC-A01"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="NxM-dk-NKf" secondAttribute="trailing" constant="2" id="i3W-Cq-Blv"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection headerTitle="Scale" id="Ezf-fw-q4Y">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="vVs-Xn-5lm">
-                                        <rect key="frame" x="0.0" y="155.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="199.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vVs-Xn-5lm" id="5gC-c9-f93">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
@@ -172,13 +205,14 @@
                     <size key="freeformSize" width="375" height="220"/>
                     <connections>
                         <outlet property="fullScaleButton" destination="QbW-Bc-4zH" id="5vu-sr-u76"/>
+                        <outlet property="intensitySlider" destination="NxM-dk-NKf" id="VSZ-Rb-vAG"/>
                         <outlet property="lightEstimationSwitch" destination="qcK-rk-hk9" id="eea-87-Sos"/>
                         <outlet property="scaleLabel" destination="TaD-zs-azP" id="kpU-8h-zsl"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Sxv-We-6Lq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-5887.5" y="-82"/>
+            <point key="canvasLocation" x="-5888.8000000000002" y="-82.758620689655174"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="E48-CC-Cqc">

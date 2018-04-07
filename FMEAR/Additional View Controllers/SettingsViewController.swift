@@ -31,7 +31,9 @@ extension UserDefaults {
 }
 
 protocol SettingsViewControllerDelegate: class {
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleLightEstimation on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float)
+    func settingsViewControllerDelegate(_: SettingsViewController, didChangeIntensity intensity: Float)
 }
 
 class SettingsViewController: UITableViewController {
@@ -43,14 +45,23 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var lightEstimationSwitch: UISwitch!
     @IBOutlet weak var scaleLabel: UILabel!
     @IBOutlet weak var fullScaleButton: UIButton!
+    @IBOutlet weak var intensitySlider: UISlider!
     
     weak var delegate: SettingsViewControllerDelegate?
     var scale: Float = 1.0
+    var intensity: Float = 1000
+    
+    let kLightEstimationSection = 0
+    let kScaleSection = 1
+    let kLightEstimationRow = 0
+    let kIntensityRow = 1
     
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        intensitySlider.value = intensity
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -63,12 +74,23 @@ class SettingsViewController: UITableViewController {
         updateScaleSettings()
     }
     
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.section == kLightEstimationSection && indexPath.row == kIntensityRow && lightEstimationSwitch.isOn {
+            return 0 // hide the intensity slider since light estimation is on
+        } else {
+            return super.tableView(tableView, heightForRowAt: indexPath)
+        }
+    }
+    
     func updateScaleSettings() {
         scaleLabel.text = String(format: "%.3f", scale)
 
         if (scaleLabel.text == "1.000") {
             scaleLabel.text = "Full Scale"
             fullScaleButton.isEnabled = false
+        } else if (scaleLabel.text == "0.000") {
+            scaleLabel.text = "< 0.001"
+            fullScaleButton.isEnabled = true
         } else {
             fullScaleButton.isEnabled = true
         }
@@ -89,9 +111,24 @@ class SettingsViewController: UITableViewController {
 //                defaults.set(sender.isOn, for: .dragOnInfinitePlanes)
             case lightEstimationSwitch:
                 defaults.set(sender.isOn, for: .estimateLight)
+                tableView.reloadData()
+                if delegate != nil {
+                        delegate?.settingsViewControllerDelegate(self, didToggleLightEstimation: sender.isOn)
+                }
             default: break
 		}
 	}
+    
+    @IBAction func didChangeSlider(_ sender: UISlider) {
+        switch sender {
+        case intensitySlider:
+            if delegate != nil {
+                delegate?.settingsViewControllerDelegate(self, didChangeIntensity: sender.value)
+            }
+        default:
+            break   // Do nothing
+        }
+    }
 
     @IBAction func clicked(_ sender: UIButton) {
         switch sender {
@@ -102,7 +139,7 @@ class SettingsViewController: UITableViewController {
                 delegate?.settingsViewControllerDelegate(self, didChangeScale: scale)
             }
         default:
-            break;   // Do nothing
+            break   // Do nothing
         }
     }
 }

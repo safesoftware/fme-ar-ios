@@ -15,10 +15,8 @@ class ViewController: UIViewController, ARSessionDelegate {
     var documentOpened = false
     var modelPath: URL?
     var lights = [SCNLight]()
-    var spotLightNodes = [SCNNode]()
+    var lightIntensity: CGFloat = 1000
     
-    let kAmbientLightIntesity: CGFloat = 200
-    let kSpotLightIntensity: CGFloat = 500
     
     // MARK: - ARKit Config Properties
     
@@ -63,7 +61,6 @@ class ViewController: UIViewController, ARSessionDelegate {
     @IBOutlet weak var showAssetsButton: UIButton!
     @IBOutlet weak var restartExperienceButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
-    @IBOutlet weak var locateButton: UIButton!
     
     // MARK: - Queues
     
@@ -116,19 +113,9 @@ class ViewController: UIViewController, ARSessionDelegate {
 	
     // MARK: - Setup
 
-    func createAmbientLightNode(type: SCNLight.LightType, intensity: CGFloat = 1000) -> SCNNode {
+    func createLightNode(type: SCNLight.LightType, position: SCNVector3 = SCNVector3(0,0,0), intensity: CGFloat = 1000) -> SCNNode {
         let light = SCNLight()
-        light.type = .ambient
-        light.intensity = intensity
-        let lightNode = SCNNode()
-        lightNode.light = light
-        lights.append(light)
-        return lightNode
-    }
-
-    func createSpotLightNode(position: SCNVector3, intensity: CGFloat = 1000) -> SCNNode {
-        let light = SCNLight()
-        light.type = .spot
+        light.type = type
         light.intensity = intensity
         let lightNode = SCNNode()
         lightNode.light = light
@@ -140,12 +127,13 @@ class ViewController: UIViewController, ARSessionDelegate {
     func setupLighting() {
         
         // Ambient light
-        sceneView.scene.rootNode.addChildNode(createAmbientLightNode(type: .ambient, intensity: kAmbientLightIntesity))
+        sceneView.scene.rootNode.addChildNode(createLightNode(type: .ambient,
+                                                              position: SCNVector3(0.0, 0.0, 0.0),
+                                                              intensity: lightIntensity))
 
-        // Spot lights
+        // Directional lights
         for position in [SCNVector3(-2, 0, 0), SCNVector3(2, 0, 0), SCNVector3(0, 0, -2), SCNVector3(0, 0, 2)] {
-            let node = createSpotLightNode(position: position, intensity: kSpotLightIntensity)
-            spotLightNodes.append(node)
+            let node = createLightNode(type: .directional, position: position, intensity: lightIntensity)
             sceneView.scene.rootNode.addChildNode(node)
         }
     }

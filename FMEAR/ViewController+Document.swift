@@ -182,14 +182,6 @@ extension ViewController: FileManagerDelegate {
             if object.parent == nil {
                 self.serialQueue.async {
                     self.sceneView.scene.rootNode.addChildNode(object)
-                    
-                    for (_, lightNode) in self.spotLightNodes.enumerated() {
-                        if (lightNode.light!.type == .spot) {
-                            let constraint = SCNLookAtConstraint(target: object)
-                            constraint.isGimbalLockEnabled = true
-                            lightNode.constraints = [constraint]
-                        }
-                    }
                 }
             }
             
