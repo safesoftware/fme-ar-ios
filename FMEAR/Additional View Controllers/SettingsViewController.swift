@@ -88,6 +88,12 @@ class SettingsViewController: UITableViewController {
         }
     }
     
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        // Hide the scale section for now since the model doesn't scale from
+        // the correct origin
+        return 1
+    }
+    
     func updateScaleSettings() {
         scaleLabel.text = String(format: "%.3f", scale)
 

@@ -607,6 +607,7 @@
 				DEVELOPMENT_TEAM = B3R9YZM37G;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = FMEAR/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.safe.fmear;
 				PRODUCT_NAME = "FME AR";
@@ -627,6 +628,7 @@
 				DEVELOPMENT_TEAM = B3R9YZM37G;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = FMEAR/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.safe.fmear;
 				PRODUCT_NAME = "FME AR";
