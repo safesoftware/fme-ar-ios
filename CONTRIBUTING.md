@@ -6,4 +6,4 @@ Please visit our [Knowledge Center](https://knowledge.safe.com/index.html). If y
 
 ## Pull Request
 
-If you want to incorporate you changes into the FME AR app, you can send us a pull request. We will review your changes.
+If you want to incorporate your changes into the FME AR app, you can send us a pull request. We will review your changes.
