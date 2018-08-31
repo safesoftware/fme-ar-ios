@@ -31,6 +31,6 @@ We have tested the app with iCloud Drive, Dropbox, and OneDrive. The app current
 
 ## Licenses
 * [FME AR](https://github.com/safesoftware/fme-ar-ios/blob/master/LICENSE)
-* [Apple](https://github.com/safesoftware/fme-ar-ios/blob/master/LICENSE)
+* [Apple](https://github.com/safesoftware/fme-ar-ios/blob/master/LICENSE-APPLE)
 * [SSZipArchive](https://github.com/safesoftware/fme-ar-ios/blob/master/FMEAR/3rd/SSZipArchive/LICENSE)
 * [Minizip](http://www.zlib.net/zlib_license.html)
