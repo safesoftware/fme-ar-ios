@@ -141,6 +141,8 @@ extension ViewController: FileManagerDelegate {
                     
                     if let scene = src?.scene(options: loadingOptions) {
                         
+                        adjustMaterialProperties(sceneNode: scene.rootNode)
+                        
                         // Set the node name as the OBJ file name, which should
                         // be the asset/feature type name from the FME AR writer
                         scene.rootNode.name = element
@@ -174,7 +176,7 @@ extension ViewController: FileManagerDelegate {
                 object.scale = SCNVector3(initialScale, initialScale, initialScale)
             }
             
-            logSceneNode(object, level: 0)
+            //logSceneNode(object, level: 0)
     
             let position = self.focusSquare?.lastPosition ?? float3(0, 0, -5)
             
@@ -196,6 +198,34 @@ extension ViewController: FileManagerDelegate {
         self.modelPath = nil;
     }
     
+    func adjustMaterialProperties(sceneNode: SCNNode) {
+        
+        if let geometry = sceneNode.geometry {
+            for material in geometry.materials {
+
+                // FMEMOBILE-384
+                // SCNSceneSource seems to mistakenly load the OBJ Ka (ambient)
+                // material property as emission property. Since we dont' care
+                // emission for now, we will just copy the emission value to the
+                // original ambient value, and reset the emission property
+                // to zero.
+                material.ambient.contents = material.emission.contents
+                material.emission.contents = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+                
+                // For some reasons, the Tr value in the OBJ model is not read
+                // correctly using SCNSceneSource or Model IO. If the OBJ material has
+                // the d value.
+                if let transparent = material.transparent.contents as? NSNumber {
+                    material.transparency = CGFloat(transparent.floatValue)
+                }
+            }
+
+        }
+        
+        for childNode in sceneNode.childNodes {
+            adjustMaterialProperties(sceneNode: childNode)
+        }
+    }
     
     func logSceneSource(_ sceneSource: SCNSceneSource) {
         if let assetContributor = sceneSource.property(forKey: SCNSceneSourceAssetContributorsKey) as? String {
@@ -283,13 +313,6 @@ extension ViewController: FileManagerDelegate {
             print("\(indentation)\(prefix): name: \(materialName)")
         } else {
             print("\(indentation)\(prefix): name: <none>")
-        }
-        
-        // HACK: For some reasons, the Tr value in the OBJ model is not read
-        // correctly using SCNSceneSource or Model IO. If the OBJ material has
-        // the d value.
-        if let transparent = material.transparent.contents as? NSNumber {
-            material.transparency = CGFloat(transparent.floatValue)
         }
         
         print("\(childIndentation)lightingModel: \(material.lightingModel)")
