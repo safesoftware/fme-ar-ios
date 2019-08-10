@@ -63,12 +63,35 @@ class ViewController: UIViewController, ARSessionDelegate {
     @IBOutlet weak var restartExperienceButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
     
+    // Indicators to show the direction to the model when the model
+    // is outside the screen area.
+    @IBOutlet weak var modelIndicatorUp: UILabel!
+    @IBOutlet weak var modelIndicatorDown: UILabel!
+    @IBOutlet weak var modelIndicatorLeft: UILabel!
+    @IBOutlet weak var modelIndicatorRight: UILabel!
+    
+    
     // MARK: - Queues
     
 	let serialQueue = DispatchQueue(label: "com.apple.arkitexample.serialSceneKitQueue")
 	
     // MARK: - View Controller Life Cycle
     
+    // Explicitly clean up the document when a memory warning is received.
+    override func didReceiveMemoryWarning() {
+        print("didReceiveMemoryWarning - time to clean up")
+        session.pause()
+        
+        if let document = self.document {
+            closeDocument(document: document)
+            self.document = nil
+            backToDocumentBrowser(self)
+        }
+
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

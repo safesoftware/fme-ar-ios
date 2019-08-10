@@ -12,7 +12,11 @@ extension ViewController: ARSCNViewDelegate {
     
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         updateFocusSquare()
-        
+        updateLights()
+        updateModelIndicators()
+    }
+    
+    func updateLights() {
         // If light estimation is enabled, update the intensity of the model's lights
         var lightIntensity: CGFloat = 1000
         var lightTemperature: CGFloat = 6500
@@ -23,10 +27,38 @@ extension ViewController: ARSCNViewDelegate {
                 lightTemperature = lightEstimate.ambientColorTemperature
                 //print("light estimate: \(ambientIntensity); light temperature: \(ambientColorTemperature)")
             }
-
+            
             for (_, light) in self.lights.enumerated() {
                 light.intensity = lightIntensity
                 light.temperature = lightTemperature
+            }
+        }
+    }
+    
+    func updateModelIndicators() {
+        DispatchQueue.main.async{
+            
+            // Hide all indicators first
+            self.modelIndicatorUp.isHidden = true
+            self.modelIndicatorDown.isHidden = true
+            self.modelIndicatorLeft.isHidden = true
+            self.modelIndicatorRight.isHidden = true
+            
+            // If there is a model but it's outside the screen, we use one or
+            // more indicators to show where to find the model.
+            if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
+                if let pointOfView = self.sceneView.pointOfView {
+                    if !self.sceneView.isNode(virtualObjectNode, insideFrustumOf: pointOfView) {
+                        
+                        print("model is not visible")
+                        
+                        let screenPosition = self.sceneView.projectPoint(virtualObjectNode.position)
+                        self.modelIndicatorUp.isHidden = (screenPosition.y > Float(self.sceneView.bounds.minY))
+                        self.modelIndicatorDown.isHidden = (screenPosition.y < Float(self.sceneView.bounds.maxY))
+                        self.modelIndicatorLeft.isHidden = (screenPosition.x > Float(self.sceneView.bounds.minX))
+                        self.modelIndicatorRight.isHidden = (screenPosition.x < Float(self.sceneView.bounds.maxX))
+                    }
+                }
             }
         }
     }

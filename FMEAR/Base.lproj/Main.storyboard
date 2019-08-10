@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -99,13 +98,13 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qcK-rk-hk9">
-                                                    <rect key="frame" x="310" y="7" width="51" height="31"/>
+                                                    <rect key="frame" x="310" y="6.5" width="51" height="31"/>
                                                     <connections>
                                                         <action selector="didChangeSetting:" destination="qS5-BA-VKT" eventType="valueChanged" id="1hz-Ww-fQG"/>
                                                     </connections>
                                                 </switch>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Light Estimation" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Ob-IM-t0X">
-                                                    <rect key="frame" x="16" y="12" width="268" height="21"/>
+                                                    <rect key="frame" x="16" y="11.5" width="268" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -128,7 +127,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1000" minValue="0.0" maxValue="2000" translatesAutoresizingMaskIntoConstraints="NO" id="NxM-dk-NKf">
-                                                    <rect key="frame" x="188.5" y="7" width="170.5" height="30"/>
+                                                    <rect key="frame" x="188.5" y="7.5" width="170.5" height="29.5"/>
                                                     <connections>
                                                         <action selector="didChangeSlider:" destination="qS5-BA-VKT" eventType="valueChanged" id="jnM-F7-Sfw"/>
                                                     </connections>
@@ -162,7 +161,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="6500" minValue="0.0" maxValue="40000" translatesAutoresizingMaskIntoConstraints="NO" id="UYJ-Ct-LOO">
-                                                    <rect key="frame" x="188.5" y="7" width="170.5" height="30"/>
+                                                    <rect key="frame" x="188.5" y="7.5" width="170.5" height="29.5"/>
                                                     <connections>
                                                         <action selector="didChangeSlider:" destination="qS5-BA-VKT" eventType="valueChanged" id="MgQ-VQ-NbD"/>
                                                     </connections>
@@ -206,7 +205,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QbW-Bc-4zH">
-                                                    <rect key="frame" x="241" y="4.5" width="126" height="34"/>
+                                                    <rect key="frame" x="241" y="5" width="126" height="33.5"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="44" id="Oko-5l-Hni"/>
                                                     </constraints>
@@ -283,7 +282,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GMA-nS-xXC" userLabel="Restart Experience Button Icon">
-                                <rect key="frame" x="339" y="22" width="20" height="33"/>
+                                <rect key="frame" x="339" y="22" width="20" height="32"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="20" id="mB7-ld-kpm"/>
                                 </constraints>
@@ -343,7 +342,7 @@
                                 <blurEffect style="light"/>
                             </visualEffectView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9hL-n4-R2F" userLabel="Back Button">
-                                <rect key="frame" x="7" y="15" width="43" height="48"/>
+                                <rect key="frame" x="7" y="14" width="43" height="48"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="43" id="g8V-Ii-sn8"/>
                                 </constraints>
@@ -368,6 +367,34 @@
                                     </button>
                                 </subviews>
                             </stackView>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="▹" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b7O-bj-7kr" userLabel="Model Indicator Right">
+                                <rect key="frame" x="340" y="323" width="21" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <color key="textColor" red="1" green="0.13064185780000001" blue="0.16597279640000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="◃" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zFO-V7-NQf" userLabel="Model Indicator Left">
+                                <rect key="frame" x="16" y="323" width="21" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <color key="textColor" red="1" green="0.13064185780000001" blue="0.16597279640000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text=" ▵" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vAy-FB-fex" userLabel="Model Indicator Up">
+                                <rect key="frame" x="174" y="64" width="27" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <color key="textColor" red="1" green="0.13064185780000001" blue="0.16597279640000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="▿" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UYe-wY-eh0" userLabel="Model Indicator Down">
+                                <rect key="frame" x="177" y="618" width="21" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <color key="textColor" red="1" green="0.13064185780000001" blue="0.16597279640000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -397,6 +424,10 @@
                         <outlet property="backButton" destination="9hL-n4-R2F" id="2de-Hp-ZG2"/>
                         <outlet property="messageLabel" destination="Fop-5d-BfL" id="kz6-qo-fbT"/>
                         <outlet property="messagePanel" destination="Xj1-pu-AOT" id="zZ2-Hj-dXQ"/>
+                        <outlet property="modelIndicatorDown" destination="UYe-wY-eh0" id="mUq-Aj-UaZ"/>
+                        <outlet property="modelIndicatorLeft" destination="zFO-V7-NQf" id="vaK-tG-VIU"/>
+                        <outlet property="modelIndicatorRight" destination="b7O-bj-7kr" id="voF-MW-LEI"/>
+                        <outlet property="modelIndicatorUp" destination="vAy-FB-fex" id="a0r-ke-um2"/>
                         <outlet property="restartExperienceButton" destination="GMA-nS-xXC" id="ziw-nT-Bhh"/>
                         <outlet property="sceneView" destination="VnN-gI-Ngn" id="cZF-YY-mIS"/>
                         <outlet property="settingsButton" destination="XOA-Zn-kFv" id="BaZ-Cv-Epj"/>
