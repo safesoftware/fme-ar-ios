@@ -118,7 +118,10 @@ extension ViewController: FileManagerDelegate {
         self.textManager.showMessage("Loading model...", autoHide: false)
 
         // The generated normals mess up lighting in some models
-        let loadingOptions = [SCNSceneSource.LoadingOption.createNormalsIfAbsent : false]
+        let loadingOptions = [
+            SCNSceneSource.LoadingOption.createNormalsIfAbsent : false,
+            SCNSceneSource.LoadingOption.convertToYUp: false,
+            SCNSceneSource.LoadingOption.flattenScene: true]
         
         // Set a name so that we can find this object later
         let containerNode = SCNNode()
@@ -133,13 +136,24 @@ extension ViewController: FileManagerDelegate {
                 
                 if element.hasSuffix(".obj") && !element.hasPrefix("__MACOSX") {
                     let objPath = path.appendingPathComponent(element)
-                    
-                    let src = SCNSceneSource(url: objPath, options: [.convertToYUp: false])
+
+                    let src = SCNSceneSource(url: objPath, options: loadingOptions)
                     //if let sceneSource = src {
                     //    self.logSceneSource(sceneSource)
                     //}
                     
-                    if let scene = src?.scene(options: loadingOptions) {
+                    let statusHandler = { (totalProgress: Float, status: SCNSceneSourceStatus, error: Error?, stopLoading: UnsafeMutablePointer<ObjCBool>) -> Void in
+                        switch status {
+                        case .error: print("error: \(totalProgress)")
+                        case .parsing: print("parsing: \(totalProgress)")
+                        case .validating: print("validating: \(totalProgress)")
+                        case .processing: print("processing: \(totalProgress)")
+                        case .complete: print("complete: \(totalProgress)")
+                        default: print("default status: \(totalProgress)");
+                        }
+                    };
+                    
+                    if let scene = src?.scene(options: loadingOptions, statusHandler:  statusHandler) {
                         
                         adjustMaterialProperties(sceneNode: scene.rootNode)
                         
