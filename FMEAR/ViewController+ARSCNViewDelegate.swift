@@ -49,9 +49,6 @@ extension ViewController: ARSCNViewDelegate {
             if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
                 if let pointOfView = self.sceneView.pointOfView {
                     if !self.sceneView.isNode(virtualObjectNode, insideFrustumOf: pointOfView) {
-                        
-                        print("model is not visible")
-                        
                         let screenPosition = self.sceneView.projectPoint(virtualObjectNode.position)
                         self.modelIndicatorUp.isHidden = (screenPosition.y > Float(self.sceneView.bounds.minY))
                         self.modelIndicatorDown.isHidden = (screenPosition.y < Float(self.sceneView.bounds.maxY))
@@ -78,17 +75,15 @@ extension ViewController: ARSCNViewDelegate {
 
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         serialQueue.async {
-            self.updatePlane(anchor: planeAnchor)
+            self.updatePlane(node: node, anchor: planeAnchor)
             self.virtualObjectManager.checkIfObjectShouldMoveOntoPlane(anchor: planeAnchor, planeAnchorNode: node)
         }
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didRemove node: SCNNode, for anchor: ARAnchor) {
-        //print("REMOVE \(anchor.identifier): \(anchor.transform)")
-
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         serialQueue.async {
-            self.removePlane(anchor: planeAnchor)
+            self.removePlane(node: node, anchor: planeAnchor)
         }
     }
     

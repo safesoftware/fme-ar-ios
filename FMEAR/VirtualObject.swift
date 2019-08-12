@@ -53,7 +53,7 @@ class VirtualObject: SCNReferenceNode, ReactsToScale {
     
     init(definition: VirtualObjectDefinition) {
         self.definition = definition
-        if let url = Bundle.main.url(forResource: "Models.scnassets/\(definition.modelName)/\(definition.modelName)", withExtension: "scn") {
+        if let url = Bundle.main.url(forResource: "SceneAssets.scnassets/\(definition.modelName)/\(definition.modelName)", withExtension: "scn") {
             super.init(url: url)!
         } else if let url = Bundle.main.url(forResource: "IfcProject.scnassets/\(definition.modelName)", withExtension: "dae") {
             super.init(url: url)!
@@ -65,7 +65,7 @@ class VirtualObject: SCNReferenceNode, ReactsToScale {
     init(definition: VirtualObjectDefinition, childNodes: [SCNNode]) {
         self.definition = definition
         
-        if let url = Bundle.main.url(forResource: "Models.scnassets/model/model", withExtension: "scn") {
+        if let url = Bundle.main.url(forResource: "SceneAssets.scnassets/model/model", withExtension: "scn") {
             super.init(url: url)!
         
             for childNode in childNodes {

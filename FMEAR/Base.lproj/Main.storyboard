@@ -189,21 +189,49 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection headerTitle="Rendering" id="xhJ-fH-kNx" userLabel="Rendering">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="ahD-x7-UxG">
+                                        <rect key="frame" x="0.0" y="243.5" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ahD-x7-UxG" id="kyy-pY-uPd">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Draw Detected Plane" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rwz-o3-e6v">
+                                                    <rect key="frame" x="8" y="11.5" width="161" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Agr-m4-DTE" userLabel="Draw Detected Plane Switch">
+                                                    <rect key="frame" x="320" y="6.5" width="51" height="31"/>
+                                                    <connections>
+                                                        <action selector="didChangeSetting:" destination="Sxv-We-6Lq" eventType="valueChanged" id="FQ2-c6-mBx"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="Agr-m4-DTE" secondAttribute="trailing" constant="6" id="0YX-Bi-k76" userLabel="Draw Detected Plan Switch.leading = Draw Detected Plane.trailing + 26"/>
+                                                <constraint firstItem="rwz-o3-e6v" firstAttribute="centerY" secondItem="kyy-pY-uPd" secondAttribute="centerY" id="QcV-Gm-8Pp"/>
+                                                <constraint firstItem="Agr-m4-DTE" firstAttribute="centerY" secondItem="kyy-pY-uPd" secondAttribute="centerY" id="iRR-E7-VYE"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="Agr-m4-DTE" secondAttribute="trailing" constant="-2" id="r2N-rW-CJn" userLabel="Draw Detected Plane Switch.trailing = trailingMargin"/>
+                                                <constraint firstItem="Agr-m4-DTE" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="rwz-o3-e6v" secondAttribute="trailing" constant="8" symbolic="YES" id="y92-5E-0a1"/>
+                                                <constraint firstItem="rwz-o3-e6v" firstAttribute="leading" secondItem="kyy-pY-uPd" secondAttribute="leadingMargin" id="ymZ-ER-fYQ" userLabel="Draw Detected Plane.leading = leadingMargin"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                             <tableViewSection headerTitle="Scale" id="Ezf-fw-q4Y">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="vVs-Xn-5lm">
-                                        <rect key="frame" x="0.0" y="243.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="343.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vVs-Xn-5lm" id="5gC-c9-f93">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="1.000" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TaD-zs-azP">
-                                                    <rect key="frame" x="8" y="8" width="43" height="26.5"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QbW-Bc-4zH">
                                                     <rect key="frame" x="241" y="5" width="126" height="33.5"/>
                                                     <constraints>
@@ -214,6 +242,12 @@
                                                         <action selector="clicked:" destination="qS5-BA-VKT" eventType="touchUpInside" id="UcG-9H-JTQ"/>
                                                     </connections>
                                                 </button>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="1.000" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TaD-zs-azP">
+                                                    <rect key="frame" x="8" y="8" width="43" height="26.5"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="QbW-Bc-4zH" firstAttribute="centerY" secondItem="5gC-c9-f93" secondAttribute="centerY" id="Eke-Qb-Xmq"/>
@@ -238,6 +272,7 @@
                     </tableView>
                     <size key="freeformSize" width="375" height="220"/>
                     <connections>
+                        <outlet property="drawDetectedPlaneSwitch" destination="Agr-m4-DTE" id="KqH-z1-T1U"/>
                         <outlet property="fullScaleButton" destination="QbW-Bc-4zH" id="5vu-sr-u76"/>
                         <outlet property="intensitySlider" destination="NxM-dk-NKf" id="VSZ-Rb-vAG"/>
                         <outlet property="lightEstimationSwitch" destination="qcK-rk-hk9" id="eea-87-Sos"/>

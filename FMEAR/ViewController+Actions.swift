@@ -81,6 +81,12 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
         }
     }
     
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawDetectedPlane on: Bool) {
+        for (_, plane) in planes {
+            plane.isHidden = !on
+        }
+    }
+    
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float) {
         if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
 

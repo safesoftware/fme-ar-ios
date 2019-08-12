@@ -37,7 +37,7 @@
 		6BA3AAC21F4EF8C700CE75E6 /* ViewController+ARSCNViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AABE1F4EF8C700CE75E6 /* ViewController+ARSCNViewDelegate.swift */; };
 		6BA3AAC31F4EF8C700CE75E6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AABF1F4EF8C700CE75E6 /* ViewController.swift */; };
 		6BA3AAC41F4EF8C700CE75E6 /* ViewController+ObjectSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AAC01F4EF8C700CE75E6 /* ViewController+ObjectSelection.swift */; };
-		6BA3AAC61F4F053300CE75E6 /* Models.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BA3AAC51F4F053300CE75E6 /* Models.scnassets */; };
+		6BA3AAC61F4F053300CE75E6 /* SceneAssets.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BA3AAC51F4F053300CE75E6 /* SceneAssets.scnassets */; };
 		6BA3AAC81F4F0CAD00CE75E6 /* ViewController+Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AAC71F4F0CAD00CE75E6 /* ViewController+Document.swift */; };
 		6BA3AB2D1F4F1BB600CE75E6 /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AB2B1F4F1BB600CE75E6 /* SSZipArchive.m */; };
 		6BA3AB2F1F4F1C2800CE75E6 /* SSZipArchive+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AB2E1F4F1C2800CE75E6 /* SSZipArchive+Swift.swift */; };
@@ -94,7 +94,7 @@
 		6BA3AABE1F4EF8C700CE75E6 /* ViewController+ARSCNViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+ARSCNViewDelegate.swift"; sourceTree = "<group>"; };
 		6BA3AABF1F4EF8C700CE75E6 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		6BA3AAC01F4EF8C700CE75E6 /* ViewController+ObjectSelection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+ObjectSelection.swift"; sourceTree = "<group>"; };
-		6BA3AAC51F4F053300CE75E6 /* Models.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Models.scnassets; sourceTree = "<group>"; };
+		6BA3AAC51F4F053300CE75E6 /* SceneAssets.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = SceneAssets.scnassets; sourceTree = "<group>"; };
 		6BA3AAC71F4F0CAD00CE75E6 /* ViewController+Document.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+Document.swift"; sourceTree = "<group>"; };
 		6BA3AAE81F4F1A3D00CE75E6 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		6BA3AB281F4F1BB500CE75E6 /* FMEAR-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FMEAR-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -186,7 +186,7 @@
 				6BA8519520478B73009D26B4 /* Images */,
 				6B2F710220214AF7003812DB /* Document Icons */,
 				6BA3AB271F4F1B8E00CE75E6 /* 3rd */,
-				6BA3AAC51F4F053300CE75E6 /* Models.scnassets */,
+				6BA3AAC51F4F053300CE75E6 /* SceneAssets.scnassets */,
 				6BA3AABF1F4EF8C700CE75E6 /* ViewController.swift */,
 				6BA3AABD1F4EF8C700CE75E6 /* ViewController+Actions.swift */,
 				6BA3AABE1F4EF8C700CE75E6 /* ViewController+ARSCNViewDelegate.swift */,
@@ -404,7 +404,7 @@
 				6BA3AA701F4EF66F00CE75E6 /* LaunchScreen.storyboard in Resources */,
 				6BA3AA6D1F4EF66F00CE75E6 /* Assets.xcassets in Resources */,
 				6B2F710A20214B2A003812DB /* DocumentIcon-fmear-44x58px.png in Resources */,
-				6BA3AAC61F4F053300CE75E6 /* Models.scnassets in Resources */,
+				6BA3AAC61F4F053300CE75E6 /* SceneAssets.scnassets in Resources */,
 				6B2F710820214B2A003812DB /* DocumentIcon-fmear-64x64px.png in Resources */,
 				6B2F710920214B2A003812DB /* DocumentIcon-fmear-22x29px.png in Resources */,
 				6BA8519720478BA2009D26B4 /* fmeLogo.png in Resources */,
@@ -607,7 +607,7 @@
 				DEVELOPMENT_TEAM = B3R9YZM37G;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = FMEAR/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.safe.fmear;
 				PRODUCT_NAME = "FME AR";
@@ -628,7 +628,7 @@
 				DEVELOPMENT_TEAM = B3R9YZM37G;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = FMEAR/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.safe.fmear;
 				PRODUCT_NAME = "FME AR";

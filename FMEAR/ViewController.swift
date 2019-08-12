@@ -17,7 +17,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     var lights = [SCNLight]()
     var lightIntensity: CGFloat = 1000
     var lightTemperature: CGFloat = 6500
-    
+    var planes = [ARPlaneAnchor: Plane]()
     
     // MARK: - ARKit Config Properties
     
@@ -248,14 +248,20 @@ class ViewController: UIViewController, ARSessionDelegate {
 	}
 	
     // MARK: - Planes
-	
-	var planes = [ARPlaneAnchor: Plane]()
-	
     func addPlane(node: SCNNode, anchor: ARPlaneAnchor) {
         
-		let plane = Plane(anchor)
-		planes[anchor] = plane
-		node.addChildNode(plane)
+        // Create a custom object to visualize the plane geometry and extent.
+        let plane = Plane(anchor: anchor, in: sceneView)
+        
+        // Remember the anchor and the node
+        planes[anchor] = plane
+
+        // Initial visibility of the plane
+        plane.isHidden = !(UserDefaults.standard.bool(for: .drawDetectedPlane))
+        
+        // Add the visualization to the ARKit-managed node so that it tracks
+        // changes in the plane anchor as plane estimation continues.
+        node.addChildNode(plane)
         
 		textManager.cancelScheduledMessage(forType: .planeEstimation)
 		textManager.showMessage("SURFACE DETECTED")
@@ -272,16 +278,38 @@ class ViewController: UIViewController, ARSessionDelegate {
 //        }
 	}
 		
-    func updatePlane(anchor: ARPlaneAnchor) {
-        if let plane = planes[anchor] {
-			plane.update(anchor)
-		}
-	}
-			
-    func removePlane(anchor: ARPlaneAnchor) {
-		if let plane = planes.removeValue(forKey: anchor) {
-			plane.removeFromParentNode()
+    func updatePlane(node: SCNNode, anchor: ARPlaneAnchor) {
+        // Update only anchors and nodes set up by `renderer(_:didAdd:for:)`.
+        guard let plane = node.childNodes.first as? Plane else {
+            return
         }
+        
+        // Update ARSCNPlaneGeometry to the anchor's new estimated shape.
+        if let planeGeometry = plane.meshNode.geometry as? ARSCNPlaneGeometry {
+            planeGeometry.update(from: anchor.geometry)
+        }
+        
+        // Update extent visualization to the anchor's new bounding rectangle.
+        if let extentGeometry = plane.extentNode.geometry as? SCNPlane {
+            extentGeometry.width = CGFloat(anchor.extent.x)
+            extentGeometry.height = CGFloat(anchor.extent.z)
+            plane.extentNode.simdPosition = anchor.center
+        }
+        
+//        // Update the plane's classification and the text position
+//        if #available(iOS 12.0, *),
+//            let classificationNode = plane.classificationNode,
+//            let classificationGeometry = classificationNode.geometry as? SCNText {
+//            let currentClassification = anchor.classification.description
+//            if let oldClassification = classificationGeometry.string as? String, oldClassification != currentClassification {
+//                classificationGeometry.string = currentClassification
+//                classificationNode.centerAlign()
+//            }
+//        }
+	}
+    
+    func removePlane(node: SCNNode, anchor: ARPlaneAnchor) {
+        planes.removeValue(forKey: anchor)
     }
 	
 	func resetTracking() {
