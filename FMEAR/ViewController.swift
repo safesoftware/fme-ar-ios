@@ -77,21 +77,6 @@ class ViewController: UIViewController, ARSessionDelegate {
 	
     // MARK: - View Controller Life Cycle
     
-    // Explicitly clean up the document when a memory warning is received.
-    override func didReceiveMemoryWarning() {
-        print("didReceiveMemoryWarning - time to clean up")
-        session.pause()
-        
-        if let document = self.document {
-            closeDocument(document: document)
-            self.document = nil
-            backToDocumentBrowser(self)
-        }
-
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
