@@ -214,3 +214,16 @@ func rayIntersectionWithHorizontalPlane(rayOrigin: float3, direction: float3, pl
 	// Return the intersection point.
 	return rayOrigin + (direction * dist)
 }
+
+// MARK: - Hit Test Options
+struct HitTestOptionCategoryBitMasks : OptionSet {
+    let rawValue: Int
+    
+    // The virtual object bit mask needs to be 1, which is the default. This
+    // makes hit test work for virtual objects.
+    static let virtualObject = HitTestOptionCategoryBitMasks(rawValue: 1 << 0)
+    
+    // The detected plane bit mask needs to be something other than 1. This
+    // makes hit test ignore the detected planes.
+    static let detectedPlane = HitTestOptionCategoryBitMasks(rawValue: 1 << 1)
+}

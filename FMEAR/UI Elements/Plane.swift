@@ -48,6 +48,15 @@ class Plane: SCNNode {
         // Add the plane extent and plane geometry as child nodes so they appear in the scene.
         addChildNode(meshNode)
         addChildNode(extentNode)
+
+        self.name = "Detected Plane"
+
+        // Set a category bit mask so that the hit test result won't include
+        // the detected plane.
+        self.categoryBitMask = HitTestOptionCategoryBitMasks.detectedPlane.rawValue
+        meshNode.categoryBitMask = HitTestOptionCategoryBitMasks.detectedPlane.rawValue
+        extentNode.categoryBitMask = HitTestOptionCategoryBitMasks.detectedPlane.rawValue
+
         
 //        // Display the plane's classification, if supported on the device
 //        if #available(iOS 12.0, *), ARPlaneAnchor.isClassificationSupported {
@@ -74,6 +83,10 @@ class Plane: SCNNode {
         guard let material = meshNode.geometry?.firstMaterial
             else { fatalError("ARSCNPlaneGeometry always has one material") }
         material.diffuse.contents = UIColor.planeColor
+        
+        // Rendering the extent node slightly below the ground so that it won't
+        // fight with the virtual objects that located on the ground.
+        meshNode.position = SCNVector3(0, /*1 cm below the ground*/ -0.1, 0)
     }
     
     private func setupExtentVisualStyle() {
@@ -84,6 +97,10 @@ class Plane: SCNNode {
             else { fatalError("SCNPlane always has one material") }
         
         material.diffuse.contents = UIColor.planeColor
+        
+        // Rendering the extent node slightly below the ground so that it won't
+        // fight with the virtual objects that located on the ground.
+        extentNode.position = SCNVector3(0, /*1 cm below the ground*/ -0.1, 0)
         
         // Use a SceneKit shader modifier to render only the borders of the plane.
         guard let path = Bundle.main.path(forResource: "wireframe_shader", ofType: "metal", inDirectory: "SceneAssets.scnassets")

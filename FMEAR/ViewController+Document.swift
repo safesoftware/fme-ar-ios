@@ -117,7 +117,6 @@ extension ViewController: FileManagerDelegate {
         print("Loading model '\(path)'")
         self.textManager.showMessage("Loading model...", autoHide: false)
 
-        // The generated normals mess up lighting in some models
         let loadingOptions = [
             SCNSceneSource.LoadingOption.createNormalsIfAbsent : false,
             SCNSceneSource.LoadingOption.convertToYUp: false,
@@ -180,6 +179,9 @@ extension ViewController: FileManagerDelegate {
             let object = VirtualObject(definition: definition, childNodes: [containerNode])
             object.name = "VirtualObject"
             
+            // Set a cteagory bit mask to include the virtual object in the hit test.
+            object.categoryBitMask = HitTestOptionCategoryBitMasks.virtualObject.rawValue
+
             // Scale the virtual object
             let modelDimension = self.dimension(containerNode)
             let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
