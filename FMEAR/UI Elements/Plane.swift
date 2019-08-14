@@ -49,6 +49,14 @@ class Plane: SCNNode {
         addChildNode(meshNode)
         addChildNode(extentNode)
 
+        // Rendering the extent node slightly below the ground so that it won't
+        // fight with the virtual objects that located on the ground.
+        // Also set the rendering order of the detected plane slightly higher
+        // than the virtual object so that the semi-transparent detected plane
+        // will be rendered after the virtual object.
+        self.simdPosition = float3(0.0, /*1cm below the ground*/ -0.01, 0)
+        self.renderingOrder = 1
+        
         self.name = "Detected Plane"
 
         // Set a category bit mask so that the hit test result won't include
@@ -83,10 +91,6 @@ class Plane: SCNNode {
         guard let material = meshNode.geometry?.firstMaterial
             else { fatalError("ARSCNPlaneGeometry always has one material") }
         material.diffuse.contents = UIColor.planeColor
-        
-        // Rendering the extent node slightly below the ground so that it won't
-        // fight with the virtual objects that located on the ground.
-        meshNode.position = SCNVector3(0, /*1 mm below the ground*/ -0.001, 0)
     }
     
     private func setupExtentVisualStyle() {
@@ -97,10 +101,6 @@ class Plane: SCNNode {
             else { fatalError("SCNPlane always has one material") }
         
         material.diffuse.contents = UIColor.planeColor
-        
-        // Rendering the extent node slightly below the ground so that it won't
-        // fight with the virtual objects that located on the ground.
-        extentNode.position = SCNVector3(0, /*1 mm below the ground*/ -0.001, 0)
         
         // Use a SceneKit shader modifier to render only the borders of the plane.
         guard let path = Bundle.main.path(forResource: "wireframe_shader", ofType: "metal", inDirectory: "SceneAssets.scnassets")
