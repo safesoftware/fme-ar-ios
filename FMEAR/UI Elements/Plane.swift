@@ -86,7 +86,7 @@ class Plane: SCNNode {
         
         // Rendering the extent node slightly below the ground so that it won't
         // fight with the virtual objects that located on the ground.
-        meshNode.position = SCNVector3(0, /*1 cm below the ground*/ -0.1, 0)
+        meshNode.position = SCNVector3(0, /*1 mm below the ground*/ -0.001, 0)
     }
     
     private func setupExtentVisualStyle() {
@@ -100,7 +100,7 @@ class Plane: SCNNode {
         
         // Rendering the extent node slightly below the ground so that it won't
         // fight with the virtual objects that located on the ground.
-        extentNode.position = SCNVector3(0, /*1 cm below the ground*/ -0.1, 0)
+        extentNode.position = SCNVector3(0, /*1 mm below the ground*/ -0.001, 0)
         
         // Use a SceneKit shader modifier to render only the borders of the plane.
         guard let path = Bundle.main.path(forResource: "wireframe_shader", ofType: "metal", inDirectory: "SceneAssets.scnassets")
