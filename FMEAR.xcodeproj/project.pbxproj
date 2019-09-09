@@ -59,6 +59,8 @@
 		6BA3AB631F4F1D4800CE75E6 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AB521F4F1D4800CE75E6 /* zip.c */; };
 		6BA8519720478BA2009D26B4 /* fmeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BA8519620478BA1009D26B4 /* fmeLogo.png */; };
 		6BA85199204A3610009D26B4 /* AssetTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA85198204A3610009D26B4 /* AssetTableViewController.swift */; };
+		6BAAA915231F21FD00E95C6B /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAAA914231F21FD00E95C6B /* RoundButton.swift */; };
+		6BAAA9172320454400E95C6B /* ScaleOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAAA9162320454400E95C6B /* ScaleOptionsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -139,6 +141,8 @@
 		6BA3AB531F4F1D4800CE75E6 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		6BA8519620478BA1009D26B4 /* fmeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fmeLogo.png; sourceTree = "<group>"; };
 		6BA85198204A3610009D26B4 /* AssetTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetTableViewController.swift; sourceTree = "<group>"; };
+		6BAAA914231F21FD00E95C6B /* RoundButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
+		6BAAA9162320454400E95C6B /* ScaleOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScaleOptionsViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -215,6 +219,7 @@
 				6BA3AA9A1F4EF86100CE75E6 /* Focus Squares */,
 				6BA3AA9D1F4EF86100CE75E6 /* Gestures */,
 				6BA3AAA11F4EF86100CE75E6 /* Plane.swift */,
+				6BAAA914231F21FD00E95C6B /* RoundButton.swift */,
 			);
 			path = "UI Elements";
 			sourceTree = "<group>";
@@ -241,6 +246,7 @@
 		6BA3AAA21F4EF86100CE75E6 /* Additional View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				6BAAA9162320454400E95C6B /* ScaleOptionsViewController.swift */,
 				6BA3AAA31F4EF86100CE75E6 /* SettingsViewController.swift */,
 				6BA3AAA41F4EF86100CE75E6 /* VirtualObjectSelectionViewController.swift */,
 				6BA85198204A3610009D26B4 /* AssetTableViewController.swift */,
@@ -448,6 +454,7 @@
 				6BA3AABA1F4EF86100CE75E6 /* Utilities.swift in Sources */,
 				6BA3AAAE1F4EF86100CE75E6 /* FocusSquareSegment.swift in Sources */,
 				6BA3AA661F4EF66F00CE75E6 /* DocumentViewController.swift in Sources */,
+				6BAAA915231F21FD00E95C6B /* RoundButton.swift in Sources */,
 				6BA3AB5C1F4F1D4800CE75E6 /* sha1.c in Sources */,
 				6BA3AB581F4F1D4800CE75E6 /* fileenc.c in Sources */,
 				6BA3AAB91F4EF86100CE75E6 /* TextManager.swift in Sources */,
@@ -461,6 +468,7 @@
 				6BA3AA621F4EF66F00CE75E6 /* AppDelegate.swift in Sources */,
 				6BA3AB551F4F1D4800CE75E6 /* aescrypt.c in Sources */,
 				6BA3AAAD1F4EF86100CE75E6 /* FocusSquare.swift in Sources */,
+				6BAAA9172320454400E95C6B /* ScaleOptionsViewController.swift in Sources */,
 				6BA3AB591F4F1D4800CE75E6 /* hmac.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

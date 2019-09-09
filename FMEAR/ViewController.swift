@@ -60,6 +60,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     @IBOutlet weak var messageLabel: UILabel!
     @IBOutlet weak var settingsButton: UIButton!
     @IBOutlet weak var showAssetsButton: UIButton!
+    @IBOutlet weak var showScaleOptionsButton: UIButton!
     @IBOutlet weak var restartExperienceButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
     

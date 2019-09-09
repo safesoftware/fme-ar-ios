@@ -13,6 +13,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     enum SegueIdentifier: String {
         case showSettings
         case showAssets
+        case showScaleOptions
     }
     
     // MARK: - Interface Actions
@@ -145,6 +146,9 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             settingsViewController.delegate = self
             settingsViewController.scale = currentScale()
             settingsViewController.intensity = Float(lightIntensity)
+        } else if segueIdentifer == .showScaleOptions, let scaleOptionsViewController = segue.destination as? ScaleOptionsViewController {
+            //scaleOptionsViewController.delegate = self
+            //scaleOptionsController.scale = currentScale()
         }
     }
     

@@ -185,8 +185,9 @@ extension ViewController: FileManagerDelegate {
             // Scale the virtual object
             let modelDimension = self.dimension(containerNode)
             let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
+            
             if maxLength > 0 {
-                
+
                 // Scale the model to be within a 0.5 meter cube.
                 let initialScale = Float(0.5) / maxLength
                 object.scale = SCNVector3(initialScale, initialScale, initialScale)
@@ -205,6 +206,7 @@ extension ViewController: FileManagerDelegate {
             
             DispatchQueue.main.async {
                 self.showAssetsButton.isEnabled = true
+                self.showScaleOptionsButton.isEnabled = true
             }
         }
         else {
