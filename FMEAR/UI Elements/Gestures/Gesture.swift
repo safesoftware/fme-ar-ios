@@ -70,7 +70,7 @@ class Gesture {
                                                        .categoryBitMask: categoryBitMask]
         let hitTestResults: [SCNHitTestResult] = sceneView.hitTest(point, options: hitTestOptions)
 
-        return hitTestResults.lazy.flatMap { result in
+        return hitTestResults.lazy.compactMap { result in
             VirtualObject.isNodePartOfVirtualObject(result.node)
         }.first
     }

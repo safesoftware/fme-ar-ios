@@ -378,7 +378,7 @@
 				TargetAttributes = {
 					6BA3AA5D1F4EF66F00CE75E6 = {
 						CreatedOnToolsVersion = 9.0;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1030;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -621,7 +621,7 @@
 				PRODUCT_NAME = "FME AR";
 				SWIFT_OBJC_BRIDGING_HEADER = "FMEAR/3rd/FMEAR-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "**/**";
 			};
@@ -641,7 +641,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.safe.fmear;
 				PRODUCT_NAME = "FME AR";
 				SWIFT_OBJC_BRIDGING_HEADER = "FMEAR/3rd/FMEAR-Bridging-Header.h";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "**/**";
 			};

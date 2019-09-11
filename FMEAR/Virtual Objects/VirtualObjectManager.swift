@@ -51,7 +51,7 @@ class VirtualObjectManager {
             else { return }
         
 		unloadVirtualObject(object)
-		if let pos = virtualObjects.index(of: object) {
+		if let pos = virtualObjects.firstIndex(of: object) {
 			virtualObjects.remove(at: pos)
 		}
 	}
@@ -252,7 +252,7 @@ class VirtualObjectManager {
 				
 				SCNTransaction.begin()
 				SCNTransaction.animationDuration = CFTimeInterval(distanceToPlane * 500) // Move 2 mm per second.
-				SCNTransaction.animationTimingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+				SCNTransaction.animationTimingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
 				object.position.y = anchor.transform.columns.3.y
 				SCNTransaction.commit()
 			}

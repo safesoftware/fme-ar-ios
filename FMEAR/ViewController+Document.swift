@@ -31,7 +31,11 @@ extension ViewController: FileManagerDelegate {
                 let fileManager = FileManager.default
                 fileManager.delegate = self
                 
-                let documentsUrl: URL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first as URL!
+                let url: URL? = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first as URL?
+                guard let documentsUrl = url else {
+                    print("Failed to open '\(document.fileURL)'")
+                    return
+                }
                 
                 let zipFile = documentsUrl.appendingPathComponent("\(UUID().uuidString).zip")
                 do {
@@ -89,7 +93,14 @@ extension ViewController: FileManagerDelegate {
         let fileManager = FileManager.default
         fileManager.delegate = self
 
-        let documentsUrl: URL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first as URL!
+        let url: URL? = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first as URL?
+        guard let documentsUrl = url else {
+            print("Document not found")
+            documentOpened = false
+            return
+        }
+        
+        
         let unzippedFolderUrl: URL = documentsUrl.appendingPathComponent("model")
 
         do {
