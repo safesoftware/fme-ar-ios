@@ -42,6 +42,7 @@ class ViewController: UIViewController, ARSessionDelegate {
                 self.settingsButton.isEnabled = !self.isLoadingObject
                 self.showAssetsButton.isEnabled = !self.isLoadingObject
                 self.restartExperienceButton.isEnabled = !self.isLoadingObject
+                self.scaleLabel.isHidden = self.isLoadingObject
             }
         }
     }
@@ -63,6 +64,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     @IBOutlet weak var showScaleOptionsButton: UIButton!
     @IBOutlet weak var restartExperienceButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
+    @IBOutlet weak var scaleLabel: UILabel!
     
     // Indicators to show the direction to the model when the model
     // is outside the screen area.
@@ -85,12 +87,36 @@ class ViewController: UIViewController, ARSessionDelegate {
 		setupUIControls()
         setupScene()
     }
+    
+    func virtualObject() -> SCNNode? {
+        return self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true)
+    }
 
     func currentScale() -> Float {
-        if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
+        if let virtualObjectNode = virtualObject() {
             return virtualObjectNode.scale.x
         } else {
             return 1.0
+        }
+    }
+    
+    func modelDimension() -> [Float] {
+        if let virtualObjectNode = virtualObject() {
+            let d = dimension(virtualObjectNode)
+            return [d.x, d.y, d.z]
+        } else {
+            return []
+        }
+    }
+    
+    func setScale(scale: Float) {
+        if let virtualObjectNode = virtualObject() {
+            updateScaleLabel(scale: scale)
+            let duration = max(1.0, min(3.0, scale / virtualObjectNode.scale.x))
+            print("Animating scale from '\(virtualObjectNode.scale)' to '\(scale)' in a duration of '\(duration)'")
+            let scaleAction = SCNAction.scale(to: CGFloat(scale), duration: Double(duration))
+            scaleAction.timingMode = .easeInEaseOut
+            virtualObjectNode.runAction(scaleAction)
         }
     }
     
@@ -205,14 +231,14 @@ class ViewController: UIViewController, ARSessionDelegate {
             sceneView.session.add(anchor: ARAnchor(transform: hit.worldTransform))
         }
         
-        for result in hitResultsFeaturePoints {
-            print("hit result = \(result)")
-        }
-        
-        let hitResults = sceneView.hitTest(location, options: nil)
-        for result in hitResults {
-            logSCNHitTestResult(result)
-        }
+//        for result in hitResultsFeaturePoints {
+//            print("hit result = \(result)")
+//        }
+//        
+//        let hitResults = sceneView.hitTest(location, options: nil)
+//        for result in hitResults {
+//            logSCNHitTestResult(result)
+//        }
 	}
 	
 	override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -385,5 +411,101 @@ class ViewController: UIViewController, ARSessionDelegate {
         print("SCNHitTestResult: node = \(result.node)")
         print("SCNHitTestResult: geometryIndex = \(result.geometryIndex)")
         print("SCNHitTestResult: faceIndex = \(result.faceIndex)")
+    }
+    
+    // MARK: - View Model
+    func lengthText(_ length: Float) -> String {
+        let formatter = NumberFormatter()
+        formatter.usesSignificantDigits = true
+        formatter.maximumSignificantDigits = 3
+        formatter.minimumSignificantDigits = 2
+        
+        var adjustedLength = length
+        var lengthText = "--"
+        var unit = ""
+        if (length >= 1000.0) {
+            adjustedLength = length / 1000.0
+            unit = "km"
+        } else if (length < 1.0) {
+            adjustedLength = length * 100.0
+            unit = "cm"
+        } else {
+            adjustedLength = length
+            unit = "m"
+        }
+
+        if let roundedLength = formatter.string(from: NSNumber(value: adjustedLength)) {
+            lengthText = roundedLength + unit
+        }
+
+        return lengthText
+    }
+    
+    func ratioText(_ scale: Float) -> String {
+        let formatter = NumberFormatter()
+        formatter.usesSignificantDigits = true
+        formatter.maximumSignificantDigits = 3
+        formatter.minimumSignificantDigits = 1
+
+        var ratio = "-:-"
+        if (scale > 1.0) {
+            var adjustedScale = scale
+            var unit = ""
+            if scale >= 1000.0 {
+                adjustedScale = scale / 1000.0
+                unit = "k"
+            }
+            if let roundedScale = formatter.string(from: NSNumber(value: adjustedScale)) {
+                ratio = "\(roundedScale)\(unit):1"
+            }
+        } else if (scale <= 0.0) {
+            ratio = "∞"
+        } else if (scale <= 1.0) {
+            var adjustedScale = 1.0 / scale
+            var unit = ""
+            if adjustedScale >= 1000.0 {
+                adjustedScale = adjustedScale / 1000.0
+                unit = "k"
+            }
+
+            //let roundedScale = (1.0 / objectScale).rounded().format(f: ".0")
+            if let roundedScale = formatter.string(from: NSNumber(value: adjustedScale)) {
+                ratio = "1:\(roundedScale)\(unit)"
+            }
+        }
+        
+        return ratio
+    }
+    
+    func dimensionAndScaleText(scale: Float, node: SCNNode) -> String {
+        let (minBounds, maxBounds) = node.boundingBox
+        return dimensionAndScaleText(scale: scale, boundingBoxMin: minBounds, boundingBoxMax: maxBounds)
+    }
+    
+    func dimensionAndScaleText(scale: Float, boundingBoxMin: SCNVector3, boundingBoxMax: SCNVector3) -> String {
+        let xInMeter = (boundingBoxMax.x - boundingBoxMin.x) * scale
+        let yInMeter = (boundingBoxMax.y - boundingBoxMin.y) * scale
+        let zInMeter = (boundingBoxMax.z - boundingBoxMin.z) * scale
+        
+        return "❑ \(lengthText(xInMeter)) x \(lengthText(yInMeter)) x \(lengthText(zInMeter)) (\(ratioText(scale)))"
+    }
+    
+    func scaleOptionsButtonText(mode: ScaleMode, lockOn: Bool) -> String {
+        // Put extra space to make the lock appear on a separate line
+        let lock = (lockOn) ? "  🔒  " : ""
+        let scaleText = (mode == .fullScale) ? "Full Scale" : "Custom Scale"
+        return scaleText + lock
+    }
+    
+    
+    // MARK: - UI
+    func updateScaleLabel(scale: Float) {
+        DispatchQueue.main.async {
+            if let virtualObjectNode = self.virtualObject() {
+                self.scaleLabel.text = self.dimensionAndScaleText(scale: scale, node: virtualObjectNode)
+            } else {
+                self.scaleLabel.text = ""
+            }
+        }
     }
 }

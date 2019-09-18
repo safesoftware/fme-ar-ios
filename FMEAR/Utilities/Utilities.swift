@@ -230,3 +230,9 @@ struct HitTestOptionCategoryBitMasks : OptionSet {
     // makes hit test ignore the detected planes.
     static let detectedPlane = HitTestOptionCategoryBitMasks(rawValue: 1 << 1)
 }
+
+extension Float {
+    func format(f: String) -> String {
+        return String(format: "%\(f)f", self)
+    }
+}

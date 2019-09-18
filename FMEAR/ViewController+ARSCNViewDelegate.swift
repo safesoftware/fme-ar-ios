@@ -46,7 +46,7 @@ extension ViewController: ARSCNViewDelegate {
             
             // If there is a model but it's outside the screen, we use one or
             // more indicators to show where to find the model.
-            if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
+            if let virtualObjectNode = self.virtualObject() {
                 if let pointOfView = self.sceneView.pointOfView {
                     if !self.sceneView.isNode(virtualObjectNode, insideFrustumOf: pointOfView) {
                         let screenPosition = self.sceneView.projectPoint(virtualObjectNode.position)

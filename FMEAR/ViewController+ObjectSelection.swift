@@ -65,6 +65,11 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, AssetVie
         textManager.showMessage("CANNOT PLACE OBJECT\nTry moving left or right.")
     }
     
+    func virtualObjectManager(_ manager: VirtualObjectManager, transformDidChangeFor object: VirtualObject) {
+        // Update UI for the new scale        
+        self.scaleLabel.text = dimensionAndScaleText(scale: object.scale.x, node: object)
+    }
+    
     // MARK: - VirtualObjectSelectionViewControllerDelegate
     
     func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didSelectObjectAt index: Int) {

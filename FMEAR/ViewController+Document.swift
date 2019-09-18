@@ -216,8 +216,15 @@ extension ViewController: FileManagerDelegate {
             }
             
             DispatchQueue.main.async {
+                let defaults = UserDefaults.standard
+                let scaleLockEnabled = defaults.bool(for: .scaleLockEnabled)
+                let scaleMode = defaults.string(for: .scaleMode)
+                
                 self.showAssetsButton.isEnabled = true
                 self.showScaleOptionsButton.isEnabled = true
+                self.showScaleOptionsButton.setTitle(self.scaleOptionsButtonText(mode: ScaleMode(rawValue: scaleMode!) ?? ScaleMode.customScale, lockOn: scaleLockEnabled), for: .normal)
+                self.scaleLabel.isHidden = false
+                self.scaleLabel.text = self.dimensionAndScaleText(scale: object.scale.x, node: object)
             }
         }
         else {

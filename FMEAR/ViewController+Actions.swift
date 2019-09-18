@@ -8,7 +8,7 @@ UI Actions for the main view controller.
 import UIKit
 import SceneKit
 
-extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewControllerDelegate {
+extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewControllerDelegate, ScaleOptionsViewControllerDelegate {
     
     enum SegueIdentifier: String {
         case showSettings
@@ -48,6 +48,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             self.showAssetsButton.setImage(#imageLiteral(resourceName:"showAssetsPressed"), for: [.highlighted])
             self.showAssetsButton.isEnabled = false
             self.focusSquare?.isHidden = true
+            self.scaleLabel.isHidden = true
             
             self.resetTracking()
             
@@ -89,7 +90,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     }
     
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float) {
-        if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
+        if let virtualObjectNode = virtualObject() {
 
             let duration = max(3.0, min(5.0, scale / virtualObjectNode.scale.x))
             print("Animating scale from '\(virtualObjectNode.scale)' to '\(scale)' in a duration of '\(duration)'")
@@ -147,8 +148,10 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             settingsViewController.scale = currentScale()
             settingsViewController.intensity = Float(lightIntensity)
         } else if segueIdentifer == .showScaleOptions, let scaleOptionsViewController = segue.destination as? ScaleOptionsViewController {
-            //scaleOptionsViewController.delegate = self
-            //scaleOptionsController.scale = currentScale()
+            scaleOptionsViewController.delegate = self
+            scaleOptionsViewController.preferredContentSize = CGSize(width: 350, height: 200)
+            scaleOptionsViewController.dimension = modelDimension()
+            scaleOptionsViewController.currentScale = currentScale()
         }
     }
     
@@ -165,5 +168,18 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
         }
         
         return assets.sorted()
+    }
+
+    // MARK: - ScaleOptionsViewControllerDelegate
+    func scaleOptionsViewControllerDelegate(_: ScaleOptionsViewController, didChangeScaleMode mode: ScaleMode, lockOn: Bool) {
+        showScaleOptionsButton.setTitle(scaleOptionsButtonText(mode: mode, lockOn: lockOn), for: .normal)
+    }
+
+    func scaleOptionsViewControllerDelegate(_: ScaleOptionsViewController, didChangeScale scale: Float) {
+        setScale(scale: scale)
+        if let virtualObjectNode = virtualObject() {
+            let (minBounds, maxBounds) = virtualObjectNode.boundingBox
+            scaleLabel.text = dimensionAndScaleText(scale: 1.0, boundingBoxMin: minBounds, boundingBoxMax: maxBounds)
+        }
     }
 }

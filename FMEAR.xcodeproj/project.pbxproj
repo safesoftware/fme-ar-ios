@@ -11,6 +11,7 @@
 		6B2F710820214B2A003812DB /* DocumentIcon-fmear-64x64px.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B2F710420214B27003812DB /* DocumentIcon-fmear-64x64px.png */; };
 		6B2F710920214B2A003812DB /* DocumentIcon-fmear-22x29px.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B2F710520214B28003812DB /* DocumentIcon-fmear-22x29px.png */; };
 		6B2F710A20214B2A003812DB /* DocumentIcon-fmear-44x58px.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B2F710620214B29003812DB /* DocumentIcon-fmear-44x58px.png */; };
+		6B9F905C232C2816009FF7E5 /* ScaleOptionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9F905B232C2816009FF7E5 /* ScaleOptionsViewModel.swift */; };
 		6BA3AA621F4EF66F00CE75E6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AA611F4EF66F00CE75E6 /* AppDelegate.swift */; };
 		6BA3AA641F4EF66F00CE75E6 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AA631F4EF66F00CE75E6 /* DocumentBrowserViewController.swift */; };
 		6BA3AA661F4EF66F00CE75E6 /* DocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AA651F4EF66F00CE75E6 /* DocumentViewController.swift */; };
@@ -68,6 +69,7 @@
 		6B2F710420214B27003812DB /* DocumentIcon-fmear-64x64px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentIcon-fmear-64x64px.png"; sourceTree = "<group>"; };
 		6B2F710520214B28003812DB /* DocumentIcon-fmear-22x29px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentIcon-fmear-22x29px.png"; sourceTree = "<group>"; };
 		6B2F710620214B29003812DB /* DocumentIcon-fmear-44x58px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentIcon-fmear-44x58px.png"; sourceTree = "<group>"; };
+		6B9F905B232C2816009FF7E5 /* ScaleOptionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScaleOptionsViewModel.swift; sourceTree = "<group>"; };
 		6BA3AA5E1F4EF66F00CE75E6 /* FME AR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FME AR.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BA3AA611F4EF66F00CE75E6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6BA3AA631F4EF66F00CE75E6 /* DocumentBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBrowserViewController.swift; sourceTree = "<group>"; };
@@ -156,6 +158,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6B2A1F76232C27840003240D /* View Models */ = {
+			isa = PBXGroup;
+			children = (
+				6B9F905B232C2816009FF7E5 /* ScaleOptionsViewModel.swift */,
+			);
+			path = "View Models";
+			sourceTree = "<group>";
+		};
 		6B2F710220214AF7003812DB /* Document Icons */ = {
 			isa = PBXGroup;
 			children = (
@@ -187,6 +197,7 @@
 		6BA3AA601F4EF66F00CE75E6 /* FMEAR */ = {
 			isa = PBXGroup;
 			children = (
+				6B2A1F76232C27840003240D /* View Models */,
 				6BA8519520478B73009D26B4 /* Images */,
 				6B2F710220214AF7003812DB /* Document Icons */,
 				6BA3AB271F4F1B8E00CE75E6 /* 3rd */,
@@ -428,6 +439,7 @@
 			files = (
 				6BA3AAB81F4EF86100CE75E6 /* SceneExtensions.swift in Sources */,
 				6BA3AB5B1F4F1D4800CE75E6 /* pwd2key.c in Sources */,
+				6B9F905C232C2816009FF7E5 /* ScaleOptionsViewModel.swift in Sources */,
 				6BA3AAB41F4EF86100CE75E6 /* VirtualObjectSelectionViewController.swift in Sources */,
 				6BA3AB571F4F1D4800CE75E6 /* aestab.c in Sources */,
 				6BA3AB5D1F4F1D4800CE75E6 /* crypt.c in Sources */,
