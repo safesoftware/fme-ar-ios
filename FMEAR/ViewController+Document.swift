@@ -183,8 +183,17 @@ extension ViewController: FileManagerDelegate {
         
         if (numObjFiles > 0) {
 
-            // Normalize the model to be within a 0.5 meter cube.
-            normalize(containerNode, scale: Float(0.5))
+            // Get the scale settings
+            let defaults = UserDefaults.standard
+            let scaleLockEnabled = defaults.bool(for: .scaleLockEnabled)
+            let scaleModeText = defaults.string(for: .scaleMode) ?? ScaleMode.customScale.rawValue
+            let scaleMode = ScaleMode(rawValue: scaleModeText) ?? ScaleMode.customScale
+            
+            // Update the virtual object manager
+            virtualObjectManager.allowScaling = !scaleLockEnabled
+            
+            // Normalize the node
+            normalize(containerNode)
             
             let definition = VirtualObjectDefinition(modelName: "model", displayName: "model", particleScaleInfo: [:])
             let object = VirtualObject(definition: definition, childNodes: [containerNode])
@@ -198,9 +207,6 @@ extension ViewController: FileManagerDelegate {
             let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
             
             if maxLength > 0 {
-                let defaults = UserDefaults.standard
-                let scaleModeText = defaults.string(for: .scaleMode) ?? ScaleMode.customScale.rawValue
-                let scaleMode = ScaleMode(rawValue: scaleModeText) ?? ScaleMode.customScale
                 var preferredScale = (scaleMode == .fullScale) ? 1.0 : defaults.float(for: .scale)
                 if (preferredScale <= 0.0) {
                     // Scale the model to be within a 0.5 meter cube.
@@ -400,7 +406,7 @@ extension ViewController: FileManagerDelegate {
         return SCNVector3(maxCoord.x - minCoord.x, maxCoord.y - minCoord.y, maxCoord.z - minCoord.z)
     }
 
-    func normalize(_ sceneNode: SCNNode, scale: Float) -> Void {
+    func normalize(_ sceneNode: SCNNode) -> Void {
         // Rotate to Y up
         sceneNode.eulerAngles.x = -Float.pi / 2
 
