@@ -131,7 +131,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
+
         // All popover segues should be popovers even on iPhone.
         if let popoverController = segue.destination.popoverPresentationController, let button = sender as? UIButton {
             popoverController.delegate = self
@@ -149,7 +149,6 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             settingsViewController.intensity = Float(lightIntensity)
         } else if segueIdentifer == .showScaleOptions, let scaleOptionsViewController = segue.destination as? ScaleOptionsViewController {
             scaleOptionsViewController.delegate = self
-            scaleOptionsViewController.preferredContentSize = CGSize(width: 350, height: 200)
             scaleOptionsViewController.dimension = modelDimension()
             scaleOptionsViewController.currentScale = currentScale()
         }

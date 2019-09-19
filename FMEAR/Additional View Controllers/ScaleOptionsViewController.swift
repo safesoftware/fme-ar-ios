@@ -68,10 +68,6 @@ class ScaleOptionsViewController: UITableViewController {
         tableView.selectRow(at: IndexPath(row: kRowCurrentScale, section: kSectionCustomScaleRatios), animated: false, scrollPosition: .bottom)
     }
     
-    override func viewWillLayoutSubviews() {
-        preferredContentSize.height = tableView.contentSize.height
-    }
-    
     func scaleMode(scaleModeSegmentedControl: UISegmentedControl) -> ScaleMode {
         switch scaleModeSegmentedControl.selectedSegmentIndex {
         case kScaleModeFullSegmentIndex:
