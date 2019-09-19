@@ -217,6 +217,13 @@ class ViewController: UIViewController, ARSessionDelegate {
         messagePanel.clipsToBounds = true
         messagePanel.isHidden = true
         messageLabel.text = ""
+        
+        let defaults = UserDefaults.standard
+        let scaleModeText = defaults.string(for: .scaleMode) ?? ScaleMode.customScale.rawValue
+        let scaleMode = ScaleMode(rawValue: scaleModeText) ?? ScaleMode.customScale
+        let scaleLockEnabled = (scaleMode == .fullScale) ? true : defaults.bool(for: .scaleLockEnabled)
+        showScaleOptionsButton.setTitle(self.scaleOptionsButtonText(mode: scaleMode, lockOn: scaleLockEnabled), for: .normal)
+        showScaleOptionsButton.isEnabled = false
     }
 	
     // MARK: - Gesture Recognizers

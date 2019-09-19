@@ -47,8 +47,10 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             self.showAssetsButton.setImage(#imageLiteral(resourceName:"showAssets"), for: [])
             self.showAssetsButton.setImage(#imageLiteral(resourceName:"showAssetsPressed"), for: [.highlighted])
             self.showAssetsButton.isEnabled = false
+            self.showScaleOptionsButton.isEnabled = false
             self.focusSquare?.isHidden = true
             self.scaleLabel.isHidden = true
+            
             
             self.resetTracking()
             

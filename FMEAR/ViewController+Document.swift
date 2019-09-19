@@ -198,10 +198,16 @@ extension ViewController: FileManagerDelegate {
             let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
             
             if maxLength > 0 {
-
-                // Scale the model to be within a 0.5 meter cube.
-                let initialScale = Float(0.5) / maxLength
-                object.scale = SCNVector3(initialScale, initialScale, initialScale)
+                let defaults = UserDefaults.standard
+                let scaleModeText = defaults.string(for: .scaleMode) ?? ScaleMode.customScale.rawValue
+                let scaleMode = ScaleMode(rawValue: scaleModeText) ?? ScaleMode.customScale
+                var preferredScale = (scaleMode == .fullScale) ? 1.0 : defaults.float(for: .scale)
+                if (preferredScale <= 0.0) {
+                    // Scale the model to be within a 0.5 meter cube.
+                    preferredScale = Float(0.5) / maxLength
+                }
+                
+                object.scale = SCNVector3(preferredScale, preferredScale, preferredScale)
             }
             
             //logSceneNode(object, level: 0)
@@ -216,13 +222,8 @@ extension ViewController: FileManagerDelegate {
             }
             
             DispatchQueue.main.async {
-                let defaults = UserDefaults.standard
-                let scaleLockEnabled = defaults.bool(for: .scaleLockEnabled)
-                let scaleMode = defaults.string(for: .scaleMode)
-                
                 self.showAssetsButton.isEnabled = true
                 self.showScaleOptionsButton.isEnabled = true
-                self.showScaleOptionsButton.setTitle(self.scaleOptionsButtonText(mode: ScaleMode(rawValue: scaleMode!) ?? ScaleMode.customScale, lockOn: scaleLockEnabled), for: .normal)
                 self.scaleLabel.isHidden = false
                 self.scaleLabel.text = self.dimensionAndScaleText(scale: object.scale.x, node: object)
             }
