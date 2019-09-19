@@ -119,7 +119,7 @@ class Plane: SCNNode {
         
         let textNode = SCNNode(geometry: textGeometry)
         // scale down the size of the text
-        textNode.simdScale = float3(0.0005)
+        textNode.simdScale = float3(repeating: 0.0005)
         
         return textNode
     }

@@ -28,14 +28,14 @@ extension Array where Iterator.Element == float3 {
 			return nil
 		}
   
-        let sum = self.reduce(float3(0)) { current, next in
+        let sum = self.reduce(float3(repeating: 0.0)) { current, next in
             return current + next
         }
 		return sum / Float(self.count)
 	}
 }
 
-extension RangeReplaceableCollection where IndexDistance == Int {
+extension RangeReplaceableCollection {
 	mutating func keepLast(_ elementsToKeep: Int) {
 		if count > elementsToKeep {
 			self.removeFirst(count - elementsToKeep)

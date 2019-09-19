@@ -79,7 +79,7 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, AssetVie
         
         let definition = VirtualObjectManager.availableObjects[index]
         let object = VirtualObject(definition: definition)
-        let position = focusSquare?.lastPosition ?? float3(0)
+        let position = focusSquare?.lastPosition ?? float3(repeating: 0.0)
         virtualObjectManager.loadVirtualObject(object, to: position, cameraTransform: cameraTransform)
         if object.parent == nil {
             serialQueue.async {
