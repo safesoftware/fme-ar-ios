@@ -78,12 +78,7 @@ class TwoFingerGesture: Gesture {
             
             allowTranslation = true
             allowRotation = true
-            allowScaling = true
-            
-//            // Allow scale if the fingers are on the object or if the object is scaled very small,
-//            // and if the scale gesture has been enabled in Settings.
-//            let scaleGestureEnabled = UserDefaults.standard.bool(for: .scaleWithPinchGesture)
-//            allowScaling = scaleGestureEnabled
+            allowScaling = objectManager.allowScaling
 
             initialDistanceBetweenFingers = (firstTouchPoint - secondTouchPoint).length()
             

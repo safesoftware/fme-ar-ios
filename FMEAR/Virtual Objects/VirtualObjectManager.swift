@@ -11,10 +11,11 @@ import ARKit
 class VirtualObjectManager {
 	
 	weak var delegate: VirtualObjectManagerDelegate?
-	
 	var virtualObjects = [VirtualObject]()
-    
 	var lastUsedObject: VirtualObject?
+
+    // MARK: - Cached state from model
+    var allowScaling = true
     
     /// The queue with updates to the virtual objects are made on.
     var updateQueue: DispatchQueue
