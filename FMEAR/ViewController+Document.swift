@@ -255,6 +255,9 @@ extension ViewController: FileManagerDelegate {
                 material.ambient.contents = material.emission.contents
                 material.emission.contents = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
                 
+                // Set doubleSided so that the user can always see the model
+                material.isDoubleSided = true
+                
                 // For some reasons, the Tr value in the OBJ model is not read
                 // correctly using SCNSceneSource or Model IO. If the OBJ material has
                 // the d value.
