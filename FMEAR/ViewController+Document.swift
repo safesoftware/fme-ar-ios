@@ -409,14 +409,14 @@ extension ViewController: FileManagerDelegate {
     func normalize(_ sceneNode: SCNNode) -> Void {
         // Rotate to Y up
         sceneNode.eulerAngles.x = -Float.pi / 2
-
+        
         // Scale and offset the model so that the model stays on the ground
         let modelDimension = self.dimension(sceneNode)
         let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
         if maxLength > 0 {
             let (minCoord, maxCoord) = sceneNode.boundingBox
             sceneNode.position = SCNVector3(/*center x*/ -(minCoord.x + maxCoord.x) * 0.5,
-                                            /*put the model on the plane*/ -minCoord.z,
+                                            /*honor the original z position to allow negative features*/ 0.0,
                                             /*center z, which was y before the rotation*/ (minCoord.y + maxCoord.y) * 0.5)
         }
     }
