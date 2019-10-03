@@ -71,6 +71,8 @@
 	</array>
 	<key>UISupportsDocumentBrowser</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>The location is used for geolocation in augmenting reality</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>

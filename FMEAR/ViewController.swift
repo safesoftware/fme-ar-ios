@@ -8,6 +8,7 @@ Main view controller for the AR experience.
 import ARKit
 import SceneKit
 import UIKit
+import CoreLocation
 
 class ViewController: UIViewController, ARSessionDelegate {
     
@@ -27,6 +28,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     let standardConfiguration: ARWorldTrackingConfiguration = {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
+        configuration.worldAlignment = ARConfiguration.WorldAlignment.gravityAndHeading
         configuration.isLightEstimationEnabled = true
         return configuration
     }()
@@ -65,6 +67,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     @IBOutlet weak var restartExperienceButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var scaleLabel: UILabel!
+    @IBOutlet weak var headingLabel: UILabel!
     
     // Indicators to show the direction to the model when the model
     // is outside the screen area.
@@ -72,7 +75,11 @@ class ViewController: UIViewController, ARSessionDelegate {
     @IBOutlet weak var modelIndicatorDown: UILabel!
     @IBOutlet weak var modelIndicatorLeft: UILabel!
     @IBOutlet weak var modelIndicatorRight: UILabel!
+
     
+    // MARK: - Core Location
+    var locationManager: CLLocationManager?
+
     
     // MARK: - Queues
     
@@ -84,6 +91,7 @@ class ViewController: UIViewController, ARSessionDelegate {
         super.viewDidLoad()
 
         Setting.registerDefaults()
+        initLocationManager()
 		setupUIControls()
         setupScene()
     }
@@ -123,6 +131,8 @@ class ViewController: UIViewController, ARSessionDelegate {
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		
+        startLocationService()
+        
 		// Prevent the screen from being dimmed after a while.
 		UIApplication.shared.isIdleTimerDisabled = true
 		
@@ -139,6 +149,9 @@ class ViewController: UIViewController, ARSessionDelegate {
 	
 	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
+        
+        stopLocationService()
+        
 		session.pause()
         
         print("viewWillDisappear")
