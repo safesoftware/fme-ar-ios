@@ -10,8 +10,27 @@
 import UIKit
 import CoreLocation
 
-extension ViewController: CLLocationManagerDelegate {
-     
+protocol LocationServiceDelegate {
+    // This function is called when the description text is updated because of
+    // one of the location, heading, authorization status, or error has changed.
+    func didUpdateDescription(_ locationService: LocationService, description: String)
+}
+
+class LocationService: NSObject, CLLocationManagerDelegate {
+    
+    var delegate: LocationServiceDelegate?
+    
+    var locationManager: CLLocationManager?
+    var location: CLLocation?
+    var heading: CLHeading?
+    var authorizationStatus: CLAuthorizationStatus?
+    var error: Error?
+    
+    override init() {
+        super.init()
+        initLocationManager()
+    }
+    
     func initLocationManager() {
         locationManager = CLLocationManager()
         locationManager?.delegate = self
@@ -53,12 +72,62 @@ extension ViewController: CLLocationManagerDelegate {
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
     }
     
-    func unknownHeadingText() -> String {
-        return "🧭 ---°"
+    func description() -> String {
+        var d = ""
+        
+        if let location = location {
+            let latitude = String(format: "%.6f", location.coordinate.latitude)
+            let longitude = String(format: "%.6f", location.coordinate.longitude)
+            d += " ⍋ \(latitude), \(longitude) "
+        } else {
+            d += " ⍋ ---, --- "
+        }
+        
+        if let heading = heading {
+            let trueHeading = String(format: "%.0f", heading.trueHeading)
+            let direction = directionText(degree: heading.trueHeading)
+            d += " 🧭 \(trueHeading)° \(direction) "
+        } else {
+            d += " 🧭 ---° "
+        }
+        
+        if let status = authorizationStatus {
+            switch (status) {
+            case .notDetermined:
+                d += " (Not Determined) "
+            case .restricted:
+                d += " (Restricted Access) "
+            case .denied:
+                d += " (Denied Access) "
+            case .authorizedAlways:
+                break;
+            case .authorizedWhenInUse:
+                break;
+            @unknown default:
+                break;
+            }
+        }
+        
+        if let error = error {
+            switch (error) {
+            case CLError.Code.locationUnknown:
+                d += " (Determining) "
+            case CLError.Code.headingFailure:
+                d += " (Interference) "
+            case CLError.Code.denied:
+                d += " (Denied Access) "
+            default:
+                d += " (Unknown Error) "
+            }
+        }
+        
+        return d
     }
     
-    func unknownHeadingAccuracyText() -> String {
-        return " ± --°"
+    func notifyDelegate() {
+        if delegate != nil {
+            delegate?.didUpdateDescription(self, description: description())
+        }
     }
     
     func directionText(degree: CLLocationDirection) -> String {
@@ -70,52 +139,31 @@ extension ViewController: CLLocationManagerDelegate {
     // MARK: - CLLocationManagerDelegate
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        print("locationManager:didChangeAuthorization")
-        switch (status) {
-        case .notDetermined:
-            headingLabel.text = unknownHeadingText() + " (Not Determined)"
-        case .restricted:
-            headingLabel.text = unknownHeadingText() + " (Restricted Access)"
-        case .denied:
-            headingLabel.text = unknownHeadingText() + " (Denied Access)"
-        case .authorizedAlways:
-            headingLabel.text = unknownHeadingText()
-        case .authorizedWhenInUse:
-            headingLabel.text = unknownHeadingText()
-        @unknown default:
-            headingLabel.text = unknownHeadingText() + " (Unknown Heading)"
-        }
+        authorizationStatus = status
+        self.error = nil
+        notifyDelegate()
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("locationManager:didFailWithError")
-        switch (error) {
-        case CLError.Code.locationUnknown:
-            headingLabel.text = unknownHeadingText() + " (Determining)"
-        case CLError.Code.headingFailure:
-            headingLabel.text = unknownHeadingText() + " (Interference)"
-        case CLError.Code.denied:
-            headingLabel.text = unknownHeadingText() + " (Denied Access)"
-            stopLocationService()
-        default:
-            headingLabel.text = unknownHeadingText() + " (Unknown Error)"
-        }
+        self.error = error
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-        print("locationManager:didUpdateHeading - \(newHeading.magneticHeading), \(newHeading.trueHeading)")
-        let trueHeading = newHeading.trueHeading.format(f: ".0")
-        let direction = directionText(degree: newHeading.trueHeading)
-        if newHeading.trueHeading >= 0.0 {
-            headingLabel.text = "🧭 \(trueHeading)° \(direction)"
-        } else {
-            headingLabel.text = unknownHeadingText()
+        heading = newHeading
+        self.error = nil
+        notifyDelegate()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            self.location = location
+            self.error = nil
+            notifyDelegate()
         }
     }
     
     // MARK: - Device Orientation
     @objc func handleDeviceOrientationDidChange() {
-        print("device orientation did change: \(UIDevice.current.orientation.rawValue)")
         switch UIDevice.current.orientation {
         case .faceUp:
             locationManager?.headingOrientation = CLDeviceOrientation.faceUp

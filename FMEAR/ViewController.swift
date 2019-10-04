@@ -8,9 +8,9 @@ Main view controller for the AR experience.
 import ARKit
 import SceneKit
 import UIKit
-import CoreLocation
 
-class ViewController: UIViewController, ARSessionDelegate {
+
+class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelegate {
     
     var document: UIDocument?
     var documentOpened = false
@@ -77,9 +77,13 @@ class ViewController: UIViewController, ARSessionDelegate {
     @IBOutlet weak var modelIndicatorRight: UILabel!
 
     
-    // MARK: - Core Location
-    var locationManager: CLLocationManager?
-
+    // MARK: - Location Service
+    var locationService: LocationService?
+    
+    func didUpdateDescription(_ locationService: LocationService, description: String) {
+        headingLabel.text = description
+    }
+    
     
     // MARK: - Queues
     
@@ -89,9 +93,12 @@ class ViewController: UIViewController, ARSessionDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         Setting.registerDefaults()
-        initLocationManager()
+        
+        locationService = LocationService()
+        locationService?.delegate = self
+        
 		setupUIControls()
         setupScene()
     }
@@ -131,7 +138,7 @@ class ViewController: UIViewController, ARSessionDelegate {
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		
-        startLocationService()
+        locationService?.startLocationService()
         
 		// Prevent the screen from being dimmed after a while.
 		UIApplication.shared.isIdleTimerDisabled = true
@@ -150,7 +157,7 @@ class ViewController: UIViewController, ARSessionDelegate {
 	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
         
-        stopLocationService()
+        locationService?.stopLocationService()
         
 		session.pause()
         
