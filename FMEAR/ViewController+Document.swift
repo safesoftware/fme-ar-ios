@@ -144,36 +144,51 @@ extension ViewController: FileManagerDelegate {
         if let dirEnumerator = fileManager.enumerator(atPath: path.path) {
             while let element = dirEnumerator.nextObject() as? String {
                 
-                if element.hasSuffix(".obj") && !element.hasPrefix("__MACOSX") {
-                    let objPath = path.appendingPathComponent(element)
+                if !element.hasPrefix("__MACOSX") {
+                    if element.hasSuffix(".obj") {
+                        let objPath = path.appendingPathComponent(element)
 
-                    let src = SCNSceneSource(url: objPath, options: loadingOptions)
-                    //if let sceneSource = src {
-                    //    self.logSceneSource(sceneSource)
-                    //}
-                    
-                    let statusHandler = { (totalProgress: Float, status: SCNSceneSourceStatus, error: Error?, stopLoading: UnsafeMutablePointer<ObjCBool>) -> Void in
-                        switch status {
-                        case .error: print("error: \(totalProgress)")
-                        case .parsing: print("parsing: \(totalProgress)")
-                        case .validating: print("validating: \(totalProgress)")
-                        case .processing: print("processing: \(totalProgress)")
-                        case .complete: print("complete: \(totalProgress)")
-                        default: print("default status: \(totalProgress)");
+                        let src = SCNSceneSource(url: objPath, options: loadingOptions)
+                        //if let sceneSource = src {
+                        //    self.logSceneSource(sceneSource)
+                        //}
+                        
+                        let statusHandler = { (totalProgress: Float, status: SCNSceneSourceStatus, error: Error?, stopLoading: UnsafeMutablePointer<ObjCBool>) -> Void in
+                            switch status {
+                            case .error: print("error: \(totalProgress)")
+                            case .parsing: print("parsing: \(totalProgress)")
+                            case .validating: print("validating: \(totalProgress)")
+                            case .processing: print("processing: \(totalProgress)")
+                            case .complete: print("complete: \(totalProgress)")
+                            default: print("default status: \(totalProgress)");
+                            }
+                        };
+                        
+                        if let scene = src?.scene(options: loadingOptions, statusHandler:  statusHandler) {
+                            
+                            adjustMaterialProperties(sceneNode: scene.rootNode)
+                            
+                            // Set the node name as the OBJ file name, which should
+                            // be the asset/feature type name from the FME AR writer
+                            scene.rootNode.name = element
+                            scene.rootNode.name?.removeLast(/*.obj*/ 4)
+                            //self.logSceneNode(scene.rootNode, level: 0)
+                            containerNode.addChildNode(scene.rootNode)
+                            numObjFiles += 1
                         }
-                    };
-                    
-                    if let scene = src?.scene(options: loadingOptions, statusHandler:  statusHandler) {
+                    } else if element.hasSuffix(".json") {
+                        print("Loading json file '\(element)'")
                         
-                        adjustMaterialProperties(sceneNode: scene.rootNode)
+                        let jsonFilePath = path.appendingPathComponent(element)
                         
-                        // Set the node name as the OBJ file name, which should
-                        // be the asset/feature type name from the FME AR writer
-                        scene.rootNode.name = element
-                        scene.rootNode.name?.removeLast(/*.obj*/ 4)
-                        //self.logSceneNode(scene.rootNode, level: 0)
-                        containerNode.addChildNode(scene.rootNode)
-                        numObjFiles += 1
+                        do {
+                            let jsonData = try Data(contentsOf: jsonFilePath)
+                            let jsonDict = try JSONSerialization.jsonObject(with: jsonData, options: [])
+                            settings = try Settings(json: jsonDict)
+                            print("JSON: \(jsonDict)")
+                        } catch {
+                            print("Failed to parse the JSON file '\(element)'")
+                        }
                     }
                 }
             }
@@ -217,7 +232,7 @@ extension ViewController: FileManagerDelegate {
             }
             
             //logSceneNode(object, level: 0)
-    
+            
             let position = self.focusSquare?.lastPosition ?? float3(0, 0, -5)
             
             self.virtualObjectManager.loadVirtualObject(object, to: position, cameraTransform: cameraTransform)

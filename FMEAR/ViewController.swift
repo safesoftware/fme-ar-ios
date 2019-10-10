@@ -20,6 +20,8 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     var lightTemperature: CGFloat = 6500
     var planes = [ARPlaneAnchor: Plane]()
     
+    var settings: Settings?
+    
     // MARK: - ARKit Config Properties
     
     var screenCenter: CGPoint?
@@ -84,7 +86,6 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         headingLabel.text = description
     }
     
-    
     // MARK: - Queues
     
 	let serialQueue = DispatchQueue(label: "com.apple.arkitexample.serialSceneKitQueue")
@@ -98,7 +99,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         
         locationService = LocationService()
         locationService?.delegate = self
-        
+
 		setupUIControls()
         setupScene()
     }
