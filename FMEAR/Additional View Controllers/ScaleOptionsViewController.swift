@@ -110,6 +110,9 @@ class ScaleOptionsViewController: UITableViewController {
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         let mode = scaleMode(scaleModeSegmentedControl: sender)
         viewModel.scaleMode = mode
+        if mode == ScaleMode.fullScale {
+            viewModel.scaleLockEnabled = true
+        }
         tableView.reloadData()
         
         if delegate != nil {

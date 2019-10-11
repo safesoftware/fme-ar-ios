@@ -113,6 +113,16 @@ extension ViewController: FileManagerDelegate {
         documentOpened = false
     }
     
+    func loadSettings(file: URL) {
+        do {
+            let jsonData = try Data(contentsOf: file)
+            let jsonDict = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            settings = try Settings(json: jsonDict)
+        } catch {
+            print("No settings")
+        }
+    }
+    
     func loadModel(path: URL) {
         
         guard let cameraTransform = self.session.currentFrame?.camera.transform else {
@@ -143,6 +153,8 @@ extension ViewController: FileManagerDelegate {
         var numObjFiles : UInt = 0
         if let dirEnumerator = fileManager.enumerator(atPath: path.path) {
             while let element = dirEnumerator.nextObject() as? String {
+                
+                print("element = \(element)")
                 
                 if !element.hasPrefix("__MACOSX") {
                     if element.hasSuffix(".obj") {
@@ -176,18 +188,16 @@ extension ViewController: FileManagerDelegate {
                             containerNode.addChildNode(scene.rootNode)
                             numObjFiles += 1
                         }
+                    } else if element.hasSuffix("settings.json") {
+                        loadSettings(file: path.appendingPathComponent(element))
                     } else if element.hasSuffix(".json") {
-                        print("Loading json file '\(element)'")
-                        
-                        let jsonFilePath = path.appendingPathComponent(element)
-                        
-                        do {
-                            let jsonData = try Data(contentsOf: jsonFilePath)
-                            let jsonDict = try JSONSerialization.jsonObject(with: jsonData, options: [])
-                            settings = try Settings(json: jsonDict)
-                            print("JSON: \(jsonDict)")
-                        } catch {
-                            print("Failed to parse the JSON file '\(element)'")
+                        // Version 1 and 2 of the settings json file has a "model" name
+                        // that should match the folder name
+                        let jsonPath = path.appendingPathComponent(element)
+                        let jsonFilename = jsonPath.deletingPathExtension().lastPathComponent
+                        let folderName = jsonPath.deletingLastPathComponent().lastPathComponent
+                        if jsonFilename == folderName {
+                            loadSettings(file: jsonPath)
                         }
                     }
                 }
@@ -197,15 +207,6 @@ extension ViewController: FileManagerDelegate {
         self.textManager.showMessage("\(numObjFiles) Assets Found")
         
         if (numObjFiles > 0) {
-
-            // Get the scale settings
-            let defaults = UserDefaults.standard
-            let scaleLockEnabled = defaults.bool(for: .scaleLockEnabled)
-            let scaleModeText = defaults.string(for: .scaleMode) ?? ScaleMode.customScale.rawValue
-            let scaleMode = ScaleMode(rawValue: scaleModeText) ?? ScaleMode.customScale
-            
-            // Update the virtual object manager
-            virtualObjectManager.allowScaling = !scaleLockEnabled
             
             // Normalize the node
             normalize(containerNode)
@@ -222,12 +223,34 @@ extension ViewController: FileManagerDelegate {
             let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
             
             if maxLength > 0 {
-                var preferredScale = (scaleMode == .fullScale) ? 1.0 : defaults.float(for: .scale)
-                if (preferredScale <= 0.0) {
-                    // Scale the model to be within a 0.5 meter cube.
-                    preferredScale = Float(0.5) / maxLength
-                }
+                // By default, scale the model to be within a 0.5 meter cube.
+                var preferredScale = (Float(0.5) / maxLength)
                 
+                // If the scaling is set in the model json file, use it instead.
+                if let scaling = self.settings?.scaling {
+                    preferredScale = Float(scaling)
+
+                    DispatchQueue.main.async {
+                        var scaleMode: ScaleMode = .customScale
+                        var scaleLockEnabled = false
+                        if scaling == 1.0 {
+                            scaleMode = .fullScale
+                            scaleLockEnabled = true
+                        }
+
+                        // Update the user defaults
+                        let defaults = UserDefaults.standard
+                        defaults.set(preferredScale, for: .scale)
+                        defaults.set(scaleMode.rawValue, for: .scaleMode)
+                        defaults.set(scaleLockEnabled, for: .scaleLockEnabled)
+
+                        // Update the virtual object manager
+                        self.virtualObjectManager.allowScaling = !scaleLockEnabled
+                                                
+                        // Update the scale options button
+                        self.setShowScaleOptionsButton(mode: .fullScale, lockOn: scaleLockEnabled)
+                    }
+                }
                 object.scale = SCNVector3(preferredScale, preferredScale, preferredScale)
             }
             

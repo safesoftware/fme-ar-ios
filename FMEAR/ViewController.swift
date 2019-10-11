@@ -154,6 +154,10 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 			displayErrorMessage(title: "Unsupported platform", message: sessionErrorMsg, allowRestart: false)
 		}
 	}
+    
+    override func didReceiveMemoryWarning() {
+        print("didReceiveMemoryWarning")
+    }
 	
 	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)

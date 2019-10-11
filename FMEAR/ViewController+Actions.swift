@@ -172,9 +172,13 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     }
 
     // MARK: - ScaleOptionsViewControllerDelegate
-    func scaleOptionsViewControllerDelegate(_: ScaleOptionsViewController, didChangeScaleMode mode: ScaleMode, lockOn: Bool) {
+    func setShowScaleOptionsButton(mode: ScaleMode, lockOn: Bool) {
         showScaleOptionsButton.setTitle(scaleOptionsButtonText(mode: mode, lockOn: lockOn), for: .normal)
         virtualObjectManager.allowScaling = !lockOn
+    }
+    
+    func scaleOptionsViewControllerDelegate(_: ScaleOptionsViewController, didChangeScaleMode mode: ScaleMode, lockOn: Bool) {
+        setShowScaleOptionsButton(mode: mode, lockOn: lockOn)
     }
 
     func scaleOptionsViewControllerDelegate(_: ScaleOptionsViewController, didChangeScale scale: Float) {
