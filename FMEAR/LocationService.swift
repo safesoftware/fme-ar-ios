@@ -74,6 +74,8 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     
     func description() -> String {
         var d = ""
+        var locationNotAvailable = false
+        var headingNotAvailable = false
         
         if let location = location {
             let latitude = String(format: "%.6f", location.coordinate.latitude)
@@ -81,6 +83,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
             d += " ⍋ \(latitude), \(longitude) "
         } else {
             d += " ⍋ ---, --- "
+            locationNotAvailable = true
         }
         
         if let heading = heading {
@@ -89,6 +92,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
             d += " 🧭 \(trueHeading)° \(direction) "
         } else {
             d += " 🧭 ---° "
+            headingNotAvailable = true
         }
         
         if let status = authorizationStatus {
@@ -120,7 +124,11 @@ class LocationService: NSObject, CLLocationManagerDelegate {
                 d += " (Unknown Error) "
             }
         }
-        
+
+        if (locationNotAvailable || headingNotAvailable) {
+            d += " (Not Available) "
+        }
+
         return d
     }
     
