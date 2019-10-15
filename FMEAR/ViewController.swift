@@ -20,7 +20,12 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     var lightTemperature: CGFloat = 6500
     var planes = [ARPlaneAnchor: Plane]()
     
+    // Settings from JSON settings file
     var settings: Settings?
+    
+    // Scale properties
+    var scaleMode: ScaleMode = .customScale
+    var scaleLockEnabled: Bool = false
     
     // MARK: - ARKit Config Properties
     
@@ -242,13 +247,9 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         messagePanel.clipsToBounds = true
         messagePanel.isHidden = true
         messageLabel.text = ""
-        
-        let defaults = UserDefaults.standard
-        let scaleModeText = defaults.string(for: .scaleMode) ?? ScaleMode.customScale.rawValue
-        let scaleMode = ScaleMode(rawValue: scaleModeText) ?? ScaleMode.customScale
-        let scaleLockEnabled = (scaleMode == .fullScale) ? true : defaults.bool(for: .scaleLockEnabled)
-        showScaleOptionsButton.setTitle(self.scaleOptionsButtonText(mode: scaleMode, lockOn: scaleLockEnabled), for: .normal)
-        showScaleOptionsButton.isEnabled = false
+
+        showScaleOptionsButton.setTitle(self.scaleOptionsButtonText(mode: .customScale, lockOn: false), for: .normal)
+        showScaleOptionsButton.isHidden = true
     }
 	
     // MARK: - Gesture Recognizers

@@ -31,27 +31,20 @@ protocol ScaleOptionsViewControllerDelegate: class {
 class ScaleOptionsViewController: UITableViewController {
     
     weak var delegate: ScaleOptionsViewControllerDelegate?
-    
-    var dimension: [Float] = [0.0, 0.0, 0.0] {
-        didSet {
-            self.viewModel = ScaleOptionViewModel(dimension: dimension, currentScale: currentScale)
-        }
-    }
-    var currentScale: Float = 1.0 {
-        didSet {
-            self.viewModel = ScaleOptionViewModel(dimension: dimension, currentScale: currentScale)
-        }
-    }
     private var viewModel: ScaleOptionViewModel
     
     required init?(coder aDecoder: NSCoder) {
-        self.viewModel = ScaleOptionViewModel(dimension: dimension, currentScale: currentScale)
+        self.viewModel = ScaleOptionViewModel()
         super.init(coder: aDecoder)
     }
     
     override init(nibName nibNameOrNil: String!, bundle nibBundleOrNil: Bundle!) {
-        self.viewModel = ScaleOptionViewModel(dimension: dimension, currentScale: currentScale)
+        self.viewModel = ScaleOptionViewModel()
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
+    
+    func setValues(dimension: [Float], scaleMode: ScaleMode, scaleLockEnabled: Bool, currentScale: Float) {
+        self.viewModel = ScaleOptionViewModel(dimension: dimension, scaleMode: scaleMode, scaleLockEnabled: scaleLockEnabled, currentScale: currentScale)
     }
     
 //    convenience init() {
@@ -88,7 +81,7 @@ class ScaleOptionsViewController: UITableViewController {
         tableView.beginUpdates()
         if (scaleMode == .fullScale) {
 
-            viewModel.scaleLockEnabled = true
+            viewModel.scaleModeItem?.scaleLockEnabled = true
             
             // Scale Lock row
             let scaleLockIndexPath = IndexPath(row: kRowScaleLock, section: kSectionScaleOptions)
@@ -109,14 +102,14 @@ class ScaleOptionsViewController: UITableViewController {
     
     @IBAction func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         let mode = scaleMode(scaleModeSegmentedControl: sender)
-        viewModel.scaleMode = mode
+        viewModel.scaleModeItem?.scaleMode = mode
         if mode == ScaleMode.fullScale {
-            viewModel.scaleLockEnabled = true
+            viewModel.scaleModeItem?.scaleLockEnabled = true
         }
         tableView.reloadData()
         
         if delegate != nil {
-            delegate?.scaleOptionsViewControllerDelegate(self, didChangeScaleMode: mode, lockOn: viewModel.scaleLockEnabled)
+            delegate?.scaleOptionsViewControllerDelegate(self, didChangeScaleMode: mode, lockOn: viewModel.scaleModeItem?.scaleLockEnabled ?? false)
             if mode == ScaleMode.fullScale {
                 delegate?.scaleOptionsViewControllerDelegate(self, didChangeScale: 1.0)
             }
@@ -124,14 +117,14 @@ class ScaleOptionsViewController: UITableViewController {
     }
     
     @IBAction func didToggleScaleLock(_ sender: UISwitch) {
-        viewModel.scaleLockEnabled = sender.isOn
+        viewModel.scaleModeItem?.scaleLockEnabled = sender.isOn
         if delegate != nil {
-            delegate?.scaleOptionsViewControllerDelegate(self, didChangeScaleMode: viewModel.scaleMode, lockOn: viewModel.scaleLockEnabled)
+            delegate?.scaleOptionsViewControllerDelegate(self, didChangeScaleMode: viewModel.scaleModeItem?.scaleMode ?? ScaleMode.customScale, lockOn: viewModel.scaleModeItem?.scaleLockEnabled ?? false)
         }
     }
 
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if (viewModel.scaleMode == .fullScale &&
+        if (viewModel.scaleModeItem?.scaleMode == .fullScale &&
             ((indexPath.section == kSectionScaleOptions && indexPath.row == kRowScaleLock) ||
             (indexPath.section == kSectionCustomScaleRatios))) {
             cell.alpha = 0.3

@@ -18,52 +18,55 @@ enum ScaleMode: String {
     case customScale
 }
 
-enum ScaleOption: String {
-    case scaleMode
-    case scaleLockEnabled
-    case scale
-    
-    static func registerDefaults() {
-        UserDefaults.standard.register(defaults: [
-            ScaleOption.scaleMode.rawValue: ScaleMode.customScale.rawValue,
-            ScaleOption.scaleLockEnabled.rawValue: false,
-            ScaleOption.scale.rawValue: 1.0,
-            ])
-    }
-}
-
-extension UserDefaults {
-    func bool(for scaleOption: ScaleOption) -> Bool {
-        return bool(forKey: scaleOption.rawValue)
-    }
-    func set(_ bool: Bool, for scaleOption: ScaleOption) {
-        set(bool, forKey: scaleOption.rawValue)
-    }
-    
-    func integer(for scaleOption: ScaleOption) -> Int {
-        return integer(forKey: scaleOption.rawValue)
-    }
-    
-    func set(_ integer: Int, for scaleOption: ScaleOption) {
-        set(integer, forKey: scaleOption.rawValue)
-    }
-    
-    func float(for scaleOption: ScaleOption) -> Float {
-        return float(forKey: scaleOption.rawValue)
-    }
-    
-    func set(_ float: Float, for scaleOption: ScaleOption) {
-        set(float, forKey: scaleOption.rawValue)
-    }
-    
-    func string(for scaleOption: ScaleOption) -> String? {
-        return string(forKey: scaleOption.rawValue)
-    }
-    
-    func set(_ string: String, for scaleOption: ScaleOption) {
-        set(string, forKey: scaleOption.rawValue)
-    }
-}
+// Don't store the scale settings in the user defaults since we
+// always load the settings from file.
+//
+//enum ScaleOption: String {
+//    case scaleMode
+//    case scaleLockEnabled
+//    case scale
+//
+//    static func registerDefaults() {
+//        UserDefaults.standard.register(defaults: [
+//            ScaleOption.scaleMode.rawValue: ScaleMode.customScale.rawValue,
+//            ScaleOption.scaleLockEnabled.rawValue: false,
+//            ScaleOption.scale.rawValue: 1.0,
+//            ])
+//    }
+//}
+//
+//extension UserDefaults {
+//    func bool(for scaleOption: ScaleOption) -> Bool {
+//        return bool(forKey: scaleOption.rawValue)
+//    }
+//    func set(_ bool: Bool, for scaleOption: ScaleOption) {
+//        set(bool, forKey: scaleOption.rawValue)
+//    }
+//
+//    func integer(for scaleOption: ScaleOption) -> Int {
+//        return integer(forKey: scaleOption.rawValue)
+//    }
+//
+//    func set(_ integer: Int, for scaleOption: ScaleOption) {
+//        set(integer, forKey: scaleOption.rawValue)
+//    }
+//
+//    func float(for scaleOption: ScaleOption) -> Float {
+//        return float(forKey: scaleOption.rawValue)
+//    }
+//
+//    func set(_ float: Float, for scaleOption: ScaleOption) {
+//        set(float, forKey: scaleOption.rawValue)
+//    }
+//
+//    func string(for scaleOption: ScaleOption) -> String? {
+//        return string(forKey: scaleOption.rawValue)
+//    }
+//
+//    func set(_ string: String, for scaleOption: ScaleOption) {
+//        set(string, forKey: scaleOption.rawValue)
+//    }
+//}
 
 class ScalePreset {
     var ratio: String?
@@ -213,27 +216,27 @@ class ScaleOptionViewModelScalePresetItem : ScaleOptionViewModelItem {
 
 class ScaleOptionModel {
     
-    func loadUserDefaults() {
-        let defaults = UserDefaults.standard
-        
-        switch defaults.string(for: .scaleMode) {
-        case ScaleMode.fullScale.rawValue:
-            scaleMode = .fullScale
-        case ScaleMode.customScale.rawValue:
-            scaleMode = .customScale
-        default:
-            scaleMode = .customScale
-        }
-        
-        scaleLockEnabled = defaults.bool(for: .scaleLockEnabled)
-
-        //scaleModeSegmentedControl.selectedSegmentIndex = max(min(scaleMode, 1), 0)
-        //scaleLockSwitch.isOn = defaults.bool(for: .scaleLockEnabled)
-    }
+//    func loadUserDefaults() {
+//        let defaults = UserDefaults.standard
+//
+//        switch defaults.string(for: .scaleMode) {
+//        case ScaleMode.fullScale.rawValue:
+//            scaleMode = .fullScale
+//        case ScaleMode.customScale.rawValue:
+//            scaleMode = .customScale
+//        default:
+//            scaleMode = .customScale
+//        }
+//
+//        scaleLockEnabled = defaults.bool(for: .scaleLockEnabled)
+//
+//        //scaleModeSegmentedControl.selectedSegmentIndex = max(min(scaleMode, 1), 0)
+//        //scaleLockSwitch.isOn = defaults.bool(for: .scaleLockEnabled)
+//    }
     
-    init() {
-        loadUserDefaults()
-    }
+//    init() {
+//        loadUserDefaults()
+//    }
     
     let scales: [Float] = [
         100,
@@ -252,23 +255,23 @@ class ScaleOptionModel {
         1 / 1000
     ]
     
-    var scaleMode = ScaleMode.customScale {
-        didSet {
-            UserDefaults.standard.set(scaleMode.rawValue, for: .scaleMode)
-        }
-    }
-    
-    var scaleLockEnabled = false {
-        didSet {
-            UserDefaults.standard.set(scaleLockEnabled, for: .scaleLockEnabled)
-        }
-    }
-    
-    var currentScale: Float = 1.0 {
-        didSet {
-            UserDefaults.standard.set(currentScale, for: .scale)
-        }
-    }
+//    var scaleMode = ScaleMode.customScale {
+//        didSet {
+//            UserDefaults.standard.set(scaleMode.rawValue, for: .scaleMode)
+//        }
+//    }
+//
+//    var scaleLockEnabled = false {
+//        didSet {
+//            UserDefaults.standard.set(scaleLockEnabled, for: .scaleLockEnabled)
+//        }
+//    }
+//
+//    var currentScale: Float = 1.0 {
+//        didSet {
+//            UserDefaults.standard.set(currentScale, for: .scale)
+//        }
+//    }
 }
 
 class ScaleOptionViewModel: NSObject {
@@ -276,42 +279,48 @@ class ScaleOptionViewModel: NSObject {
     fileprivate let model = ScaleOptionModel()
     
     var items = [ScaleOptionViewModelItem]()
-    var scaleModeItem: ScaleOptionViewModelScaleModeItem
-    var scalePresetItem: ScaleOptionViewModelScalePresetItem
+    var scaleModeItem: ScaleOptionViewModelScaleModeItem?
+    var scalePresetItem: ScaleOptionViewModelScalePresetItem?
+//    var scaleMode: ScaleMode = .customScale
+//    var scaleLockEnabled: Bool = false
+//    var currentScale: Float = 1.0
 
-    required init(dimension: [Float], currentScale: Float) {
-        self.scaleMode = model.scaleMode
-        self.scaleLockEnabled = model.scaleLockEnabled
-        self.currentScale = currentScale
-        
+    override init() {
+    }
+    
+    required init(dimension: [Float], scaleMode: ScaleMode, scaleLockEnabled: Bool, currentScale: Float) {
+//        self.scaleMode = scaleMode
+//        self.scaleLockEnabled = scaleLockEnabled
+//        self.currentScale = currentScale
+//
         items.removeAll()
-        scaleModeItem = ScaleOptionViewModelScaleModeItem(scaleMode: model.scaleMode, scaleLockEnabled: model.scaleLockEnabled)
-        items.append(scaleModeItem)
+        scaleModeItem = ScaleOptionViewModelScaleModeItem(scaleMode: scaleMode, scaleLockEnabled: scaleLockEnabled)
+        items.append(scaleModeItem!)
         
         scalePresetItem = ScaleOptionViewModelScalePresetItem(dimension: dimension, scales: model.scales, currentScale: currentScale)
-        items.append(scalePresetItem)
+        items.append(scalePresetItem!)
     }
     
-    var scaleMode = ScaleMode.customScale {
-        didSet {
-            model.scaleMode = scaleMode
-            scaleModeItem.scaleMode = scaleMode
-        }
-    }
-
-    var scaleLockEnabled = false {
-        didSet {
-            model.scaleLockEnabled = scaleLockEnabled
-            scaleModeItem.scaleLockEnabled = scaleLockEnabled
-        }
-    }
-    
-    var currentScale: Float = 1.0 {
-        didSet {
-            model.currentScale = currentScale
-            scalePresetItem.currentScale = currentScale
-        }
-    }
+//    var scaleMode = ScaleMode.customScale {
+//        didSet {
+//            model.scaleMode = scaleMode
+//            scaleModeItem.scaleMode = scaleMode
+//        }
+//    }
+//
+//    var scaleLockEnabled = false {
+//        didSet {
+//            model.scaleLockEnabled = scaleLockEnabled
+//            scaleModeItem.scaleLockEnabled = scaleLockEnabled
+//        }
+//    }
+//
+//    var currentScale: Float = 1.0 {
+//        didSet {
+//            model.currentScale = currentScale
+//            scalePresetItem.currentScale = currentScale
+//        }
+//    }
 }
 
 extension ScaleOptionViewModel: UITableViewDataSource {
@@ -341,7 +350,7 @@ extension ScaleOptionViewModel: UITableViewDataSource {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: ScaleLockTableViewCell.identifier, for: indexPath) as? ScaleLockTableViewCell {
                     cell.item = item
 
-                    if (scaleMode == .fullScale) {
+                    if (scaleModeItem?.scaleMode == .fullScale) {
                         cell.isUserInteractionEnabled = false
                     } else {
                         cell.isUserInteractionEnabled = true
@@ -360,7 +369,7 @@ extension ScaleOptionViewModel: UITableViewDataSource {
                     cell.item = ScalePreset(scale: item.scales[indexPath.row - 1], dimension: item.dimension)
                 }
                 
-                if (scaleMode == .fullScale) {
+                if (scaleModeItem?.scaleMode == .fullScale) {
                     cell.isUserInteractionEnabled = false
                 } else {
                     cell.isUserInteractionEnabled = true

@@ -118,8 +118,24 @@ extension ViewController: FileManagerDelegate {
             let jsonData = try Data(contentsOf: file)
             let jsonDict = try JSONSerialization.jsonObject(with: jsonData, options: [])
             settings = try Settings(json: jsonDict)
+            
         } catch {
             print("No settings")
+            settings = nil
+        }
+    
+        DispatchQueue.main.async {
+            self.scaleMode = .customScale
+            self.scaleLockEnabled = false
+            if let scaling = self.settings?.scaling {
+                if scaling == 1.0 {
+                    self.scaleMode = .fullScale
+                    self.scaleLockEnabled = true
+                }
+            }
+                   
+            // Update the scale options button
+            self.setShowScaleOptionsButton(mode: self.scaleMode, lockOn: self.scaleLockEnabled)
         }
     }
     
@@ -192,7 +208,7 @@ extension ViewController: FileManagerDelegate {
                         loadSettings(file: path.appendingPathComponent(element))
                     } else if element.hasSuffix(".json") {
                         // Version 1 and 2 of the settings json file has a "model" name
-                        // that should match the folder name
+                        // that should match the folder name inside the .fmear archive
                         let jsonPath = path.appendingPathComponent(element)
                         let jsonFilename = jsonPath.deletingPathExtension().lastPathComponent
                         let folderName = jsonPath.deletingLastPathComponent().lastPathComponent
@@ -224,34 +240,12 @@ extension ViewController: FileManagerDelegate {
             
             if maxLength > 0 {
                 // By default, scale the model to be within a 0.5 meter cube.
-                var preferredScale = (Float(0.5) / maxLength)
-                
                 // If the scaling is set in the model json file, use it instead.
-                if let scaling = self.settings?.scaling {
-                    preferredScale = Float(scaling)
-
-                    DispatchQueue.main.async {
-                        var scaleMode: ScaleMode = .customScale
-                        var scaleLockEnabled = false
-                        if scaling == 1.0 {
-                            scaleMode = .fullScale
-                            scaleLockEnabled = true
-                        }
-
-                        // Update the user defaults
-                        let defaults = UserDefaults.standard
-                        defaults.set(preferredScale, for: .scale)
-                        defaults.set(scaleMode.rawValue, for: .scaleMode)
-                        defaults.set(scaleLockEnabled, for: .scaleLockEnabled)
-
-                        // Update the virtual object manager
-                        self.virtualObjectManager.allowScaling = !scaleLockEnabled
-                                                
-                        // Update the scale options button
-                        self.setShowScaleOptionsButton(mode: .fullScale, lockOn: scaleLockEnabled)
-                    }
-                }
+                let preferredScale = (self.scaleMode == .fullScale) ? 1.0 : (Float(0.5) / maxLength)
                 object.scale = SCNVector3(preferredScale, preferredScale, preferredScale)
+
+                // Set scale lock
+                self.virtualObjectManager.allowScaling = !self.scaleLockEnabled                
             }
             
             //logSceneNode(object, level: 0)
@@ -267,7 +261,7 @@ extension ViewController: FileManagerDelegate {
             
             DispatchQueue.main.async {
                 self.showAssetsButton.isEnabled = true
-                self.showScaleOptionsButton.isEnabled = true
+                self.showScaleOptionsButton.isHidden = false
                 self.scaleLabel.isHidden = false
                 self.scaleLabel.text = self.dimensionAndScaleText(scale: object.scale.x, node: object)
             }

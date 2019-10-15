@@ -47,7 +47,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             self.showAssetsButton.setImage(#imageLiteral(resourceName:"showAssets"), for: [])
             self.showAssetsButton.setImage(#imageLiteral(resourceName:"showAssetsPressed"), for: [.highlighted])
             self.showAssetsButton.isEnabled = false
-            self.showScaleOptionsButton.isEnabled = false
+            self.showScaleOptionsButton.isHidden = true
             self.focusSquare?.isHidden = true
             self.scaleLabel.isHidden = true
             
@@ -151,8 +151,10 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             settingsViewController.intensity = Float(lightIntensity)
         } else if segueIdentifer == .showScaleOptions, let scaleOptionsViewController = segue.destination as? ScaleOptionsViewController {
             scaleOptionsViewController.delegate = self
-            scaleOptionsViewController.dimension = modelDimension()
-            scaleOptionsViewController.currentScale = currentScale()
+            scaleOptionsViewController.setValues(dimension: modelDimension(),
+                                                 scaleMode: self.scaleMode,
+                                                 scaleLockEnabled: self.scaleLockEnabled,
+                                                 currentScale: currentScale())
         }
     }
     
@@ -173,6 +175,8 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
 
     // MARK: - ScaleOptionsViewControllerDelegate
     func setShowScaleOptionsButton(mode: ScaleMode, lockOn: Bool) {
+        self.scaleMode = mode
+        self.scaleLockEnabled = lockOn
         showScaleOptionsButton.setTitle(scaleOptionsButtonText(mode: mode, lockOn: lockOn), for: .normal)
         virtualObjectManager.allowScaling = !lockOn
     }
