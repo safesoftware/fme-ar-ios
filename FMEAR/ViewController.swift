@@ -112,6 +112,10 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     func virtualObject() -> SCNNode? {
         return self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true)
     }
+    
+    func anchorNode() -> SCNNode? {
+        return self.sceneView.scene.rootNode.childNode(withName: "Anchor Node", recursively: true)
+    }
 
     func currentScale() -> Float {
         if let virtualObjectNode = virtualObject() {

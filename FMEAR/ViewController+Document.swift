@@ -223,21 +223,62 @@ extension ViewController: FileManagerDelegate {
         self.textManager.showMessage("\(numObjFiles) Assets Found")
         
         if (numObjFiles > 0) {
+            let (minCoord, maxCoord) = containerNode.boundingBox
             
-            // Normalize the node
-            normalize(containerNode)
+            // By default, set the anchor to the center of the model, with the
+            // 0.0 height as the ground
+            let centerX = (minCoord.x + maxCoord.x) * 0.5
+            let centerY = (minCoord.y + maxCoord.y) * 0.5
+            let groundZ = 0.0
+            var anchor: SCNVector3 = SCNVector3(centerX, Float(groundZ), centerY)
             
+            if let anchors = settings?.anchors {
+                if let firstAnchor = anchors.first {
+                    anchor = SCNVector3(firstAnchor.x ?? Double(centerX),
+                                        firstAnchor.z ?? groundZ,
+                                        firstAnchor.y ?? Double(centerY))
+                }
+            }
+            
+            // TEST - The bottom-left corner of the Arc de Triomphe, using the
+            // roof as the ground (i.e. the building will be displayed underground)
+            //anchor = SCNVector3(-2132.81, 2068, -1855.440373)
+
+            // Position the container node, including the model and the anchor
+            // node, to the anchor location. The z value was the
+            containerNode.position = SCNVector3(-anchor.x, -anchor.y, anchor.z)
+            
+            // Rotate to Y up
+            containerNode.eulerAngles.x = -Float.pi / 2
+                        
+            let modelDimension = self.dimension(containerNode)
+            let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
+
+            // Add the anchor geometry and node
+            let anchorHeight: CGFloat = CGFloat(modelDimension.z * 2)
+            let anchorRadius: CGFloat = anchorHeight * 0.01
+            let anchorMaterial = SCNMaterial()
+            anchorMaterial.diffuse.contents = UIColor.red
+            let anchorGeometry = SCNCone(topRadius: anchorRadius, bottomRadius: 0, height: anchorHeight)
+            anchorGeometry.firstMaterial = anchorMaterial
+            let anchorNode = SCNNode(geometry: anchorGeometry)
+            anchorNode.name = "Anchor Node"
+            // Need to shift the SCNCone up since it's origin is the middle of the
+            // cone.
+            anchorNode.simdPosition =  float3(0, Float(anchorHeight * 0.5), 0)
+            // Initial visibility of the anchor node
+            anchorNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
+            containerNode.addChildNode(anchorNode)
+
+
             let definition = VirtualObjectDefinition(modelName: "model", displayName: "model", particleScaleInfo: [:])
-            let object = VirtualObject(definition: definition, childNodes: [containerNode])
+            let object = VirtualObject(definition: definition, childNodes: [containerNode, anchorNode])
             object.name = "VirtualObject"
             
             // Set a cteagory bit mask to include the virtual object in the hit test.
             object.categoryBitMask = HitTestOptionCategoryBitMasks.virtualObject.rawValue
 
             // Scale the virtual object
-            let modelDimension = self.dimension(containerNode)
-            let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
-            
             if maxLength > 0 {
                 // By default, scale the model to be within a 0.5 meter cube.
                 // If the scaling is set in the model json file, use it instead.
@@ -245,12 +286,16 @@ extension ViewController: FileManagerDelegate {
                 object.scale = SCNVector3(preferredScale, preferredScale, preferredScale)
 
                 // Set scale lock
-                self.virtualObjectManager.allowScaling = !self.scaleLockEnabled                
+                self.virtualObjectManager.allowScaling = !self.scaleLockEnabled
             }
             
             //logSceneNode(object, level: 0)
             
-            let position = self.focusSquare?.lastPosition ?? float3(0, 0, -5)
+            let position = (self.focusSquare?.lastPosition ?? float3(0, 0, -5))
+            
+//            // We need to negate the anchor.z (which was the y in FME) since
+//            // the y in FME is reverse compared to ARKit
+//            anchorNode.simdPosition = position + float3(anchor.x, anchor.y, -anchor.z)
             
             self.virtualObjectManager.loadVirtualObject(object, to: position, cameraTransform: cameraTransform)
             if object.parent == nil {
@@ -441,18 +486,18 @@ extension ViewController: FileManagerDelegate {
         return SCNVector3(maxCoord.x - minCoord.x, maxCoord.y - minCoord.y, maxCoord.z - minCoord.z)
     }
 
-    func normalize(_ sceneNode: SCNNode) -> Void {
-        // Rotate to Y up
-        sceneNode.eulerAngles.x = -Float.pi / 2
-        
-        // Scale and offset the model so that the model stays on the ground
-        let modelDimension = self.dimension(sceneNode)
-        let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
-        if maxLength > 0 {
-            let (minCoord, maxCoord) = sceneNode.boundingBox
-            sceneNode.position = SCNVector3(/*center x*/ -(minCoord.x + maxCoord.x) * 0.5,
-                                            /*honor the original z position to allow negative features*/ 0.0,
-                                            /*center z, which was y before the rotation*/ (minCoord.y + maxCoord.y) * 0.5)
-        }
-    }
+//    func normalize(_ sceneNode: SCNNode) -> Void {
+//        // Rotate to Y up
+//        sceneNode.eulerAngles.x = -Float.pi / 2
+//        
+//        // Scale and offset the model so that the model stays on the ground
+//        let modelDimension = self.dimension(sceneNode)
+//        let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
+//        if maxLength > 0 {
+//            let (minCoord, maxCoord) = sceneNode.boundingBox
+//            sceneNode.position = SCNVector3(/*center x*/ -(minCoord.x + maxCoord.x) * 0.5,
+//                                            /*honor the original z position to allow negative features*/ 0.0,
+//                                            /*center z, which was y before the rotation*/ (minCoord.y + maxCoord.y) * 0.5)
+//        }
+//    }
 }

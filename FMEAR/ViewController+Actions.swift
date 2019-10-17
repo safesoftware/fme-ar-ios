@@ -91,6 +91,12 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
         }
     }
     
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawAnchor on: Bool) {
+        if let anchorNode = anchorNode() {
+            anchorNode.isHidden = !on
+        }
+    }
+    
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float) {
         if let virtualObjectNode = virtualObject() {
 

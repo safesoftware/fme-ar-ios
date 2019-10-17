@@ -379,12 +379,42 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="Tli-ur-Xih">
+                                        <rect key="frame" x="0.0" y="287.5" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Tli-ur-Xih" id="frt-QP-vFq">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Draw Anchor" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T4G-tz-KsY">
+                                                    <rect key="frame" x="8" y="11.5" width="99" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T7T-9p-U0L" userLabel="Draw Detected Plane Switch">
+                                                    <rect key="frame" x="320" y="6.5" width="51" height="31"/>
+                                                    <connections>
+                                                        <action selector="didChangeSetting:" destination="Sxv-We-6Lq" eventType="valueChanged" id="CNW-t3-BYz"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="T7T-9p-U0L" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="T4G-tz-KsY" secondAttribute="trailing" constant="8" symbolic="YES" id="9KR-FN-EFE"/>
+                                                <constraint firstItem="T4G-tz-KsY" firstAttribute="centerY" secondItem="frt-QP-vFq" secondAttribute="centerY" id="Eu2-dZ-oDj"/>
+                                                <constraint firstAttribute="trailing" secondItem="T7T-9p-U0L" secondAttribute="trailing" constant="6" id="bPS-aX-LUx" userLabel="Draw Detected Plan Switch.leading = Draw Detected Plane.trailing + 26"/>
+                                                <constraint firstItem="T7T-9p-U0L" firstAttribute="centerY" secondItem="frt-QP-vFq" secondAttribute="centerY" id="eec-6C-CH0"/>
+                                                <constraint firstItem="T4G-tz-KsY" firstAttribute="leading" secondItem="frt-QP-vFq" secondAttribute="leadingMargin" id="oZj-TY-XXc" userLabel="Draw Detected Plane.leading = leadingMargin"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="T7T-9p-U0L" secondAttribute="trailing" constant="-2" id="q36-72-i8g" userLabel="Draw Detected Plane Switch.trailing = trailingMargin"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection headerTitle="Scale" id="Ezf-fw-q4Y">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="vVs-Xn-5lm">
-                                        <rect key="frame" x="0.0" y="343.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="387.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vVs-Xn-5lm" id="5gC-c9-f93">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -430,6 +460,7 @@
                     </tableView>
                     <size key="freeformSize" width="375" height="220"/>
                     <connections>
+                        <outlet property="drawAnchorSwitch" destination="T7T-9p-U0L" id="bOy-3K-sr3"/>
                         <outlet property="drawDetectedPlaneSwitch" destination="Agr-m4-DTE" id="KqH-z1-T1U"/>
                         <outlet property="fullScaleButton" destination="QbW-Bc-4zH" id="5vu-sr-u76"/>
                         <outlet property="intensitySlider" destination="NxM-dk-NKf" id="VSZ-Rb-vAG"/>

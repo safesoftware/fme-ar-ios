@@ -61,8 +61,8 @@ extension ViewController: ARSCNViewDelegate {
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        //print("ADD \(anchor.identifier): \(anchor.transform)")
-
+//        let isPlane = (anchor as? ARPlaneAnchor != nil) ? "PLANE" : "POINT"
+//        print("ARAnchor (\(isPlane)) ADD \(anchor.identifier): \(anchor.transform)")
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         serialQueue.async {
             self.addPlane(node: node, anchor: planeAnchor)
@@ -71,8 +71,8 @@ extension ViewController: ARSCNViewDelegate {
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-        //print("UPDATE \(anchor.identifier): \(anchor.transform)")
-
+//        let isPlane = (anchor as? ARPlaneAnchor != nil) ? "PLANE" : "POINT"
+//        print("ARAnchor (\(isPlane)) UPDATE \(anchor.identifier): \(anchor.transform)")
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         serialQueue.async {
             self.updatePlane(node: node, anchor: planeAnchor)
@@ -81,6 +81,8 @@ extension ViewController: ARSCNViewDelegate {
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didRemove node: SCNNode, for anchor: ARAnchor) {
+//        let isPlane = (anchor as? ARPlaneAnchor != nil) ? "PLANE" : "POINT"
+//        print("ARAnchor (\(isPlane)) REMOVE \(anchor.identifier): \(anchor.transform)")
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         serialQueue.async {
             self.removePlane(node: node, anchor: planeAnchor)

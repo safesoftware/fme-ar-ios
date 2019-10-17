@@ -12,13 +12,15 @@ enum Setting: String {
 //    case dragOnInfinitePlanes
     case estimateLight
     case drawDetectedPlane
+    case drawAnchor
     
     static func registerDefaults() {
         UserDefaults.standard.register(defaults: [
 //            Setting.dragOnInfinitePlanes.rawValue: true,
 //            Setting.scaleWithPinchGesture.rawValue: true,
             Setting.estimateLight.rawValue: false,
-            Setting.drawDetectedPlane.rawValue: true
+            Setting.drawDetectedPlane.rawValue: true,
+            Setting.drawAnchor.rawValue: true
         ])
     }
 }
@@ -35,6 +37,7 @@ extension UserDefaults {
 protocol SettingsViewControllerDelegate: class {
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleLightEstimation on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawDetectedPlane on: Bool)
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawAnchor on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeIntensity intensity: Float)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeTemperature temperature: Float)
@@ -52,6 +55,8 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var intensitySlider: UISlider!
     @IBOutlet weak var temperatureSlider: UISlider!
     @IBOutlet weak var drawDetectedPlaneSwitch: UISwitch!
+    @IBOutlet weak var drawAnchorSwitch: UISwitch!
+    
     
     weak var delegate: SettingsViewControllerDelegate?
     var scale: Float = 1.0
@@ -89,6 +94,7 @@ class SettingsViewController: UITableViewController {
 //        dragOnInfinitePlanesSwitch.isOn = defaults.bool(for: .dragOnInfinitePlanes)
         lightEstimationSwitch.isOn = defaults.bool(for: .estimateLight)
         drawDetectedPlaneSwitch.isOn = defaults.bool(for: .drawDetectedPlane)
+        drawAnchorSwitch.isOn = defaults.bool(for: .drawAnchor)
         updateScaleSettings()
     }
     
@@ -146,6 +152,12 @@ class SettingsViewController: UITableViewController {
                 tableView.reloadData()
                 if delegate != nil {
                     delegate?.settingsViewControllerDelegate(self, didToggleDrawDetectedPlane: sender.isOn)
+                }
+            case drawAnchorSwitch:
+                defaults.set(sender.isOn, for: .drawAnchor)
+                tableView.reloadData()
+                if delegate != nil {
+                    delegate?.settingsViewControllerDelegate(self, didToggleDrawAnchor: sender.isOn)
                 }
             default: break
 		}
