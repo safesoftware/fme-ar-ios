@@ -14,6 +14,8 @@ protocol LocationServiceDelegate {
     // This function is called when the description text is updated because of
     // one of the location, heading, authorization status, or error has changed.
     func didUpdateDescription(_ locationService: LocationService, description: String)
+    
+    func didUpdateLocation(_ locationService: LocationService, location: CLLocation)
 }
 
 class LocationService: NSObject, CLLocationManagerDelegate {
@@ -132,9 +134,15 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         return d
     }
     
-    func notifyDelegate() {
+    func notifyDelegateNewDescription() {
         if delegate != nil {
             delegate?.didUpdateDescription(self, description: description())
+        }
+    }
+    
+    func notifyDelegateNewLocation(location: CLLocation) {
+        if delegate != nil {
+            delegate?.didUpdateLocation(self, location: location)
         }
     }
     
@@ -149,7 +157,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         authorizationStatus = status
         self.error = nil
-        notifyDelegate()
+        notifyDelegateNewDescription()
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -160,15 +168,17 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         heading = newHeading
+//        print("new heading: \(newHeading)")
         self.error = nil
-        notifyDelegate()
+        notifyDelegateNewDescription()
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
             self.location = location
             self.error = nil
-            notifyDelegate()
+            notifyDelegateNewDescription()
+            notifyDelegateNewLocation(location: location)
         }
     }
     

@@ -13,6 +13,7 @@ enum Setting: String {
     case estimateLight
     case drawDetectedPlane
     case drawAnchor
+    case drawGeomarker
     
     static func registerDefaults() {
         UserDefaults.standard.register(defaults: [
@@ -20,7 +21,8 @@ enum Setting: String {
 //            Setting.scaleWithPinchGesture.rawValue: true,
             Setting.estimateLight.rawValue: false,
             Setting.drawDetectedPlane.rawValue: true,
-            Setting.drawAnchor.rawValue: true
+            Setting.drawAnchor.rawValue: true,
+            Setting.drawGeomarker.rawValue: true
         ])
     }
 }
@@ -38,6 +40,7 @@ protocol SettingsViewControllerDelegate: class {
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleLightEstimation on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawDetectedPlane on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawAnchor on: Bool)
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawGeomarker on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeIntensity intensity: Float)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeTemperature temperature: Float)
@@ -56,6 +59,7 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var temperatureSlider: UISlider!
     @IBOutlet weak var drawDetectedPlaneSwitch: UISwitch!
     @IBOutlet weak var drawAnchorSwitch: UISwitch!
+    @IBOutlet weak var drawGeomarkerSwitch: UISwitch!
     
     
     weak var delegate: SettingsViewControllerDelegate?
@@ -158,6 +162,12 @@ class SettingsViewController: UITableViewController {
                 tableView.reloadData()
                 if delegate != nil {
                     delegate?.settingsViewControllerDelegate(self, didToggleDrawAnchor: sender.isOn)
+                }
+            case drawGeomarkerSwitch:
+                defaults.set(sender.isOn, for: .drawGeomarker)
+                tableView.reloadData()
+                if delegate != nil {
+                    delegate?.settingsViewControllerDelegate(self, didToggleDrawGeomarker: sender.isOn)
                 }
             default: break
 		}

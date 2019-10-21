@@ -8,9 +8,12 @@ Main view controller for the AR experience.
 import ARKit
 import SceneKit
 import UIKit
-
+import CoreLocation
 
 class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelegate {
+    
+    let geomarkerLabelName = "Geomarker Label"
+    let geomarkerNodeName = "Geomarker Node"
     
     var document: UIDocument?
     var documentOpened = false
@@ -56,6 +59,9 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         }
     }
     
+    // SCNSceneRenderer time
+    var lastUpdateTime: TimeInterval?
+    
     // MARK: - Other Properties
     
     var textManager: TextManager!
@@ -66,6 +72,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     var spinner: UIActivityIndicatorView?
     
     @IBOutlet var sceneView: ARSCNView!
+    var overlayView: OverlaySKScene!
     @IBOutlet weak var messagePanel: UIView!
     @IBOutlet weak var messageLabel: UILabel!
     @IBOutlet weak var settingsButton: UIButton!
@@ -89,6 +96,15 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     func didUpdateDescription(_ locationService: LocationService, description: String) {
         headingLabel.text = description
+    }
+    
+    func didUpdateLocation(_ locationService: LocationService, location: CLLocation) {
+//        print("UPDATE LOCATION: \(location)")
+//        
+//        if let geomarker = geolocationNode() {
+//            print("UPDATING GEOMARKER...")
+//            geomarker.userLocation = location
+//        }
     }
     
     // MARK: - Queues
@@ -115,6 +131,19 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     func anchorNode() -> SCNNode? {
         return self.sceneView.scene.rootNode.childNode(withName: "Anchor Node", recursively: true)
+    }
+    
+    func geolocationNode() -> GeolocationMarkerNode? {
+        return self.sceneView.scene.rootNode.childNode(withName: geomarkerNodeName, recursively: true) as? GeolocationMarkerNode
+    }
+    
+    func addGeolocationNode() -> GeolocationMarkerNode {
+        let geomarker = GeolocationMarkerNode()
+        geomarker.name = geomarkerNodeName
+        geomarker.color = .green
+        geomarker.userLocation = self.locationService?.locationManager?.location
+        self.sceneView.scene.rootNode.addChildNode(geomarker)
+        return geomarker
     }
 
     func currentScale() -> Float {
@@ -221,7 +250,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         setupLighting()
         session.delegate = self
 		
-        
+        // set up overlay view
+        overlayView = OverlaySKScene(size: self.view.bounds.size)
+        sceneView.overlaySKScene = overlayView
+        sceneView.overlaySKScene?.scaleMode = .resizeFill
+        sceneView.overlaySKScene?.isUserInteractionEnabled = false
         
 		//sceneView.scene.enableEnvironmentMapWithIntensity(25, queue: serialQueue)
         

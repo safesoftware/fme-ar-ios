@@ -8,6 +8,7 @@ Methods on the main view controller for handling virtual object loading and move
 import UIKit
 import SceneKit
 import Foundation
+import CoreLocation
 import SceneKit.ModelIO
 
 extension ViewController: FileManagerDelegate {
@@ -160,8 +161,8 @@ extension ViewController: FileManagerDelegate {
             SCNSceneSource.LoadingOption.flattenScene: true]
         
         // Set a name so that we can find this object later
-        let containerNode = SCNNode()
-        containerNode.name = "VirtualObjectContent"
+        let modelNode = SCNNode()
+        modelNode.name = "VirtualObjectContent"
 
         // Go through the directory path and find all the obj models
         let fileManager = FileManager.default
@@ -201,7 +202,7 @@ extension ViewController: FileManagerDelegate {
                             scene.rootNode.name = element
                             scene.rootNode.name?.removeLast(/*.obj*/ 4)
                             //self.logSceneNode(scene.rootNode, level: 0)
-                            containerNode.addChildNode(scene.rootNode)
+                            modelNode.addChildNode(scene.rootNode)
                             numObjFiles += 1
                         }
                     } else if element.hasSuffix("settings.json") {
@@ -223,7 +224,7 @@ extension ViewController: FileManagerDelegate {
         self.textManager.showMessage("\(numObjFiles) Assets Found")
         
         if (numObjFiles > 0) {
-            let (minCoord, maxCoord) = containerNode.boundingBox
+            let (minCoord, maxCoord) = modelNode.boundingBox
             
             // By default, set the anchor to the center of the model, with the
             // 0.0 height as the ground
@@ -231,12 +232,17 @@ extension ViewController: FileManagerDelegate {
             let centerY = (minCoord.y + maxCoord.y) * 0.5
             let groundZ = 0.0
             var anchor: SCNVector3 = SCNVector3(centerX, Float(groundZ), centerY)
+            var geolocation: CLLocation?
             
             if let anchors = settings?.anchors {
                 if let firstAnchor = anchors.first {
                     anchor = SCNVector3(firstAnchor.x ?? Double(centerX),
                                         firstAnchor.z ?? groundZ,
                                         firstAnchor.y ?? Double(centerY))
+                    
+                    if let coordinate = firstAnchor.coordinate {
+                        geolocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+                    }
                 }
             }
             
@@ -246,12 +252,12 @@ extension ViewController: FileManagerDelegate {
 
             // Position the container node, including the model and the anchor
             // node, to the anchor location. The z value was the
-            containerNode.position = SCNVector3(-anchor.x, -anchor.y, anchor.z)
+            modelNode.position = SCNVector3(-anchor.x, -anchor.y, anchor.z)
             
             // Rotate to Y up
-            containerNode.eulerAngles.x = -Float.pi / 2
+            modelNode.eulerAngles.x = -Float.pi / 2
                         
-            let modelDimension = self.dimension(containerNode)
+            let modelDimension = self.dimension(modelNode)
             let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
 
             // Add the anchor geometry and node
@@ -268,11 +274,9 @@ extension ViewController: FileManagerDelegate {
             anchorNode.simdPosition =  float3(0, Float(anchorHeight * 0.5), 0)
             // Initial visibility of the anchor node
             anchorNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
-            containerNode.addChildNode(anchorNode)
-
 
             let definition = VirtualObjectDefinition(modelName: "model", displayName: "model", particleScaleInfo: [:])
-            let object = VirtualObject(definition: definition, childNodes: [containerNode, anchorNode])
+            let object = VirtualObject(definition: definition, childNodes: [modelNode, anchorNode])
             object.name = "VirtualObject"
             
             // Set a cteagory bit mask to include the virtual object in the hit test.
@@ -293,14 +297,22 @@ extension ViewController: FileManagerDelegate {
             
             let position = (self.focusSquare?.lastPosition ?? float3(0, 0, -5))
             
-//            // We need to negate the anchor.z (which was the y in FME) since
-//            // the y in FME is reverse compared to ARKit
-//            anchorNode.simdPosition = position + float3(anchor.x, anchor.y, -anchor.z)
-            
             self.virtualObjectManager.loadVirtualObject(object, to: position, cameraTransform: cameraTransform)
             if object.parent == nil {
                 self.serialQueue.async {
                     self.sceneView.scene.rootNode.addChildNode(object)
+                    
+                    // TODO: need to update the plane position on the geomarker if
+                    // the model is moved to a different plane.
+                    // Only set the y position since the geomarker update the horizontal location
+                    if let geolocation = geolocation {
+                        var geomarker = self.geolocationNode()
+                        if geomarker == nil {
+                            geomarker = self.addGeolocationNode()
+                        }
+                        geomarker?.geolocation = geolocation
+                        geomarker?.simdPosition = position
+                    }
                 }
             }
             
@@ -485,19 +497,4 @@ extension ViewController: FileManagerDelegate {
         let (minCoord, maxCoord) = sceneNode.boundingBox
         return SCNVector3(maxCoord.x - minCoord.x, maxCoord.y - minCoord.y, maxCoord.z - minCoord.z)
     }
-
-//    func normalize(_ sceneNode: SCNNode) -> Void {
-//        // Rotate to Y up
-//        sceneNode.eulerAngles.x = -Float.pi / 2
-//        
-//        // Scale and offset the model so that the model stays on the ground
-//        let modelDimension = self.dimension(sceneNode)
-//        let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
-//        if maxLength > 0 {
-//            let (minCoord, maxCoord) = sceneNode.boundingBox
-//            sceneNode.position = SCNVector3(/*center x*/ -(minCoord.x + maxCoord.x) * 0.5,
-//                                            /*honor the original z position to allow negative features*/ 0.0,
-//                                            /*center z, which was y before the rotation*/ (minCoord.y + maxCoord.y) * 0.5)
-//        }
-//    }
 }

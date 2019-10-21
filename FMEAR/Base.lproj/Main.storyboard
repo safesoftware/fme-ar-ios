@@ -409,12 +409,42 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="tPd-9N-1c1">
+                                        <rect key="frame" x="0.0" y="331.5" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="tPd-9N-1c1" id="lY0-Gn-BuH">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Draw Geomarker" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IPu-2E-sME">
+                                                    <rect key="frame" x="8" y="11.5" width="128.5" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2eX-lV-KT2" userLabel="Draw Detected Plane Switch">
+                                                    <rect key="frame" x="320" y="6.5" width="51" height="31"/>
+                                                    <connections>
+                                                        <action selector="didChangeSetting:" destination="Sxv-We-6Lq" eventType="valueChanged" id="agQ-tT-49L"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="2eX-lV-KT2" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="IPu-2E-sME" secondAttribute="trailing" constant="8" symbolic="YES" id="PuN-CI-g1i"/>
+                                                <constraint firstAttribute="trailing" secondItem="2eX-lV-KT2" secondAttribute="trailing" constant="6" id="SvK-zF-Xf9" userLabel="Draw Detected Plan Switch.leading = Draw Detected Plane.trailing + 26"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="2eX-lV-KT2" secondAttribute="trailing" constant="-2" id="aam-H2-1AL" userLabel="Draw Detected Plane Switch.trailing = trailingMargin"/>
+                                                <constraint firstItem="IPu-2E-sME" firstAttribute="centerY" secondItem="lY0-Gn-BuH" secondAttribute="centerY" id="eWZ-XP-ewv"/>
+                                                <constraint firstItem="2eX-lV-KT2" firstAttribute="centerY" secondItem="lY0-Gn-BuH" secondAttribute="centerY" id="pNK-cn-Wjq"/>
+                                                <constraint firstItem="IPu-2E-sME" firstAttribute="leading" secondItem="lY0-Gn-BuH" secondAttribute="leadingMargin" id="qML-nH-LPl" userLabel="Draw Detected Plane.leading = leadingMargin"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection headerTitle="Scale" id="Ezf-fw-q4Y">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="vVs-Xn-5lm">
-                                        <rect key="frame" x="0.0" y="387.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="431.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vVs-Xn-5lm" id="5gC-c9-f93">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -462,6 +492,7 @@
                     <connections>
                         <outlet property="drawAnchorSwitch" destination="T7T-9p-U0L" id="bOy-3K-sr3"/>
                         <outlet property="drawDetectedPlaneSwitch" destination="Agr-m4-DTE" id="KqH-z1-T1U"/>
+                        <outlet property="drawGeomarkerSwitch" destination="2eX-lV-KT2" id="mQV-Kw-nzv"/>
                         <outlet property="fullScaleButton" destination="QbW-Bc-4zH" id="5vu-sr-u76"/>
                         <outlet property="intensitySlider" destination="NxM-dk-NKf" id="VSZ-Rb-vAG"/>
                         <outlet property="lightEstimationSwitch" destination="qcK-rk-hk9" id="eea-87-Sos"/>
