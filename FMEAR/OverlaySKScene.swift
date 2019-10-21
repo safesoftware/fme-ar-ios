@@ -19,26 +19,6 @@ class OverlaySKScene: SKScene {
     
     override init(size: CGSize) {
         super.init(size: size)
-        
-//        self.backgroundColor = UIColor(white: 1.0, alpha: 0.5)
-//
-//        self.geolocationlabelNode = SKLabelNode(text: "Testing")
-//        self.geolocationlabelNode.fontName = "DINAlternate-Bold"
-//        self.geolocationlabelNode.fontColor = .white
-//        self.geolocationlabelNode.fontSize = 24
-//        self.geolocationlabelNode.position = CGPoint(x: size.width/2, y: size.height/2)
-//        self.geolocationlabelNode.horizontalAlignmentMode = .left
-//        self.geolocationlabelNode.verticalAlignmentMode = .bottom
-//
-//        self.pointerNode = SKShapeNode()
-//        self.pointerNode.strokeColor = .white
-        
-//        self.pointLabelNode = PointLabelNode()
-//        self.pointLabelNode.text = "Point Label Node"
-        
-//        self.addChild(self.geolocationlabelNode)
-//        self.addChild(self.pointerNode)
-        //self.addChild(self.pointLabelNode)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -55,41 +35,6 @@ class OverlaySKScene: SKScene {
             return newLabelNode
         }
     }
-    
-//    func distance(from: CGPoint, to: CGPoint) -> CGFloat {
-//        return sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y))
-//    }
-    
-//    func updateLabelPosition() {
-//        let x: CGFloat = min(max(20, (geolocationScreenCoordinate.x + 20)), size.width - geolocationlabelNode.frame.width - 80)
-//        let y: CGFloat = min(max(100, (geolocationScreenCoordinate.y + 20)), size.height - geolocationlabelNode.frame.height - 100)
-//        self.geolocationlabelNode.position = CGPoint(x: x, y: y)
-//    }
-//
-//    var geolocationScreenCoordinate: CGPoint = CGPoint(x: 0, y: 0) {
-//        didSet {
-//
-//            self.pointLabelNode.point = geolocationScreenCoordinate
-//
-//            updateLabelPosition()
-//
-//            var path = CGMutablePath()
-//
-//            // Draw the pointer line
-//            let labelCenter = self.geolocationlabelNode.position.x + (geolocationlabelNode.frame.width / 2)
-//            if labelCenter < geolocationScreenCoordinate.x {
-//                path.move(to: self.geolocationlabelNode.position + (CGPoint(x: geolocationlabelNode.frame.width, y: 0)))
-//            } else {
-//                path.move(to: self.geolocationlabelNode.position)
-//            }
-//            path.addLine(to: geolocationScreenCoordinate)
-//
-//            // Draw an horizontal line below the text
-//            path.move(to: self.geolocationlabelNode.position)
-//            path.addLine(to: geolocationlabelNode.position + CGPoint(x: geolocationlabelNode.frame.width, y: 0))
-//            pointerNode.path = path
-//        }
-//    }
 }
 
 class PointLabelNode: SKNode {
