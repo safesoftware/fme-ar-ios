@@ -99,12 +99,12 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     }
     
     func didUpdateLocation(_ locationService: LocationService, location: CLLocation) {
-//        print("UPDATE LOCATION: \(location)")
-//        
-//        if let geomarker = geolocationNode() {
-//            print("UPDATING GEOMARKER...")
-//            geomarker.userLocation = location
-//        }
+        print("UPDATE LOCATION: \(location)")
+        
+        if let geomarker = geolocationNode() {
+            //print("UPDATING GEOMARKER...")
+            geomarker.userLocation = location
+        }
     }
     
     // MARK: - Queues
@@ -140,7 +140,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     func addGeolocationNode() -> GeolocationMarkerNode {
         let geomarker = GeolocationMarkerNode()
         geomarker.name = geomarkerNodeName
-        geomarker.color = .green
+        geomarker.color = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.8)
         geomarker.userLocation = self.locationService?.locationManager?.location
         self.sceneView.scene.rootNode.addChildNode(geomarker)
         return geomarker
@@ -246,15 +246,14 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 		sceneView.setup()
 		sceneView.delegate = self
 		sceneView.session = session
-		sceneView.showsStatistics = false
+		sceneView.showsStatistics = true
         setupLighting()
         session.delegate = self
 		
         // set up overlay view
         overlayView = OverlaySKScene(size: self.view.bounds.size)
+        overlayView.overlaySKSceneDelegate = self
         sceneView.overlaySKScene = overlayView
-        sceneView.overlaySKScene?.scaleMode = .resizeFill
-        sceneView.overlaySKScene?.isUserInteractionEnabled = false
         
 		//sceneView.scene.enableEnvironmentMapWithIntensity(25, queue: serialQueue)
         

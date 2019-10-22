@@ -88,9 +88,11 @@ class GeolocationMarkerNode: SCNNode {
             let deltaLongitude = CLLocation(latitude: userLocation.coordinate.latitude, longitude: geolocation.coordinate.longitude).distance(from: userLocation)
 
             // North: -Z, South: +Z, East: +X, West: -X, Up: +Y, Down: -Y
-            move(to: SCNVector3(Float(deltaLongitude), self.position.y, -Float(deltaLatitude)))
+            let newLocation = SCNVector3(Float(deltaLongitude), self.position.y, -Float(deltaLatitude))
+            move(to: newLocation)
             
-            isHidden = !(UserDefaults.standard.bool(for: .drawGeomarker))
+            let shouldDrawGeomarker = !(UserDefaults.standard.bool(for: .drawGeomarker))
+            isHidden = shouldDrawGeomarker
         } else {
             isHidden = true
         }

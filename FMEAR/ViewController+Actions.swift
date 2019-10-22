@@ -7,8 +7,9 @@ UI Actions for the main view controller.
 
 import UIKit
 import SceneKit
+import SpriteKit
 
-extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewControllerDelegate, ScaleOptionsViewControllerDelegate {
+extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewControllerDelegate, ScaleOptionsViewControllerDelegate, OverlaySKSceneDelegate {
     
     enum SegueIdentifier: String {
         case showSettings
@@ -139,6 +140,37 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
         lightTemperature = temperature
         for (_, light) in self.lights.enumerated() {
             light.temperature = temperature
+        }
+    }
+    
+    // MARK: - OverlaySKSceneDelegate
+    
+    func overlaySKSceneDelegate(_: OverlaySKScene, didTapNode node: SKNode) {
+        if let nodeName = node.name {
+            print("Tapped \(nodeName)")
+            
+            if nodeName == self.geomarkerLabelName {
+                let dialogMessage = UIAlertController(title: "Confirm", message: "Are you sure you want to move the model to the geomarker location?", preferredStyle: .alert)
+                
+                // Create OK button with action handler
+                let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
+                     print("Ok button tapped")
+                })
+                
+                // Create Cancel button with action handlder
+                let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) -> Void in
+                    print("Cancel button tapped")
+                }
+                
+                //Add OK and Cancel button to dialog message
+                dialogMessage.addAction(ok)
+                dialogMessage.addAction(cancel)
+                
+                // Present dialog message to user
+                self.present(dialogMessage, animated: true, completion: nil)
+
+
+            }
         }
     }
 

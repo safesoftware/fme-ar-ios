@@ -82,7 +82,8 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         if let location = location {
             let latitude = String(format: "%.6f", location.coordinate.latitude)
             let longitude = String(format: "%.6f", location.coordinate.longitude)
-            d += " ⍋ \(latitude), \(longitude) "
+            let accuracy = String(format: "%.0f", location.horizontalAccuracy)
+            d += " ⍋ \(latitude), \(longitude) ± \(accuracy)m"
         } else {
             d += " ⍋ ---, --- "
             locationNotAvailable = true

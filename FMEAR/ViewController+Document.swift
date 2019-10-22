@@ -264,7 +264,7 @@ extension ViewController: FileManagerDelegate {
             let anchorHeight: CGFloat = CGFloat(modelDimension.z * 2)
             let anchorRadius: CGFloat = anchorHeight * 0.01
             let anchorMaterial = SCNMaterial()
-            anchorMaterial.diffuse.contents = UIColor.red
+            anchorMaterial.diffuse.contents = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 0.8)
             let anchorGeometry = SCNCone(topRadius: anchorRadius, bottomRadius: 0, height: anchorHeight)
             anchorGeometry.firstMaterial = anchorMaterial
             let anchorNode = SCNNode(geometry: anchorGeometry)

@@ -16,7 +16,7 @@ extension ViewController: ARSCNViewDelegate {
 
         // Update lights, model indicators, and overlay less frequently to
         // avoid resource overuse
-        let updateTimeInterval = 1.0 / 30 // update 30 times every second
+        let updateTimeInterval = 1.0 / 10 // update 30 times every second
         var shouldUpdate = true
         if let lastUpdateTime = self.lastUpdateTime {
             if (time - lastUpdateTime) < updateTimeInterval {
@@ -29,7 +29,6 @@ extension ViewController: ARSCNViewDelegate {
             updateOverlay()
             self.lastUpdateTime = time
         }
-
     }
     
     func updateLights() {
@@ -77,26 +76,30 @@ extension ViewController: ARSCNViewDelegate {
     }
     
     func updateOverlay() {
-        DispatchQueue.main.async {
-            if let geomarker = self.geolocationNode() {
+        if let geomarker = self.geolocationNode() {
+            if let userLocation = geomarker.userLocation, let markerLocation = geomarker.geolocation {
+                
                 let worldPosition = geomarker.position
                 let geomarkerPosition = SCNVector3(worldPosition.x, worldPosition.y, worldPosition.z)
                 let screenCoord = self.sceneView.projectPoint(geomarkerPosition)
-                
+
                 // When the z is larger than 1, the geomarker is actually at
                 // the opposite direction or invalid, and the screenCoord.x is wrong.
                 // We can simply use a very large screen value, such as 10000,
                 // to make the geolocation offscreen.
-                
-                //print("GEOLOCATION SCREEN COORDINATE: \(screenCoord)")
 
-                let geomarkerScreenPosition = CGPoint(
-                    x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
-                    y: self.sceneView.bounds.size.height - CGFloat(screenCoord.y))
-                
-                if let userLocation = geomarker.userLocation, let markerLocation = geomarker.geolocation {
+//                    print("GEOLOCATION SCREEN COORDINATE: \(screenCoord)")
+
+                DispatchQueue.main.async {
+
+                    let geomarkerScreenPosition = CGPoint(
+                        x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
+                        y: self.sceneView.bounds.size.height - CGFloat(screenCoord.y))
+                    
+                    let latitude = String(format: "%.6f", markerLocation.coordinate.latitude)
+                    let longitude = String(format: "%.6f", markerLocation.coordinate.longitude)
                     let distance = String(format: "%.2f", markerLocation.distance(from: userLocation))
-                    self.overlayView.labelNode(labelName: self.geomarkerLabelName).text = "Geomarker: \(distance)m"
+                    self.overlayView.labelNode(labelName: self.geomarkerLabelName).text = "📍 \(latitude), \(longitude) (\(distance)m)"
                     self.overlayView.labelNode(labelName: self.geomarkerLabelName).point = geomarkerScreenPosition
                 }
             }
