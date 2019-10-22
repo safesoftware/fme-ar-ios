@@ -44,7 +44,6 @@ class OverlaySKScene: SKScene {
 
 class ButtonNode: SKNode {
     
-    let fontName = "DINAlternate-Bold"
     var labelNode: SKLabelNode?
     var shapeNode: SKShapeNode?
     
@@ -55,20 +54,27 @@ class ButtonNode: SKNode {
                 self.removeChildren(in: [oldLabelNode])
             }
             self.labelNode = SKLabelNode(text: text)
-            self.labelNode!.fontName = self.fontName
+            self.labelNode!.fontName = UIFont.systemFont(ofSize: 10).fontName
             self.labelNode!.fontColor = .white
-            self.labelNode!.fontSize = 12
+            self.labelNode!.fontSize = 10
             self.labelNode!.horizontalAlignmentMode = .left
             self.labelNode!.verticalAlignmentMode = .bottom
-            self.addChild(self.labelNode!)
+//            self.addChild(self.labelNode!)
+
             if let oldShapeNode = shapeNode {
                 self.removeChildren(in: [oldShapeNode])
             }
 
-            let rect = CGRect(origin: CGPoint(x: 0, y: 0), size: self.labelNode!.frame.size)
+            let padding: CGFloat = 2.0
+            let buttonOrigin = CGPoint(x: -padding, y: -padding)
+            let buttonSize = CGSize(width: self.labelNode!.frame.size.width + (padding * 2),
+                                    height: self.labelNode!.frame.size.height + (padding * 2))
+            let rect = CGRect(origin: buttonOrigin, size: buttonSize)
             self.shapeNode = SKShapeNode(rect: rect)
-            self.shapeNode!.fillColor = UIColor(white: 1.0, alpha: 0.1)
+            self.shapeNode!.fillColor = UIColor(white: 1.0, alpha: 0.2)
             self.shapeNode!.strokeColor = .white
+            
+            self.shapeNode!.addChild(self.labelNode!)
             self.addChild(self.shapeNode!)
         }
     }
@@ -83,16 +89,17 @@ class ButtonNode: SKNode {
 }
 
 class PointLabelNode: SKNode {
-    
-    let fontName = "DINAlternate-Bold"
+
     var labelNode: SKLabelNode!
-    var pointerNode: SKShapeNode!
+    var lineNode: SKShapeNode!
+    var pointNode: SKShapeNode!
     var buttonNode: ButtonNode!
     
     var point = CGPoint(x: 0, y: 0) {
         didSet {
+            updatePointNodePosition()
             updateLabelNodePosition()
-            updatePointerNodePath()
+            updateLineNode()
         }
     }
     
@@ -100,7 +107,7 @@ class PointLabelNode: SKNode {
         didSet {
             self.labelNode.text = text
             updateLabelNodePosition()
-            updatePointerNodePath()
+            updateLineNode()
         }
     }
     
@@ -108,20 +115,25 @@ class PointLabelNode: SKNode {
         super.init()
         
         self.labelNode = SKLabelNode(text: "")
-        self.labelNode.fontName = self.fontName
-        self.labelNode.fontColor = .white
-        self.labelNode.fontSize = 12
+//        self.labelNode.fontName = self.fontName
+//        self.labelNode.fontColor = .white
+        self.labelNode!.fontName = UIFont.systemFont(ofSize: 10).fontName
+        self.labelNode.fontSize = 10
         self.labelNode.horizontalAlignmentMode = .left
         self.labelNode.verticalAlignmentMode = .bottom
         
-        self.pointerNode = SKShapeNode()
-        self.pointerNode.strokeColor = .white
+        self.lineNode = SKShapeNode()
+        self.lineNode.strokeColor = .white
+        
+        self.pointNode = SKShapeNode(circleOfRadius: 1)
+        self.pointNode.fillColor = .white
         
         self.buttonNode = ButtonNode()
         self.buttonNode.text = "Move model here >>>"
         
         self.addChild(self.labelNode)
-        self.addChild(self.pointerNode)
+        self.addChild(self.lineNode)
+        self.addChild(self.pointNode)
         self.addChild(self.buttonNode)
     }
     
@@ -139,17 +151,24 @@ class PointLabelNode: SKNode {
         let rightMargin: CGFloat = 80.0
         let topMargin: CGFloat = 100.0
         let bottomMargin: CGFloat = 100.0
-        let horizontalSpacing: CGFloat = 20.0
-        let verticalSpacing: CGFloat = 20.0
+        let horizontalSpacing: CGFloat = 40.0
+        let verticalSpacing: CGFloat = 40.0
         
-        let x: CGFloat = min(max(leftMargin, (point.x + horizontalSpacing)), scene.size.width - labelNode.frame.width - rightMargin)
-        let y: CGFloat = min(max(bottomMargin, (point.y + verticalSpacing)), scene.size.height - labelNode.frame.height - topMargin)
+        // Assume we want to display the label right to and above the target point
+        var x: CGFloat = min(max(leftMargin, (point.x + horizontalSpacing)), scene.size.width - labelNode.frame.width - rightMargin)
+        var y: CGFloat = min(max(bottomMargin, (point.y + verticalSpacing)), scene.size.height - labelNode.frame.height - topMargin)
+        
+        if x < (point.x - horizontalSpacing) {
+            x = min(max(leftMargin, point.x - horizontalSpacing - labelNode.frame.width), scene.size.width - labelNode.frame.width - rightMargin)
+        }
+        
         self.labelNode.position = CGPoint(x: x, y: y)
-        let buttonHeight = self.buttonNode.calculateAccumulatedFrame().size.height
-        self.buttonNode.position = CGPoint(x: x, y: y - buttonHeight)
+        
+        let buttonSize = self.buttonNode.calculateAccumulatedFrame().size
+        self.buttonNode.position = CGPoint(x: x + self.labelNode.frame.width - buttonSize.width, y: y - buttonSize.height)
     }
     
-    func updatePointerNodePath() {
+    func updateLineNode() {
         let path = CGMutablePath()
         
         // Draw the pointer line
@@ -164,7 +183,11 @@ class PointLabelNode: SKNode {
         // Draw an horizontal line below the text
         path.move(to: self.labelNode.position)
         path.addLine(to: labelNode.position + CGPoint(x: labelNode.frame.width, y: 0))
-        pointerNode.path = path
+        lineNode.path = path
+    }
+    
+    func updatePointNodePosition() {
+        pointNode.position = point
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
