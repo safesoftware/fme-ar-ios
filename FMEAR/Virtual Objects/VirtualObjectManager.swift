@@ -184,12 +184,13 @@ class VirtualObjectManager {
 	private func setNewVirtualObjectPosition(_ object: VirtualObject, to pos: float3, cameraTransform: matrix_float4x4) {
 		let cameraWorldPos = cameraTransform.translation
 		var cameraToPosition = pos - cameraWorldPos
-		
-		// Limit the distance of the object from the camera to a maximum of 10 meters.
-        if simd_length(cameraToPosition) > 10 {
-            cameraToPosition = simd_normalize(cameraToPosition)
-            cameraToPosition *= 10
-        }
+
+        // We want to place the object without the 10 meter limit.
+//		// Limit the distance of the object from the camera to a maximum of 10 meters.
+//        if simd_length(cameraToPosition) > 10 {
+//            cameraToPosition = simd_normalize(cameraToPosition)
+//            cameraToPosition *= 10
+//        }
 
 		object.simdPosition = cameraWorldPos + cameraToPosition
 		object.recentVirtualObjectDistances.removeAll()
@@ -198,12 +199,13 @@ class VirtualObjectManager {
 	private func updateVirtualObjectPosition(_ object: VirtualObject, to pos: float3, filterPosition: Bool, cameraTransform: matrix_float4x4) {
 		let cameraWorldPos = cameraTransform.translation
 		var cameraToPosition = pos - cameraWorldPos
-		
-		// Limit the distance of the object from the camera to a maximum of 10 meters.
-        if simd_length(cameraToPosition) > 10 {
-            cameraToPosition = simd_normalize(cameraToPosition)
-            cameraToPosition *= 10
-        }
+
+        // We want to place the object without the 10 meter limit.
+//		// Limit the distance of the object from the camera to a maximum of 10 meters.
+//        if simd_length(cameraToPosition) > 10 {
+//            cameraToPosition = simd_normalize(cameraToPosition)
+//            cameraToPosition *= 10
+//        }
 
 		// Compute the average distance of the object from the camera over the last ten
 		// updates. If filterPosition is true, compute a new position for the object
