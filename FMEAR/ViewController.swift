@@ -104,6 +104,12 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         if let geomarker = geolocationNode() {
             //print("UPDATING GEOMARKER...")
             geomarker.userLocation = location
+            
+            // TODO: Apply the current camera world position to the geomarker
+            //// Also set the camera world position to match the user location
+            //if let cameraTransform = session.currentFrame?.camera.transform  {
+            //    geomarker.cameraWorldPosition = cameraTransform.translation
+            //}
         }
     }
     
@@ -161,6 +167,17 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         } else {
             return []
         }
+    }
+    
+    func moveModelToGeolocation() {
+        guard let geomarker = geolocationNode(), let model = virtualObject() else {
+            print("FAILED TO MOVE MODEL TO GEOLOCATION")
+            return
+        }
+              
+        let action = SCNAction.move(to: geomarker.position, duration: 1.0)
+        action.timingMode = .easeInEaseOut
+        model.runAction(action)
     }
     
     func setScale(scale: Float) {

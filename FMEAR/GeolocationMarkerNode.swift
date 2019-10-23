@@ -89,6 +89,12 @@ class GeolocationMarkerNode: SCNNode {
 
             // North: -Z, South: +Z, East: +X, West: -X, Up: +Y, Down: -Y
             let newLocation = SCNVector3(Float(deltaLongitude), self.position.y, -Float(deltaLatitude))
+            // TODO: The new location is calculated from the current device geolocation to the
+            // geomarker. If the device has moved away from the world origin (i.e. the starting
+            // device location), the calculation of the above newLocation will be inaccurate. We
+            // should offset the newLocation by the origin.
+            // let newLocation = SCNVector3(Float(deltaLongitude) - cameraPos.x, self.position.y, -Float(deltaLatitude) - cameraPos.z)
+
             move(to: newLocation)
             
             let shouldDrawGeomarker = !(UserDefaults.standard.bool(for: .drawGeomarker))

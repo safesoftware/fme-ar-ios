@@ -150,15 +150,16 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             print("Tapped \(nodeName)")
             
             if nodeName == self.geomarkerLabelName {
-                let dialogMessage = UIAlertController(title: "Confirm", message: "Are you sure you want to move the model to the geomarker location?", preferredStyle: .alert)
+                let dialogMessage = UIAlertController(title: "Move Model", message: "Are you sure you want to move the model to the geolocation so that the anchor aligns with the geomarker?", preferredStyle: .alert)
                 
                 // Create OK button with action handler
-                let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
-                     print("Ok button tapped")
+                let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
+                    print("Ok button tapped")
+                    self.moveModelToGeolocation()
                 })
                 
                 // Create Cancel button with action handlder
-                let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) -> Void in
+                let cancel = UIAlertAction(title: "No", style: .cancel) { (action) -> Void in
                     print("Cancel button tapped")
                 }
                 
@@ -168,8 +169,6 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                 
                 // Present dialog message to user
                 self.present(dialogMessage, animated: true, completion: nil)
-
-
             }
         }
     }
