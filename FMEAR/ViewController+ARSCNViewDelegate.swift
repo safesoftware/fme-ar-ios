@@ -11,24 +11,10 @@ extension ViewController: ARSCNViewDelegate {
     // MARK: - ARSCNViewDelegate
     
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-
         updateFocusSquare()
-
-        // Update lights, model indicators, and overlay less frequently to
-        // avoid resource overuse
-        let updateTimeInterval = 1.0 / 10 // update 30 times every second
-        var shouldUpdate = true
-        if let lastUpdateTime = self.lastUpdateTime {
-            if (time - lastUpdateTime) < updateTimeInterval {
-                shouldUpdate = false
-            }
-        }
-        if shouldUpdate {
-            updateLights()
-            updateModelIndicators()
-            updateOverlay()
-            self.lastUpdateTime = time
-        }
+        updateLights()
+        updateModelIndicators()
+        updateOverlay()
     }
     
     func updateLights() {
@@ -51,26 +37,30 @@ extension ViewController: ARSCNViewDelegate {
     }
     
     func updateModelIndicators() {
-        DispatchQueue.main.async{
-            
-            // Hide all indicators first
-            self.modelIndicatorUp.isHidden = true
-            self.modelIndicatorDown.isHidden = true
-            self.modelIndicatorLeft.isHidden = true
-            self.modelIndicatorRight.isHidden = true
-            
-            // If there is a model but it's outside the screen, we use one or
-            // more indicators to show where to find the model.
-            if let virtualObjectNode = self.virtualObject() {
-                if let pointOfView = self.sceneView.pointOfView {
-                    if !self.sceneView.isNode(virtualObjectNode, insideFrustumOf: pointOfView) {
-                        let screenPosition = self.sceneView.projectPoint(virtualObjectNode.position)
-                        self.modelIndicatorUp.isHidden = (screenPosition.y > Float(self.sceneView.bounds.minY))
-                        self.modelIndicatorDown.isHidden = (screenPosition.y < Float(self.sceneView.bounds.maxY))
-                        self.modelIndicatorLeft.isHidden = (screenPosition.x > Float(self.sceneView.bounds.minX))
-                        self.modelIndicatorRight.isHidden = (screenPosition.x < Float(self.sceneView.bounds.maxX))
-                    }
+        
+        var screenPosition: SCNVector3?
+        
+        // If there is a model but it's outside the screen, we use one or
+        // more indicators to show where to find the model.
+        if let virtualObjectNode = self.virtualObject() {
+            if let pointOfView = self.sceneView.pointOfView {
+                if !self.sceneView.isNode(virtualObjectNode, insideFrustumOf: pointOfView) {
+                    screenPosition = self.sceneView.projectPoint(virtualObjectNode.position)
                 }
+            }
+        }
+        
+        DispatchQueue.main.async{
+            if let screenPosition = screenPosition {
+                self.modelIndicatorUp.isHidden = (screenPosition.y > Float(self.sceneView.bounds.minY))
+                self.modelIndicatorDown.isHidden = (screenPosition.y < Float(self.sceneView.bounds.maxY))
+                self.modelIndicatorLeft.isHidden = (screenPosition.x > Float(self.sceneView.bounds.minX))
+                self.modelIndicatorRight.isHidden = (screenPosition.x < Float(self.sceneView.bounds.maxX))
+            } else {
+                self.modelIndicatorUp.isHidden = true
+                self.modelIndicatorDown.isHidden = true
+                self.modelIndicatorLeft.isHidden = true
+                self.modelIndicatorRight.isHidden = true
             }
         }
     }
@@ -82,25 +72,22 @@ extension ViewController: ARSCNViewDelegate {
                 let worldPosition = geomarker.position
                 let geomarkerPosition = SCNVector3(worldPosition.x, worldPosition.y, worldPosition.z)
                 let screenCoord = self.sceneView.projectPoint(geomarkerPosition)
+                let latitude = String(format: "%.6f", markerLocation.coordinate.latitude)
+                let longitude = String(format: "%.6f", markerLocation.coordinate.longitude)
+                let distance = String(format: "%.2f", markerLocation.distance(from: userLocation))
 
-                // When the z is larger than 1, the geomarker is actually at
-                // the opposite direction or invalid, and the screenCoord.x is wrong.
-                // We can simply use a very large screen value, such as 10000,
-                // to make the geolocation offscreen.
-
-//                    print("GEOLOCATION SCREEN COORDINATE: \(screenCoord)")
-
-                DispatchQueue.main.async {
-
+                if viewSize.width > 0 && viewSize.height > 0 {
+                    // When the z is larger than 1, the geomarker is actually at
+                    // the opposite direction or invalid, and the screenCoord.x is wrong.
+                    // We can simply use a very large screen value, such as 10000,
+                    // to make the geolocation offscreen.
                     let geomarkerScreenPosition = CGPoint(
                         x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
-                        y: self.sceneView.bounds.size.height - CGFloat(screenCoord.y))
-                    
-                    let latitude = String(format: "%.6f", markerLocation.coordinate.latitude)
-                    let longitude = String(format: "%.6f", markerLocation.coordinate.longitude)
-                    let distance = String(format: "%.2f", markerLocation.distance(from: userLocation))
+                        y: viewSize.height - CGFloat(screenCoord.y))
+
                     self.overlayView.labelNode(labelName: self.geomarkerLabelName).text = "📍 \(latitude), \(longitude) (\(distance)m)"
                     self.overlayView.labelNode(labelName: self.geomarkerLabelName).point = geomarkerScreenPosition
+
                 }
             }
         }

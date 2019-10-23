@@ -23,6 +23,12 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     var lightTemperature: CGFloat = 6500
     var planes = [ARPlaneAnchor: Plane]()
     
+    // Cache the view bounds so that we don't need to access the view object
+    // in the main thread all the time. This help avoiding using
+    // DispatchQueue.main.async. However, we should keep viewBounds up to
+    // date when the view has a transition. See willTransition(to:with:)
+    var viewSize = CGSize()
+    
     // Settings from JSON settings file
     var settings: Settings?
     
@@ -99,7 +105,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     }
     
     func didUpdateLocation(_ locationService: LocationService, location: CLLocation) {
-        print("UPDATE LOCATION: \(location)")
+//        print("UPDATE LOCATION: \(location)")
         
         if let geomarker = geolocationNode() {
             //print("UPDATING GEOMARKER...")
@@ -127,6 +133,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         locationService = LocationService()
         locationService?.delegate = self
 
+        self.viewSize = self.sceneView.bounds.size
 		setupUIControls()
         setupScene()
     }
@@ -226,6 +233,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
             closeDocument(document: document)
         }
 	}
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        print("viewWillTransition")
+        self.viewSize = size
+    }
 	
     // MARK: - Setup
 
