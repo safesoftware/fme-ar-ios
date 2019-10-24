@@ -12,7 +12,12 @@ extension ViewController: ARSCNViewDelegate {
     
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         updateFocusSquare()
-        
+        updateLights()
+        updateModelIndicators()
+        updateOverlay()
+    }
+    
+    func updateLights() {
         // If light estimation is enabled, update the intensity of the model's lights
         var lightIntensity: CGFloat = 1000
         var lightTemperature: CGFloat = 6500
@@ -23,7 +28,7 @@ extension ViewController: ARSCNViewDelegate {
                 lightTemperature = lightEstimate.ambientColorTemperature
                 //print("light estimate: \(ambientIntensity); light temperature: \(ambientColorTemperature)")
             }
-
+            
             for (_, light) in self.lights.enumerated() {
                 light.intensity = lightIntensity
                 light.temperature = lightTemperature
@@ -31,9 +36,66 @@ extension ViewController: ARSCNViewDelegate {
         }
     }
     
-    func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        //print("ADD \(anchor.identifier): \(anchor.transform)")
+    func updateModelIndicators() {
+        
+        var screenPosition: SCNVector3?
+        
+        // If there is a model but it's outside the screen, we use one or
+        // more indicators to show where to find the model.
+        if let virtualObjectNode = self.virtualObject() {
+            if let pointOfView = self.sceneView.pointOfView {
+                if !self.sceneView.isNode(virtualObjectNode, insideFrustumOf: pointOfView) {
+                    screenPosition = self.sceneView.projectPoint(virtualObjectNode.position)
+                }
+            }
+        }
+        
+        DispatchQueue.main.async{
+            if let screenPosition = screenPosition {
+                self.modelIndicatorUp.isHidden = (screenPosition.y > Float(self.sceneView.bounds.minY))
+                self.modelIndicatorDown.isHidden = (screenPosition.y < Float(self.sceneView.bounds.maxY))
+                self.modelIndicatorLeft.isHidden = (screenPosition.x > Float(self.sceneView.bounds.minX))
+                self.modelIndicatorRight.isHidden = (screenPosition.x < Float(self.sceneView.bounds.maxX))
+            } else {
+                self.modelIndicatorUp.isHidden = true
+                self.modelIndicatorDown.isHidden = true
+                self.modelIndicatorLeft.isHidden = true
+                self.modelIndicatorRight.isHidden = true
+            }
+        }
+    }
+    
+    func updateOverlay() {
+        if let geomarker = self.geolocationNode() {
+            if let userLocation = geomarker.userLocation, let markerLocation = geomarker.geolocation {
+                
+                let worldPosition = geomarker.position
+                let geomarkerPosition = SCNVector3(worldPosition.x, worldPosition.y, worldPosition.z)
+                let screenCoord = self.sceneView.projectPoint(geomarkerPosition)
+                let latitude = String(format: "%.6f", markerLocation.coordinate.latitude)
+                let longitude = String(format: "%.6f", markerLocation.coordinate.longitude)
+                let distance = String(format: "%.2f", markerLocation.distance(from: userLocation))
 
+                if viewSize.width > 0 && viewSize.height > 0 {
+                    // When the z is larger than 1, the geomarker is actually at
+                    // the opposite direction or invalid, and the screenCoord.x is wrong.
+                    // We can simply use a very large screen value, such as 10000,
+                    // to make the geolocation offscreen.
+                    let geomarkerScreenPosition = CGPoint(
+                        x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
+                        y: viewSize.height - CGFloat(screenCoord.y))
+
+                    self.overlayView.labelNode(labelName: self.geomarkerLabelName).text = "📍 \(latitude), \(longitude) (\(distance)m)"
+                    self.overlayView.labelNode(labelName: self.geomarkerLabelName).point = geomarkerScreenPosition
+
+                }
+            }
+        }
+    }
+    
+    func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+//        let isPlane = (anchor as? ARPlaneAnchor != nil) ? "PLANE" : "POINT"
+//        print("ARAnchor (\(isPlane)) ADD \(anchor.identifier): \(anchor.transform)")
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         serialQueue.async {
             self.addPlane(node: node, anchor: planeAnchor)
@@ -42,21 +104,21 @@ extension ViewController: ARSCNViewDelegate {
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-        //print("UPDATE \(anchor.identifier): \(anchor.transform)")
-
+//        let isPlane = (anchor as? ARPlaneAnchor != nil) ? "PLANE" : "POINT"
+//        print("ARAnchor (\(isPlane)) UPDATE \(anchor.identifier): \(anchor.transform)")
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         serialQueue.async {
-            self.updatePlane(anchor: planeAnchor)
+            self.updatePlane(node: node, anchor: planeAnchor)
             self.virtualObjectManager.checkIfObjectShouldMoveOntoPlane(anchor: planeAnchor, planeAnchorNode: node)
         }
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didRemove node: SCNNode, for anchor: ARAnchor) {
-        //print("REMOVE \(anchor.identifier): \(anchor.transform)")
-
+//        let isPlane = (anchor as? ARPlaneAnchor != nil) ? "PLANE" : "POINT"
+//        print("ARAnchor (\(isPlane)) REMOVE \(anchor.identifier): \(anchor.transform)")
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         serialQueue.async {
-            self.removePlane(anchor: planeAnchor)
+            self.removePlane(node: node, anchor: planeAnchor)
         }
     }
     

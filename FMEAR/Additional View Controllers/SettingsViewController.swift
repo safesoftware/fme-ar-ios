@@ -11,12 +11,18 @@ enum Setting: String {
 //    case scaleWithPinchGesture
 //    case dragOnInfinitePlanes
     case estimateLight
+    case drawDetectedPlane
+    case drawAnchor
+    case drawGeomarker
     
     static func registerDefaults() {
         UserDefaults.standard.register(defaults: [
 //            Setting.dragOnInfinitePlanes.rawValue: true,
 //            Setting.scaleWithPinchGesture.rawValue: true,
-            Setting.estimateLight.rawValue: false
+            Setting.estimateLight.rawValue: false,
+            Setting.drawDetectedPlane.rawValue: true,
+            Setting.drawAnchor.rawValue: true,
+            Setting.drawGeomarker.rawValue: true
         ])
     }
 }
@@ -32,6 +38,9 @@ extension UserDefaults {
 
 protocol SettingsViewControllerDelegate: class {
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleLightEstimation on: Bool)
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawDetectedPlane on: Bool)
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawAnchor on: Bool)
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawGeomarker on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeIntensity intensity: Float)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeTemperature temperature: Float)
@@ -48,17 +57,30 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var fullScaleButton: UIButton!
     @IBOutlet weak var intensitySlider: UISlider!
     @IBOutlet weak var temperatureSlider: UISlider!
+    @IBOutlet weak var drawDetectedPlaneSwitch: UISwitch!
+    @IBOutlet weak var drawAnchorSwitch: UISwitch!
+    @IBOutlet weak var drawGeomarkerSwitch: UISwitch!
+    
     
     weak var delegate: SettingsViewControllerDelegate?
     var scale: Float = 1.0
     var intensity: Float = 1000
     var temperature: Float = 6500
     
+    // Sections
     let kLightEstimationSection = 0
-    let kScaleSection = 1
+    let kRenderingSection = 1
+    let kScaleSection = 2
+    
+    // Section: Light Estimation
     let kLightEstimationRow = 0
     let kIntensityRow = 1
     let kTemperatureRow = 2
+    
+    // Section: Rendering
+    let kDrawDetectedPlanRow = 0
+    
+    // Section: Scaling
     
     // MARK: - View Life Cycle
     
@@ -75,6 +97,8 @@ class SettingsViewController: UITableViewController {
 //        scaleWithPinchGestureSwitch.isOn = defaults.bool(for: .scaleWithPinchGesture)
 //        dragOnInfinitePlanesSwitch.isOn = defaults.bool(for: .dragOnInfinitePlanes)
         lightEstimationSwitch.isOn = defaults.bool(for: .estimateLight)
+        drawDetectedPlaneSwitch.isOn = defaults.bool(for: .drawDetectedPlane)
+        drawAnchorSwitch.isOn = defaults.bool(for: .drawAnchor)
         updateScaleSettings()
     }
     
@@ -91,7 +115,7 @@ class SettingsViewController: UITableViewController {
     override func numberOfSections(in tableView: UITableView) -> Int {
         // Hide the scale section for now since the model doesn't scale from
         // the correct origin
-        return 1
+        return 2
     }
     
     func updateScaleSettings() {
@@ -125,7 +149,25 @@ class SettingsViewController: UITableViewController {
                 defaults.set(sender.isOn, for: .estimateLight)
                 tableView.reloadData()
                 if delegate != nil {
-                        delegate?.settingsViewControllerDelegate(self, didToggleLightEstimation: sender.isOn)
+                    delegate?.settingsViewControllerDelegate(self, didToggleLightEstimation: sender.isOn)
+                }
+            case drawDetectedPlaneSwitch:
+                defaults.set(sender.isOn, for: .drawDetectedPlane)
+                tableView.reloadData()
+                if delegate != nil {
+                    delegate?.settingsViewControllerDelegate(self, didToggleDrawDetectedPlane: sender.isOn)
+                }
+            case drawAnchorSwitch:
+                defaults.set(sender.isOn, for: .drawAnchor)
+                tableView.reloadData()
+                if delegate != nil {
+                    delegate?.settingsViewControllerDelegate(self, didToggleDrawAnchor: sender.isOn)
+                }
+            case drawGeomarkerSwitch:
+                defaults.set(sender.isOn, for: .drawGeomarker)
+                tableView.reloadData()
+                if delegate != nil {
+                    delegate?.settingsViewControllerDelegate(self, didToggleDrawGeomarker: sender.isOn)
                 }
             default: break
 		}

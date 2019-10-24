@@ -28,14 +28,14 @@ extension Array where Iterator.Element == float3 {
 			return nil
 		}
   
-        let sum = self.reduce(float3(0)) { current, next in
+        let sum = self.reduce(float3(repeating: 0.0)) { current, next in
             return current + next
         }
 		return sum / Float(self.count)
 	}
 }
 
-extension RangeReplaceableCollection where IndexDistance == Int {
+extension RangeReplaceableCollection {
 	mutating func keepLast(_ elementsToKeep: Int) {
 		if count > elementsToKeep {
 			self.removeFirst(count - elementsToKeep)
@@ -80,11 +80,13 @@ extension float4x4 {
 extension CGPoint {
 	
 	init(_ size: CGSize) {
+        self.init()
 		self.x = size.width
 		self.y = size.height
 	}
 	
 	init(_ vector: SCNVector3) {
+        self.init()
 		self.x = CGFloat(vector.x)
 		self.y = CGFloat(vector.y)
 	}
@@ -137,6 +139,7 @@ extension CGPoint {
 
 extension CGSize {
 	init(_ point: CGPoint) {
+        self.init()
 		self.width = point.x
 		self.height = point.y
 	}
@@ -213,4 +216,29 @@ func rayIntersectionWithHorizontalPlane(rayOrigin: float3, direction: float3, pl
 	
 	// Return the intersection point.
 	return rayOrigin + (direction * dist)
+}
+
+// MARK: - Hit Test Options
+struct HitTestOptionCategoryBitMasks : OptionSet {
+    let rawValue: Int
+    
+    // The virtual object bit mask needs to be 1, which is the default. This
+    // makes hit test work for virtual objects.
+    static let virtualObject = HitTestOptionCategoryBitMasks(rawValue: 1 << 0)
+    
+    // The detected plane bit mask needs to be something other than 1. This
+    // makes hit test ignore the detected planes.
+    static let detectedPlane = HitTestOptionCategoryBitMasks(rawValue: 1 << 1)
+}
+
+extension Float {
+    func format(f: String) -> String {
+        return String(format: "%\(f)f", self)
+    }
+}
+
+extension Double {
+    func format(f: String) -> String {
+        return String(format: "%\(f)f", self)
+    }
 }

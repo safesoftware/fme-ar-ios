@@ -46,7 +46,7 @@ class AssetViewController: UITableViewController {
         for (row, asset) in assets.enumerated() {
             if asset.selected {
                 let indexPath = IndexPath(row: row, section: 0)
-                self.tableView.selectRow(at: indexPath, animated: false, scrollPosition: UITableViewScrollPosition.none)
+                self.tableView.selectRow(at: indexPath, animated: false, scrollPosition: UITableView.ScrollPosition.none)
             }
         }
         

@@ -8,6 +8,7 @@ Methods on the main view controller for handling virtual object loading and move
 import UIKit
 import SceneKit
 import Foundation
+import CoreLocation
 import SceneKit.ModelIO
 
 extension ViewController: FileManagerDelegate {
@@ -31,7 +32,11 @@ extension ViewController: FileManagerDelegate {
                 let fileManager = FileManager.default
                 fileManager.delegate = self
                 
-                let documentsUrl: URL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first as URL!
+                let url: URL? = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first as URL?
+                guard let documentsUrl = url else {
+                    print("Failed to open '\(document.fileURL)'")
+                    return
+                }
                 
                 let zipFile = documentsUrl.appendingPathComponent("\(UUID().uuidString).zip")
                 do {
@@ -89,7 +94,14 @@ extension ViewController: FileManagerDelegate {
         let fileManager = FileManager.default
         fileManager.delegate = self
 
-        let documentsUrl: URL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first as URL!
+        let url: URL? = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first as URL?
+        guard let documentsUrl = url else {
+            print("Document not found")
+            documentOpened = false
+            return
+        }
+        
+        
         let unzippedFolderUrl: URL = documentsUrl.appendingPathComponent("model")
 
         do {
@@ -100,6 +112,32 @@ extension ViewController: FileManagerDelegate {
         }
         
         documentOpened = false
+    }
+    
+    func loadSettings(file: URL) {
+        do {
+            let jsonData = try Data(contentsOf: file)
+            let jsonDict = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            settings = try Settings(json: jsonDict)
+            
+        } catch {
+            print("No settings")
+            settings = nil
+        }
+    
+        DispatchQueue.main.async {
+            self.scaleMode = .customScale
+            self.scaleLockEnabled = false
+            if let scaling = self.settings?.scaling {
+                if scaling == 1.0 {
+                    self.scaleMode = .fullScale
+                    self.scaleLockEnabled = true
+                }
+            }
+                   
+            // Update the scale options button
+            self.setShowScaleOptionsButton(mode: self.scaleMode, lockOn: self.scaleLockEnabled)
+        }
     }
     
     func loadModel(path: URL) {
@@ -117,12 +155,14 @@ extension ViewController: FileManagerDelegate {
         print("Loading model '\(path)'")
         self.textManager.showMessage("Loading model...", autoHide: false)
 
-        // The generated normals mess up lighting in some models
-        let loadingOptions = [SCNSceneSource.LoadingOption.createNormalsIfAbsent : false]
+        let loadingOptions = [
+            SCNSceneSource.LoadingOption.createNormalsIfAbsent : false,
+            SCNSceneSource.LoadingOption.convertToYUp: false,
+            SCNSceneSource.LoadingOption.flattenScene: true]
         
         // Set a name so that we can find this object later
-        let containerNode = SCNNode()
-        containerNode.name = "VirtualObjectContent"
+        let modelNode = SCNNode()
+        modelNode.name = "VirtualObjectContent"
 
         // Go through the directory path and find all the obj models
         let fileManager = FileManager.default
@@ -131,25 +171,51 @@ extension ViewController: FileManagerDelegate {
         if let dirEnumerator = fileManager.enumerator(atPath: path.path) {
             while let element = dirEnumerator.nextObject() as? String {
                 
-                if element.hasSuffix(".obj") && !element.hasPrefix("__MACOSX") {
-                    let objPath = path.appendingPathComponent(element)
-                    
-                    let src = SCNSceneSource(url: objPath, options: [.convertToYUp: false])
-                    //if let sceneSource = src {
-                    //    self.logSceneSource(sceneSource)
-                    //}
-                    
-                    if let scene = src?.scene(options: loadingOptions) {
+                print("element = \(element)")
+                
+                if !element.hasPrefix("__MACOSX") {
+                    if element.hasSuffix(".obj") {
+                        let objPath = path.appendingPathComponent(element)
+
+                        let src = SCNSceneSource(url: objPath, options: loadingOptions)
+                        //if let sceneSource = src {
+                        //    self.logSceneSource(sceneSource)
+                        //}
                         
-                        adjustMaterialProperties(sceneNode: scene.rootNode)
+                        let statusHandler = { (totalProgress: Float, status: SCNSceneSourceStatus, error: Error?, stopLoading: UnsafeMutablePointer<ObjCBool>) -> Void in
+                            switch status {
+                            case .error: print("error: \(totalProgress)")
+                            case .parsing: print("parsing: \(totalProgress)")
+                            case .validating: print("validating: \(totalProgress)")
+                            case .processing: print("processing: \(totalProgress)")
+                            case .complete: print("complete: \(totalProgress)")
+                            default: print("default status: \(totalProgress)");
+                            }
+                        };
                         
-                        // Set the node name as the OBJ file name, which should
-                        // be the asset/feature type name from the FME AR writer
-                        scene.rootNode.name = element
-                        scene.rootNode.name?.removeLast(/*.obj*/ 4)
-                        //self.logSceneNode(scene.rootNode, level: 0)
-                        containerNode.addChildNode(scene.rootNode)
-                        numObjFiles += 1
+                        if let scene = src?.scene(options: loadingOptions, statusHandler:  statusHandler) {
+                            
+                            adjustMaterialProperties(sceneNode: scene.rootNode)
+                            
+                            // Set the node name as the OBJ file name, which should
+                            // be the asset/feature type name from the FME AR writer
+                            scene.rootNode.name = element
+                            scene.rootNode.name?.removeLast(/*.obj*/ 4)
+                            //self.logSceneNode(scene.rootNode, level: 0)
+                            modelNode.addChildNode(scene.rootNode)
+                            numObjFiles += 1
+                        }
+                    } else if element.hasSuffix("settings.json") {
+                        loadSettings(file: path.appendingPathComponent(element))
+                    } else if element.hasSuffix(".json") {
+                        // Version 1 and 2 of the settings json file has a "model" name
+                        // that should match the folder name inside the .fmear archive
+                        let jsonPath = path.appendingPathComponent(element)
+                        let jsonFilename = jsonPath.deletingPathExtension().lastPathComponent
+                        let folderName = jsonPath.deletingLastPathComponent().lastPathComponent
+                        if jsonFilename == folderName {
+                            loadSettings(file: jsonPath)
+                        }
                     }
                 }
             }
@@ -158,37 +224,103 @@ extension ViewController: FileManagerDelegate {
         self.textManager.showMessage("\(numObjFiles) Assets Found")
         
         if (numObjFiles > 0) {
-
-            // Normalize the model to be within a 0.5 meter cube.
-            normalize(containerNode, scale: Float(0.5))
+            let (minCoord, maxCoord) = modelNode.boundingBox
             
+            // By default, set the anchor to the center of the model, with the
+            // 0.0 height as the ground
+            let centerX = (minCoord.x + maxCoord.x) * 0.5
+            let centerY = (minCoord.y + maxCoord.y) * 0.5
+            let groundZ = 0.0
+            var anchor: SCNVector3 = SCNVector3(centerX, Float(groundZ), centerY)
+            var geolocation: CLLocation?
+            
+            if let anchors = settings?.anchors {
+                if let firstAnchor = anchors.first {
+                    anchor = SCNVector3(firstAnchor.x ?? Double(centerX),
+                                        firstAnchor.z ?? groundZ,
+                                        firstAnchor.y ?? Double(centerY))
+                    
+                    if let coordinate = firstAnchor.coordinate {
+                        geolocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+                    }
+                }
+            }
+            
+            // TEST - The bottom-left corner of the Arc de Triomphe, using the
+            // roof as the ground (i.e. the building will be displayed underground)
+            //anchor = SCNVector3(-2132.81, 2068, -1855.440373)
+
+            // Position the container node, including the model and the anchor
+            // node, to the anchor location. The z value was the
+            modelNode.position = SCNVector3(-anchor.x, -anchor.y, anchor.z)
+            
+            // Rotate to Y up
+            modelNode.eulerAngles.x = -Float.pi / 2
+                        
+            let modelDimension = self.dimension(modelNode)
+            let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
+
+            // Add the anchor geometry and node
+            let anchorHeight: CGFloat = CGFloat(modelDimension.z * 2)
+            let anchorRadius: CGFloat = anchorHeight * 0.01
+            let anchorMaterial = SCNMaterial()
+            anchorMaterial.diffuse.contents = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 0.8)
+            let anchorGeometry = SCNCone(topRadius: anchorRadius, bottomRadius: 0, height: anchorHeight)
+            anchorGeometry.firstMaterial = anchorMaterial
+            let anchorNode = SCNNode(geometry: anchorGeometry)
+            anchorNode.name = "Anchor Node"
+            // Need to shift the SCNCone up since it's origin is the middle of the
+            // cone.
+            anchorNode.simdPosition =  float3(0, Float(anchorHeight * 0.5), 0)
+            // Initial visibility of the anchor node
+            anchorNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
+
             let definition = VirtualObjectDefinition(modelName: "model", displayName: "model", particleScaleInfo: [:])
-            let object = VirtualObject(definition: definition, childNodes: [containerNode])
+            let object = VirtualObject(definition: definition, childNodes: [modelNode, anchorNode])
             object.name = "VirtualObject"
             
+            // Set a cteagory bit mask to include the virtual object in the hit test.
+            object.categoryBitMask = HitTestOptionCategoryBitMasks.virtualObject.rawValue
+
             // Scale the virtual object
-            let modelDimension = self.dimension(containerNode)
-            let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
             if maxLength > 0 {
-                
-                // Scale the model to be within a 0.5 meter cube.
-                let initialScale = Float(0.5) / maxLength
-                object.scale = SCNVector3(initialScale, initialScale, initialScale)
+                // By default, scale the model to be within a 0.5 meter cube.
+                // If the scaling is set in the model json file, use it instead.
+                let preferredScale = (self.scaleMode == .fullScale) ? 1.0 : (Float(0.5) / maxLength)
+                object.scale = SCNVector3(preferredScale, preferredScale, preferredScale)
+
+                // Set scale lock
+                self.virtualObjectManager.allowScaling = !self.scaleLockEnabled
             }
             
             //logSceneNode(object, level: 0)
-    
-            let position = self.focusSquare?.lastPosition ?? float3(0, 0, -5)
+            
+            let position = (self.focusSquare?.lastPosition ?? float3(0, 0, -5))
             
             self.virtualObjectManager.loadVirtualObject(object, to: position, cameraTransform: cameraTransform)
             if object.parent == nil {
                 self.serialQueue.async {
                     self.sceneView.scene.rootNode.addChildNode(object)
+                    
+                    // TODO: need to update the plane position on the geomarker if
+                    // the model is moved to a different plane.
+                    // Only set the y position since the geomarker update the horizontal location
+                    if let geolocation = geolocation {
+                        var geomarker = self.geolocationNode()
+                        if geomarker == nil {
+                            geomarker = self.addGeolocationNode()
+                        }
+                        geomarker?.geolocation = geolocation
+                        geomarker?.simdPosition = position
+                    }
                 }
             }
             
             DispatchQueue.main.async {
                 self.showAssetsButton.isEnabled = true
+                self.showScaleOptionsButton.isHidden = false
+                self.scaleLabel.isHidden = false
+                self.scaleLabel.text = self.dimensionAndScaleText(scale: object.scale.x, node: object)
             }
         }
         else {
@@ -211,6 +343,9 @@ extension ViewController: FileManagerDelegate {
                 // to zero.
                 material.ambient.contents = material.emission.contents
                 material.emission.contents = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+                
+                // Set doubleSided so that the user can always see the model
+                material.isDoubleSided = true
                 
                 // For some reasons, the Tr value in the OBJ model is not read
                 // correctly using SCNSceneSource or Model IO. If the OBJ material has
@@ -361,20 +496,5 @@ extension ViewController: FileManagerDelegate {
     func dimension(_ sceneNode: SCNNode) -> SCNVector3 {
         let (minCoord, maxCoord) = sceneNode.boundingBox
         return SCNVector3(maxCoord.x - minCoord.x, maxCoord.y - minCoord.y, maxCoord.z - minCoord.z)
-    }
-
-    func normalize(_ sceneNode: SCNNode, scale: Float) -> Void {
-        // Rotate to Y up
-        sceneNode.eulerAngles.x = -Float.pi / 2
-
-        // Scale and offset the model so that the model stays on the ground
-        let modelDimension = self.dimension(sceneNode)
-        let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
-        if maxLength > 0 {
-            let (minCoord, maxCoord) = sceneNode.boundingBox
-            sceneNode.position = SCNVector3(/*center x*/ -(minCoord.x + maxCoord.x) * 0.5,
-                                            /*put the model on the plane*/ -minCoord.z,
-                                            /*center z, which was y before the rotation*/ (minCoord.y + maxCoord.y) * 0.5)
-        }
     }
 }

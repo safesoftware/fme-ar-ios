@@ -7,12 +7,14 @@ UI Actions for the main view controller.
 
 import UIKit
 import SceneKit
+import SpriteKit
 
-extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewControllerDelegate {
+extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewControllerDelegate, ScaleOptionsViewControllerDelegate, OverlaySKSceneDelegate {
     
     enum SegueIdentifier: String {
         case showSettings
         case showAssets
+        case showScaleOptions
     }
     
     // MARK: - Interface Actions
@@ -46,7 +48,10 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             self.showAssetsButton.setImage(#imageLiteral(resourceName:"showAssets"), for: [])
             self.showAssetsButton.setImage(#imageLiteral(resourceName:"showAssetsPressed"), for: [.highlighted])
             self.showAssetsButton.isEnabled = false
+            self.showScaleOptionsButton.isHidden = true
             self.focusSquare?.isHidden = true
+            self.scaleLabel.isHidden = true
+            
             
             self.resetTracking()
             
@@ -81,8 +86,30 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
         }
     }
     
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawDetectedPlane on: Bool) {
+        for (_, plane) in planes {
+            plane.isHidden = !on
+        }
+    }
+    
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawAnchor on: Bool) {
+        if let anchorNode = anchorNode() {
+            anchorNode.isHidden = !on
+        }
+    }
+    
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawGeomarker on: Bool) {
+        if let geolocationNode = geolocationNode() {
+            geolocationNode.isHidden = !on
+        }
+        
+        if let geolocationLabel = overlayView.childNode(withName: self.geomarkerLabelName) {
+            geolocationLabel.isHidden = !on
+        }
+    }
+
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float) {
-        if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
+        if let virtualObjectNode = virtualObject() {
 
             let duration = max(3.0, min(5.0, scale / virtualObjectNode.scale.x))
             print("Animating scale from '\(virtualObjectNode.scale)' to '\(scale)' in a duration of '\(duration)'")
@@ -115,6 +142,36 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             light.temperature = temperature
         }
     }
+    
+    // MARK: - OverlaySKSceneDelegate
+    
+    func overlaySKSceneDelegate(_: OverlaySKScene, didTapNode node: SKNode) {
+        if let nodeName = node.name {
+            print("Tapped \(nodeName)")
+            
+            if nodeName == self.geomarkerLabelName {
+                let dialogMessage = UIAlertController(title: "Move Model", message: "Are you sure you want to move the model to the geolocation so that the anchor aligns with the geomarker?", preferredStyle: .alert)
+                
+                // Create OK button with action handler
+                let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
+                    print("Ok button tapped")
+                    self.moveModelToGeolocation()
+                })
+                
+                // Create Cancel button with action handlder
+                let cancel = UIAlertAction(title: "No", style: .cancel) { (action) -> Void in
+                    print("Cancel button tapped")
+                }
+                
+                //Add OK and Cancel button to dialog message
+                dialogMessage.addAction(ok)
+                dialogMessage.addAction(cancel)
+                
+                // Present dialog message to user
+                self.present(dialogMessage, animated: true, completion: nil)
+            }
+        }
+    }
 
     // MARK: - UIPopoverPresentationControllerDelegate
     
@@ -123,7 +180,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
+
         // All popover segues should be popovers even on iPhone.
         if let popoverController = segue.destination.popoverPresentationController, let button = sender as? UIButton {
             popoverController.delegate = self
@@ -139,6 +196,12 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             settingsViewController.delegate = self
             settingsViewController.scale = currentScale()
             settingsViewController.intensity = Float(lightIntensity)
+        } else if segueIdentifer == .showScaleOptions, let scaleOptionsViewController = segue.destination as? ScaleOptionsViewController {
+            scaleOptionsViewController.delegate = self
+            scaleOptionsViewController.setValues(dimension: modelDimension(),
+                                                 scaleMode: self.scaleMode,
+                                                 scaleLockEnabled: self.scaleLockEnabled,
+                                                 currentScale: currentScale())
         }
     }
     
@@ -155,5 +218,25 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
         }
         
         return assets.sorted()
+    }
+
+    // MARK: - ScaleOptionsViewControllerDelegate
+    func setShowScaleOptionsButton(mode: ScaleMode, lockOn: Bool) {
+        self.scaleMode = mode
+        self.scaleLockEnabled = lockOn
+        showScaleOptionsButton.setTitle(scaleOptionsButtonText(mode: mode, lockOn: lockOn), for: .normal)
+        virtualObjectManager.allowScaling = !lockOn
+    }
+    
+    func scaleOptionsViewControllerDelegate(_: ScaleOptionsViewController, didChangeScaleMode mode: ScaleMode, lockOn: Bool) {
+        setShowScaleOptionsButton(mode: mode, lockOn: lockOn)
+    }
+
+    func scaleOptionsViewControllerDelegate(_: ScaleOptionsViewController, didChangeScale scale: Float) {
+        setScale(scale: scale)
+        if let virtualObjectNode = virtualObject() {
+            let (minBounds, maxBounds) = virtualObjectNode.boundingBox
+            scaleLabel.text = dimensionAndScaleText(scale: 1.0, boundingBoxMin: minBounds, boundingBoxMax: maxBounds)
+        }
     }
 }

@@ -11,6 +11,9 @@
 		6B2F710820214B2A003812DB /* DocumentIcon-fmear-64x64px.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B2F710420214B27003812DB /* DocumentIcon-fmear-64x64px.png */; };
 		6B2F710920214B2A003812DB /* DocumentIcon-fmear-22x29px.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B2F710520214B28003812DB /* DocumentIcon-fmear-22x29px.png */; };
 		6B2F710A20214B2A003812DB /* DocumentIcon-fmear-44x58px.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B2F710620214B29003812DB /* DocumentIcon-fmear-44x58px.png */; };
+		6B5162D323594D77003CEC8C /* GeolocationMarkerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5162D223594D77003CEC8C /* GeolocationMarkerNode.swift */; };
+		6B5162D5235A4F9B003CEC8C /* OverlaySKScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5162D4235A4F9B003CEC8C /* OverlaySKScene.swift */; };
+		6B9F905C232C2816009FF7E5 /* ScaleOptionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9F905B232C2816009FF7E5 /* ScaleOptionsViewModel.swift */; };
 		6BA3AA621F4EF66F00CE75E6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AA611F4EF66F00CE75E6 /* AppDelegate.swift */; };
 		6BA3AA641F4EF66F00CE75E6 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AA631F4EF66F00CE75E6 /* DocumentBrowserViewController.swift */; };
 		6BA3AA661F4EF66F00CE75E6 /* DocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AA651F4EF66F00CE75E6 /* DocumentViewController.swift */; };
@@ -37,7 +40,7 @@
 		6BA3AAC21F4EF8C700CE75E6 /* ViewController+ARSCNViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AABE1F4EF8C700CE75E6 /* ViewController+ARSCNViewDelegate.swift */; };
 		6BA3AAC31F4EF8C700CE75E6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AABF1F4EF8C700CE75E6 /* ViewController.swift */; };
 		6BA3AAC41F4EF8C700CE75E6 /* ViewController+ObjectSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AAC01F4EF8C700CE75E6 /* ViewController+ObjectSelection.swift */; };
-		6BA3AAC61F4F053300CE75E6 /* Models.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BA3AAC51F4F053300CE75E6 /* Models.scnassets */; };
+		6BA3AAC61F4F053300CE75E6 /* SceneAssets.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BA3AAC51F4F053300CE75E6 /* SceneAssets.scnassets */; };
 		6BA3AAC81F4F0CAD00CE75E6 /* ViewController+Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AAC71F4F0CAD00CE75E6 /* ViewController+Document.swift */; };
 		6BA3AB2D1F4F1BB600CE75E6 /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AB2B1F4F1BB600CE75E6 /* SSZipArchive.m */; };
 		6BA3AB2F1F4F1C2800CE75E6 /* SSZipArchive+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AB2E1F4F1C2800CE75E6 /* SSZipArchive+Swift.swift */; };
@@ -59,13 +62,32 @@
 		6BA3AB631F4F1D4800CE75E6 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AB521F4F1D4800CE75E6 /* zip.c */; };
 		6BA8519720478BA2009D26B4 /* fmeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BA8519620478BA1009D26B4 /* fmeLogo.png */; };
 		6BA85199204A3610009D26B4 /* AssetTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA85198204A3610009D26B4 /* AssetTableViewController.swift */; };
+		6BAAA915231F21FD00E95C6B /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAAA914231F21FD00E95C6B /* RoundButton.swift */; };
+		6BAAA9172320454400E95C6B /* ScaleOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAAA9162320454400E95C6B /* ScaleOptionsViewController.swift */; };
+		6BF718BF23443F060050434D /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BF718BE23443F060050434D /* MapKit.framework */; };
+		6BF718C123452B710050434D /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF718C023452B710050434D /* LocationService.swift */; };
+		6BF718C3234D5C1A0050434D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF718C2234D5C1A0050434D /* Settings.swift */; };
+		6BF718CB234E90990050434D /* FMEARTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF718CA234E90990050434D /* FMEARTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6BF718CD234E90990050434D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6BA3AA561F4EF66F00CE75E6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6BA3AA5D1F4EF66F00CE75E6;
+			remoteInfo = FMEAR;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		6B2F710320214B25003812DB /* DocumentIcon-fmear-320x320px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentIcon-fmear-320x320px.png"; sourceTree = "<group>"; };
 		6B2F710420214B27003812DB /* DocumentIcon-fmear-64x64px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentIcon-fmear-64x64px.png"; sourceTree = "<group>"; };
 		6B2F710520214B28003812DB /* DocumentIcon-fmear-22x29px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentIcon-fmear-22x29px.png"; sourceTree = "<group>"; };
 		6B2F710620214B29003812DB /* DocumentIcon-fmear-44x58px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentIcon-fmear-44x58px.png"; sourceTree = "<group>"; };
+		6B5162D223594D77003CEC8C /* GeolocationMarkerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeolocationMarkerNode.swift; sourceTree = "<group>"; };
+		6B5162D4235A4F9B003CEC8C /* OverlaySKScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlaySKScene.swift; sourceTree = "<group>"; };
+		6B9F905B232C2816009FF7E5 /* ScaleOptionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScaleOptionsViewModel.swift; sourceTree = "<group>"; };
 		6BA3AA5E1F4EF66F00CE75E6 /* FME AR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FME AR.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BA3AA611F4EF66F00CE75E6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6BA3AA631F4EF66F00CE75E6 /* DocumentBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBrowserViewController.swift; sourceTree = "<group>"; };
@@ -94,7 +116,7 @@
 		6BA3AABE1F4EF8C700CE75E6 /* ViewController+ARSCNViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+ARSCNViewDelegate.swift"; sourceTree = "<group>"; };
 		6BA3AABF1F4EF8C700CE75E6 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		6BA3AAC01F4EF8C700CE75E6 /* ViewController+ObjectSelection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+ObjectSelection.swift"; sourceTree = "<group>"; };
-		6BA3AAC51F4F053300CE75E6 /* Models.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Models.scnassets; sourceTree = "<group>"; };
+		6BA3AAC51F4F053300CE75E6 /* SceneAssets.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = SceneAssets.scnassets; sourceTree = "<group>"; };
 		6BA3AAC71F4F0CAD00CE75E6 /* ViewController+Document.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+Document.swift"; sourceTree = "<group>"; };
 		6BA3AAE81F4F1A3D00CE75E6 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		6BA3AB281F4F1BB500CE75E6 /* FMEAR-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FMEAR-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -139,10 +161,26 @@
 		6BA3AB531F4F1D4800CE75E6 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		6BA8519620478BA1009D26B4 /* fmeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fmeLogo.png; sourceTree = "<group>"; };
 		6BA85198204A3610009D26B4 /* AssetTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetTableViewController.swift; sourceTree = "<group>"; };
+		6BAAA914231F21FD00E95C6B /* RoundButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
+		6BAAA9162320454400E95C6B /* ScaleOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScaleOptionsViewController.swift; sourceTree = "<group>"; };
+		6BF718BE23443F060050434D /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		6BF718C023452B710050434D /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		6BF718C2234D5C1A0050434D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		6BF718C8234E90990050434D /* FMEARTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FMEARTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6BF718CA234E90990050434D /* FMEARTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FMEARTests.swift; sourceTree = "<group>"; };
+		6BF718CC234E90990050434D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		6BA3AA5B1F4EF66F00CE75E6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6BF718BF23443F060050434D /* MapKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6BF718C5234E90990050434D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -152,6 +190,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6B2A1F76232C27840003240D /* View Models */ = {
+			isa = PBXGroup;
+			children = (
+				6B9F905B232C2816009FF7E5 /* ScaleOptionsViewModel.swift */,
+			);
+			path = "View Models";
+			sourceTree = "<group>";
+		};
 		6B2F710220214AF7003812DB /* Document Icons */ = {
 			isa = PBXGroup;
 			children = (
@@ -168,7 +214,9 @@
 			children = (
 				6BA3AAE81F4F1A3D00CE75E6 /* libz.tbd */,
 				6BA3AA601F4EF66F00CE75E6 /* FMEAR */,
+				6BF718C9234E90990050434D /* FMEARTests */,
 				6BA3AA5F1F4EF66F00CE75E6 /* Products */,
+				6BF718BD23443F060050434D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -176,6 +224,7 @@
 			isa = PBXGroup;
 			children = (
 				6BA3AA5E1F4EF66F00CE75E6 /* FME AR.app */,
+				6BF718C8234E90990050434D /* FMEARTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -183,16 +232,19 @@
 		6BA3AA601F4EF66F00CE75E6 /* FMEAR */ = {
 			isa = PBXGroup;
 			children = (
+				6B2A1F76232C27840003240D /* View Models */,
 				6BA8519520478B73009D26B4 /* Images */,
 				6B2F710220214AF7003812DB /* Document Icons */,
 				6BA3AB271F4F1B8E00CE75E6 /* 3rd */,
-				6BA3AAC51F4F053300CE75E6 /* Models.scnassets */,
+				6BA3AAC51F4F053300CE75E6 /* SceneAssets.scnassets */,
 				6BA3AABF1F4EF8C700CE75E6 /* ViewController.swift */,
 				6BA3AABD1F4EF8C700CE75E6 /* ViewController+Actions.swift */,
 				6BA3AABE1F4EF8C700CE75E6 /* ViewController+ARSCNViewDelegate.swift */,
+				6BF718C023452B710050434D /* LocationService.swift */,
 				6BA3AABB1F4EF89500CE75E6 /* VirtualObject.swift */,
 				6BA3AAC01F4EF8C700CE75E6 /* ViewController+ObjectSelection.swift */,
 				6BA3AAC71F4F0CAD00CE75E6 /* ViewController+Document.swift */,
+				6B5162D223594D77003CEC8C /* GeolocationMarkerNode.swift */,
 				6BA3AAA21F4EF86100CE75E6 /* Additional View Controllers */,
 				6BA3AA991F4EF86100CE75E6 /* UI Elements */,
 				6BA3AAA81F4EF86100CE75E6 /* Utilities */,
@@ -205,6 +257,8 @@
 				6BA3AA6C1F4EF66F00CE75E6 /* Assets.xcassets */,
 				6BA3AA6E1F4EF66F00CE75E6 /* LaunchScreen.storyboard */,
 				6BA3AA711F4EF66F00CE75E6 /* Info.plist */,
+				6BF718C2234D5C1A0050434D /* Settings.swift */,
+				6B5162D4235A4F9B003CEC8C /* OverlaySKScene.swift */,
 			);
 			path = FMEAR;
 			sourceTree = "<group>";
@@ -215,6 +269,7 @@
 				6BA3AA9A1F4EF86100CE75E6 /* Focus Squares */,
 				6BA3AA9D1F4EF86100CE75E6 /* Gestures */,
 				6BA3AAA11F4EF86100CE75E6 /* Plane.swift */,
+				6BAAA914231F21FD00E95C6B /* RoundButton.swift */,
 			);
 			path = "UI Elements";
 			sourceTree = "<group>";
@@ -241,6 +296,7 @@
 		6BA3AAA21F4EF86100CE75E6 /* Additional View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				6BAAA9162320454400E95C6B /* ScaleOptionsViewController.swift */,
 				6BA3AAA31F4EF86100CE75E6 /* SettingsViewController.swift */,
 				6BA3AAA41F4EF86100CE75E6 /* VirtualObjectSelectionViewController.swift */,
 				6BA85198204A3610009D26B4 /* AssetTableViewController.swift */,
@@ -340,6 +396,23 @@
 			path = Images;
 			sourceTree = "<group>";
 		};
+		6BF718BD23443F060050434D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6BF718BE23443F060050434D /* MapKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6BF718C9234E90990050434D /* FMEARTests */ = {
+			isa = PBXGroup;
+			children = (
+				6BF718CA234E90990050434D /* FMEARTests.swift */,
+				6BF718CC234E90990050434D /* Info.plist */,
+			);
+			path = FMEARTests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -360,20 +433,43 @@
 			productReference = 6BA3AA5E1F4EF66F00CE75E6 /* FME AR.app */;
 			productType = "com.apple.product-type.application";
 		};
+		6BF718C7234E90990050434D /* FMEARTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6BF718CF234E90990050434D /* Build configuration list for PBXNativeTarget "FMEARTests" */;
+			buildPhases = (
+				6BF718C4234E90990050434D /* Sources */,
+				6BF718C5234E90990050434D /* Frameworks */,
+				6BF718C6234E90990050434D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6BF718CE234E90990050434D /* PBXTargetDependency */,
+			);
+			name = FMEARTests;
+			productName = FMEARTests;
+			productReference = 6BF718C8234E90990050434D /* FMEARTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		6BA3AA561F4EF66F00CE75E6 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0900;
+				LastSwiftUpdateCheck = 1100;
 				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Safe Software Inc.";
 				TargetAttributes = {
 					6BA3AA5D1F4EF66F00CE75E6 = {
 						CreatedOnToolsVersion = 9.0;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1030;
 						ProvisioningStyle = Automatic;
+					};
+					6BF718C7234E90990050434D = {
+						CreatedOnToolsVersion = 11.0;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 6BA3AA5D1F4EF66F00CE75E6;
 					};
 				};
 			};
@@ -391,6 +487,7 @@
 			projectRoot = "";
 			targets = (
 				6BA3AA5D1F4EF66F00CE75E6 /* FMEAR */,
+				6BF718C7234E90990050434D /* FMEARTests */,
 			);
 		};
 /* End PBXProject section */
@@ -404,12 +501,19 @@
 				6BA3AA701F4EF66F00CE75E6 /* LaunchScreen.storyboard in Resources */,
 				6BA3AA6D1F4EF66F00CE75E6 /* Assets.xcassets in Resources */,
 				6B2F710A20214B2A003812DB /* DocumentIcon-fmear-44x58px.png in Resources */,
-				6BA3AAC61F4F053300CE75E6 /* Models.scnassets in Resources */,
+				6BA3AAC61F4F053300CE75E6 /* SceneAssets.scnassets in Resources */,
 				6B2F710820214B2A003812DB /* DocumentIcon-fmear-64x64px.png in Resources */,
 				6B2F710920214B2A003812DB /* DocumentIcon-fmear-22x29px.png in Resources */,
 				6BA8519720478BA2009D26B4 /* fmeLogo.png in Resources */,
 				6B2F710720214B2A003812DB /* DocumentIcon-fmear-320x320px.png in Resources */,
 				6BA3AA6B1F4EF66F00CE75E6 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6BF718C6234E90990050434D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -422,12 +526,15 @@
 			files = (
 				6BA3AAB81F4EF86100CE75E6 /* SceneExtensions.swift in Sources */,
 				6BA3AB5B1F4F1D4800CE75E6 /* pwd2key.c in Sources */,
+				6B9F905C232C2816009FF7E5 /* ScaleOptionsViewModel.swift in Sources */,
 				6BA3AAB41F4EF86100CE75E6 /* VirtualObjectSelectionViewController.swift in Sources */,
 				6BA3AB571F4F1D4800CE75E6 /* aestab.c in Sources */,
 				6BA3AB5D1F4F1D4800CE75E6 /* crypt.c in Sources */,
 				6BA3AAC11F4EF8C700CE75E6 /* ViewController+Actions.swift in Sources */,
 				6BA3AB621F4F1D4800CE75E6 /* unzip.c in Sources */,
 				6BA3AB5E1F4F1D4800CE75E6 /* ioapi.c in Sources */,
+				6B5162D5235A4F9B003CEC8C /* OverlaySKScene.swift in Sources */,
+				6BF718C3234D5C1A0050434D /* Settings.swift in Sources */,
 				6BA3AAB51F4EF86100CE75E6 /* VirtualObjectManager.swift in Sources */,
 				6BA3AAB71F4EF86100CE75E6 /* ARSCNView+HitTests.swift in Sources */,
 				6BA85199204A3610009D26B4 /* AssetTableViewController.swift in Sources */,
@@ -444,10 +551,12 @@
 				6BA3AAB21F4EF86100CE75E6 /* Plane.swift in Sources */,
 				6BA3AAAF1F4EF86100CE75E6 /* Gesture.swift in Sources */,
 				6BA3AB5A1F4F1D4800CE75E6 /* prng.c in Sources */,
+				6B5162D323594D77003CEC8C /* GeolocationMarkerNode.swift in Sources */,
 				6BA3AA681F4EF66F00CE75E6 /* Document.swift in Sources */,
 				6BA3AABA1F4EF86100CE75E6 /* Utilities.swift in Sources */,
 				6BA3AAAE1F4EF86100CE75E6 /* FocusSquareSegment.swift in Sources */,
 				6BA3AA661F4EF66F00CE75E6 /* DocumentViewController.swift in Sources */,
+				6BAAA915231F21FD00E95C6B /* RoundButton.swift in Sources */,
 				6BA3AB5C1F4F1D4800CE75E6 /* sha1.c in Sources */,
 				6BA3AB581F4F1D4800CE75E6 /* fileenc.c in Sources */,
 				6BA3AAB91F4EF86100CE75E6 /* TextManager.swift in Sources */,
@@ -458,14 +567,32 @@
 				6BA3AAC41F4EF8C700CE75E6 /* ViewController+ObjectSelection.swift in Sources */,
 				6BA3AB2D1F4F1BB600CE75E6 /* SSZipArchive.m in Sources */,
 				6BA3AAC31F4EF8C700CE75E6 /* ViewController.swift in Sources */,
+				6BF718C123452B710050434D /* LocationService.swift in Sources */,
 				6BA3AA621F4EF66F00CE75E6 /* AppDelegate.swift in Sources */,
 				6BA3AB551F4F1D4800CE75E6 /* aescrypt.c in Sources */,
 				6BA3AAAD1F4EF86100CE75E6 /* FocusSquare.swift in Sources */,
+				6BAAA9172320454400E95C6B /* ScaleOptionsViewController.swift in Sources */,
 				6BA3AB591F4F1D4800CE75E6 /* hmac.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6BF718C4234E90990050434D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6BF718CB234E90990050434D /* FMEARTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6BF718CE234E90990050434D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6BA3AA5D1F4EF66F00CE75E6 /* FMEAR */;
+			targetProxy = 6BF718CD234E90990050434D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		6BA3AA691F4EF66F00CE75E6 /* Main.storyboard */ = {
@@ -607,13 +734,13 @@
 				DEVELOPMENT_TEAM = B3R9YZM37G;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = FMEAR/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.safe.fmear;
 				PRODUCT_NAME = "FME AR";
 				SWIFT_OBJC_BRIDGING_HEADER = "FMEAR/3rd/FMEAR-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "**/**";
 			};
@@ -628,14 +755,57 @@
 				DEVELOPMENT_TEAM = B3R9YZM37G;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = FMEAR/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.safe.fmear;
 				PRODUCT_NAME = "FME AR";
 				SWIFT_OBJC_BRIDGING_HEADER = "FMEAR/3rd/FMEAR-Bridging-Header.h";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "**/**";
+			};
+			name = Release;
+		};
+		6BF718D0234E90990050434D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = B3R9YZM37G;
+				INFOPLIST_FILE = FMEARTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.safe.FMEARTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "./FMEAR/3rd/FMEAR-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FME AR.app/FME AR";
+			};
+			name = Debug;
+		};
+		6BF718D1234E90990050434D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = B3R9YZM37G;
+				INFOPLIST_FILE = FMEARTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.safe.FMEARTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "./FMEAR/3rd/FMEAR-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FME AR.app/FME AR";
 			};
 			name = Release;
 		};
@@ -656,6 +826,15 @@
 			buildConfigurations = (
 				6BA3AA751F4EF66F00CE75E6 /* Debug */,
 				6BA3AA761F4EF66F00CE75E6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6BF718CF234E90990050434D /* Build configuration list for PBXNativeTarget "FMEARTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6BF718D0234E90990050434D /* Debug */,
+				6BF718D1234E90990050434D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

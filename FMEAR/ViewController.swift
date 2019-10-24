@@ -8,8 +8,12 @@ Main view controller for the AR experience.
 import ARKit
 import SceneKit
 import UIKit
+import CoreLocation
 
-class ViewController: UIViewController, ARSessionDelegate {
+class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelegate {
+    
+    let geomarkerLabelName = "Geomarker Label"
+    let geomarkerNodeName = "Geomarker Node"
     
     var document: UIDocument?
     var documentOpened = false
@@ -17,7 +21,20 @@ class ViewController: UIViewController, ARSessionDelegate {
     var lights = [SCNLight]()
     var lightIntensity: CGFloat = 1000
     var lightTemperature: CGFloat = 6500
+    var planes = [ARPlaneAnchor: Plane]()
     
+    // Cache the view bounds so that we don't need to access the view object
+    // in the main thread all the time. This help avoiding using
+    // DispatchQueue.main.async. However, we should keep viewBounds up to
+    // date when the view has a transition. See willTransition(to:with:)
+    var viewSize = CGSize()
+    
+    // Settings from JSON settings file
+    var settings: Settings?
+    
+    // Scale properties
+    var scaleMode: ScaleMode = .customScale
+    var scaleLockEnabled: Bool = false
     
     // MARK: - ARKit Config Properties
     
@@ -27,6 +44,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     let standardConfiguration: ARWorldTrackingConfiguration = {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
+        configuration.worldAlignment = ARConfiguration.WorldAlignment.gravityAndHeading
         configuration.isLightEstimationEnabled = true
         return configuration
     }()
@@ -42,9 +60,13 @@ class ViewController: UIViewController, ARSessionDelegate {
                 self.settingsButton.isEnabled = !self.isLoadingObject
                 self.showAssetsButton.isEnabled = !self.isLoadingObject
                 self.restartExperienceButton.isEnabled = !self.isLoadingObject
+                self.scaleLabel.isHidden = self.isLoadingObject
             }
         }
     }
+    
+    // SCNSceneRenderer time
+    var lastUpdateTime: TimeInterval?
     
     // MARK: - Other Properties
     
@@ -56,12 +78,46 @@ class ViewController: UIViewController, ARSessionDelegate {
     var spinner: UIActivityIndicatorView?
     
     @IBOutlet var sceneView: ARSCNView!
+    var overlayView: OverlaySKScene!
     @IBOutlet weak var messagePanel: UIView!
     @IBOutlet weak var messageLabel: UILabel!
     @IBOutlet weak var settingsButton: UIButton!
     @IBOutlet weak var showAssetsButton: UIButton!
+    @IBOutlet weak var showScaleOptionsButton: UIButton!
     @IBOutlet weak var restartExperienceButton: UIButton!
     @IBOutlet weak var backButton: UIButton!
+    @IBOutlet weak var scaleLabel: UILabel!
+    @IBOutlet weak var headingLabel: UILabel!
+    
+    // Indicators to show the direction to the model when the model
+    // is outside the screen area.
+    @IBOutlet weak var modelIndicatorUp: UILabel!
+    @IBOutlet weak var modelIndicatorDown: UILabel!
+    @IBOutlet weak var modelIndicatorLeft: UILabel!
+    @IBOutlet weak var modelIndicatorRight: UILabel!
+
+    
+    // MARK: - Location Service
+    var locationService: LocationService?
+    
+    func didUpdateDescription(_ locationService: LocationService, description: String) {
+        headingLabel.text = description
+    }
+    
+    func didUpdateLocation(_ locationService: LocationService, location: CLLocation) {
+//        print("UPDATE LOCATION: \(location)")
+        
+        if let geomarker = geolocationNode() {
+            //print("UPDATING GEOMARKER...")
+            geomarker.userLocation = location
+            
+            // TODO: Apply the current camera world position to the geomarker
+            //// Also set the camera world position to match the user location
+            //if let cameraTransform = session.currentFrame?.camera.transform  {
+            //    geomarker.cameraWorldPosition = cameraTransform.translation
+            //}
+        }
+    }
     
     // MARK: - Queues
     
@@ -71,23 +127,82 @@ class ViewController: UIViewController, ARSessionDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         Setting.registerDefaults()
+        
+        locationService = LocationService()
+        locationService?.delegate = self
+
+        self.viewSize = self.sceneView.bounds.size
 		setupUIControls()
         setupScene()
     }
+    
+    func virtualObject() -> SCNNode? {
+        return self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true)
+    }
+    
+    func anchorNode() -> SCNNode? {
+        return self.sceneView.scene.rootNode.childNode(withName: "Anchor Node", recursively: true)
+    }
+    
+    func geolocationNode() -> GeolocationMarkerNode? {
+        return self.sceneView.scene.rootNode.childNode(withName: geomarkerNodeName, recursively: true) as? GeolocationMarkerNode
+    }
+    
+    func addGeolocationNode() -> GeolocationMarkerNode {
+        let geomarker = GeolocationMarkerNode()
+        geomarker.name = geomarkerNodeName
+        geomarker.color = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.8)
+        geomarker.userLocation = self.locationService?.locationManager?.location
+        self.sceneView.scene.rootNode.addChildNode(geomarker)
+        return geomarker
+    }
 
     func currentScale() -> Float {
-        if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) {
+        if let virtualObjectNode = virtualObject() {
             return virtualObjectNode.scale.x
         } else {
             return 1.0
         }
     }
     
+    func modelDimension() -> [Float] {
+        if let virtualObjectNode = virtualObject() {
+            let d = dimension(virtualObjectNode)
+            return [d.x, d.y, d.z]
+        } else {
+            return []
+        }
+    }
+    
+    func moveModelToGeolocation() {
+        guard let geomarker = geolocationNode(), let model = virtualObject() else {
+            print("FAILED TO MOVE MODEL TO GEOLOCATION")
+            return
+        }
+              
+        let action = SCNAction.move(to: geomarker.position, duration: 1.0)
+        action.timingMode = .easeInEaseOut
+        model.runAction(action)
+    }
+    
+    func setScale(scale: Float) {
+        if let virtualObjectNode = virtualObject() {
+            updateScaleLabel(scale: scale)
+            let duration = max(1.0, min(3.0, scale / virtualObjectNode.scale.x))
+            print("Animating scale from '\(virtualObjectNode.scale)' to '\(scale)' in a duration of '\(duration)'")
+            let scaleAction = SCNAction.scale(to: CGFloat(scale), duration: Double(duration))
+            scaleAction.timingMode = .easeInEaseOut
+            virtualObjectNode.runAction(scaleAction)
+        }
+    }
+    
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		
+        locationService?.startLocationService()
+        
 		// Prevent the screen from being dimmed after a while.
 		UIApplication.shared.isIdleTimerDisabled = true
 		
@@ -101,9 +216,16 @@ class ViewController: UIViewController, ARSessionDelegate {
 			displayErrorMessage(title: "Unsupported platform", message: sessionErrorMsg, allowRestart: false)
 		}
 	}
+    
+    override func didReceiveMemoryWarning() {
+        print("didReceiveMemoryWarning")
+    }
 	
 	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
+        
+        locationService?.stopLocationService()
+        
 		session.pause()
         
         print("viewWillDisappear")
@@ -111,6 +233,11 @@ class ViewController: UIViewController, ARSessionDelegate {
             closeDocument(document: document)
         }
 	}
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        print("viewWillTransition")
+        self.viewSize = size
+    }
 	
     // MARK: - Setup
 
@@ -148,11 +275,14 @@ class ViewController: UIViewController, ARSessionDelegate {
 		sceneView.setup()
 		sceneView.delegate = self
 		sceneView.session = session
-		sceneView.showsStatistics = false
+		sceneView.showsStatistics = true
         setupLighting()
         session.delegate = self
 		
-        
+        // set up overlay view
+        overlayView = OverlaySKScene(size: self.view.bounds.size)
+        overlayView.overlaySKSceneDelegate = self
+        sceneView.overlaySKScene = overlayView
         
 		//sceneView.scene.enableEnvironmentMapWithIntensity(25, queue: serialQueue)
         
@@ -182,6 +312,9 @@ class ViewController: UIViewController, ARSessionDelegate {
         messagePanel.clipsToBounds = true
         messagePanel.isHidden = true
         messageLabel.text = ""
+
+        showScaleOptionsButton.setTitle(self.scaleOptionsButtonText(mode: .customScale, lockOn: false), for: .normal)
+        showScaleOptionsButton.isHidden = true
     }
 	
     // MARK: - Gesture Recognizers
@@ -196,14 +329,14 @@ class ViewController: UIViewController, ARSessionDelegate {
             sceneView.session.add(anchor: ARAnchor(transform: hit.worldTransform))
         }
         
-        for result in hitResultsFeaturePoints {
-            print("hit result = \(result)")
-        }
-        
-        let hitResults = sceneView.hitTest(location, options: nil)
-        for result in hitResults {
-            logSCNHitTestResult(result)
-        }
+//        for result in hitResultsFeaturePoints {
+//            print("hit result = \(result)")
+//        }
+//        
+//        let hitResults = sceneView.hitTest(location, options: nil)
+//        for result in hitResults {
+//            logSCNHitTestResult(result)
+//        }
 	}
 	
 	override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -225,14 +358,20 @@ class ViewController: UIViewController, ARSessionDelegate {
 	}
 	
     // MARK: - Planes
-	
-	var planes = [ARPlaneAnchor: Plane]()
-	
     func addPlane(node: SCNNode, anchor: ARPlaneAnchor) {
         
-		let plane = Plane(anchor)
-		planes[anchor] = plane
-		node.addChildNode(plane)
+        // Create a custom object to visualize the plane geometry and extent.
+        let plane = Plane(anchor: anchor, in: sceneView)
+        
+        // Remember the anchor and the node
+        planes[anchor] = plane
+
+        // Initial visibility of the plane
+        plane.isHidden = !(UserDefaults.standard.bool(for: .drawDetectedPlane))
+        
+        // Add the visualization to the ARKit-managed node so that it tracks
+        // changes in the plane anchor as plane estimation continues.
+        node.addChildNode(plane)
         
 		textManager.cancelScheduledMessage(forType: .planeEstimation)
 		textManager.showMessage("SURFACE DETECTED")
@@ -249,16 +388,38 @@ class ViewController: UIViewController, ARSessionDelegate {
 //        }
 	}
 		
-    func updatePlane(anchor: ARPlaneAnchor) {
-        if let plane = planes[anchor] {
-			plane.update(anchor)
-		}
-	}
-			
-    func removePlane(anchor: ARPlaneAnchor) {
-		if let plane = planes.removeValue(forKey: anchor) {
-			plane.removeFromParentNode()
+    func updatePlane(node: SCNNode, anchor: ARPlaneAnchor) {
+        // Update only anchors and nodes set up by `renderer(_:didAdd:for:)`.
+        guard let plane = node.childNodes.first as? Plane else {
+            return
         }
+        
+        // Update ARSCNPlaneGeometry to the anchor's new estimated shape.
+        if let planeGeometry = plane.meshNode.geometry as? ARSCNPlaneGeometry {
+            planeGeometry.update(from: anchor.geometry)
+        }
+        
+        // Update extent visualization to the anchor's new bounding rectangle.
+        if let extentGeometry = plane.extentNode.geometry as? SCNPlane {
+            extentGeometry.width = CGFloat(anchor.extent.x)
+            extentGeometry.height = CGFloat(anchor.extent.z)
+            plane.extentNode.simdPosition = anchor.center
+        }
+        
+//        // Update the plane's classification and the text position
+//        if #available(iOS 12.0, *),
+//            let classificationNode = plane.classificationNode,
+//            let classificationGeometry = classificationNode.geometry as? SCNText {
+//            let currentClassification = anchor.classification.description
+//            if let oldClassification = classificationGeometry.string as? String, oldClassification != currentClassification {
+//                classificationGeometry.string = currentClassification
+//                classificationNode.centerAlign()
+//            }
+//        }
+	}
+    
+    func removePlane(node: SCNNode, anchor: ARPlaneAnchor) {
+        planes.removeValue(forKey: anchor)
     }
 	
 	func resetTracking() {
@@ -348,5 +509,101 @@ class ViewController: UIViewController, ARSessionDelegate {
         print("SCNHitTestResult: node = \(result.node)")
         print("SCNHitTestResult: geometryIndex = \(result.geometryIndex)")
         print("SCNHitTestResult: faceIndex = \(result.faceIndex)")
+    }
+    
+    // MARK: - View Model
+    func lengthText(_ length: Float) -> String {
+        let formatter = NumberFormatter()
+        formatter.usesSignificantDigits = true
+        formatter.maximumSignificantDigits = 3
+        formatter.minimumSignificantDigits = 2
+        
+        var adjustedLength = length
+        var lengthText = "--"
+        var unit = ""
+        if (length >= 1000.0) {
+            adjustedLength = length / 1000.0
+            unit = "km"
+        } else if (length < 1.0) {
+            adjustedLength = length * 100.0
+            unit = "cm"
+        } else {
+            adjustedLength = length
+            unit = "m"
+        }
+
+        if let roundedLength = formatter.string(from: NSNumber(value: adjustedLength)) {
+            lengthText = roundedLength + unit
+        }
+
+        return lengthText
+    }
+    
+    func ratioText(_ scale: Float) -> String {
+        let formatter = NumberFormatter()
+        formatter.usesSignificantDigits = true
+        formatter.maximumSignificantDigits = 3
+        formatter.minimumSignificantDigits = 1
+
+        var ratio = "-:-"
+        if (scale > 1.0) {
+            var adjustedScale = scale
+            var unit = ""
+            if scale >= 1000.0 {
+                adjustedScale = scale / 1000.0
+                unit = "k"
+            }
+            if let roundedScale = formatter.string(from: NSNumber(value: adjustedScale)) {
+                ratio = "\(roundedScale)\(unit):1"
+            }
+        } else if (scale <= 0.0) {
+            ratio = "∞"
+        } else if (scale <= 1.0) {
+            var adjustedScale = 1.0 / scale
+            var unit = ""
+            if adjustedScale >= 1000.0 {
+                adjustedScale = adjustedScale / 1000.0
+                unit = "k"
+            }
+
+            //let roundedScale = (1.0 / objectScale).rounded().format(f: ".0")
+            if let roundedScale = formatter.string(from: NSNumber(value: adjustedScale)) {
+                ratio = "1:\(roundedScale)\(unit)"
+            }
+        }
+        
+        return ratio
+    }
+    
+    func dimensionAndScaleText(scale: Float, node: SCNNode) -> String {
+        let (minBounds, maxBounds) = node.boundingBox
+        return dimensionAndScaleText(scale: scale, boundingBoxMin: minBounds, boundingBoxMax: maxBounds)
+    }
+    
+    func dimensionAndScaleText(scale: Float, boundingBoxMin: SCNVector3, boundingBoxMax: SCNVector3) -> String {
+        let xInMeter = (boundingBoxMax.x - boundingBoxMin.x) * scale
+        let yInMeter = (boundingBoxMax.y - boundingBoxMin.y) * scale
+        let zInMeter = (boundingBoxMax.z - boundingBoxMin.z) * scale
+        
+        return "❑ \(lengthText(xInMeter)) x \(lengthText(yInMeter)) x \(lengthText(zInMeter)) (\(ratioText(scale)))"
+    }
+    
+    func scaleOptionsButtonText(mode: ScaleMode, lockOn: Bool) -> String {
+        // Put extra space to make the lock appear on a separate line
+        let lock = (lockOn) ? "  🔒  " : ""
+        let scaleText = (mode == .fullScale) ? "Full Scale" : "Custom Scale"
+        return scaleText + lock
+    }
+    
+    
+    // MARK: - UI
+    func updateScaleLabel(scale: Float) {
+        DispatchQueue.main.async {
+            if let virtualObjectNode = self.virtualObject() {
+                self.scaleLabel.text = self.dimensionAndScaleText(scale: scale, node: virtualObjectNode)
+            } else {
+                self.scaleLabel.text = ""
+            }
+        }
     }
 }

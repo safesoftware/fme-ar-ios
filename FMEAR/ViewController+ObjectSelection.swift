@@ -65,6 +65,11 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, AssetVie
         textManager.showMessage("CANNOT PLACE OBJECT\nTry moving left or right.")
     }
     
+    func virtualObjectManager(_ manager: VirtualObjectManager, transformDidChangeFor object: VirtualObject) {
+        // Update UI for the new scale        
+        self.scaleLabel.text = dimensionAndScaleText(scale: object.scale.x, node: object)
+    }
+    
     // MARK: - VirtualObjectSelectionViewControllerDelegate
     
     func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didSelectObjectAt index: Int) {
@@ -74,7 +79,7 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, AssetVie
         
         let definition = VirtualObjectManager.availableObjects[index]
         let object = VirtualObject(definition: definition)
-        let position = focusSquare?.lastPosition ?? float3(0)
+        let position = focusSquare?.lastPosition ?? float3(repeating: 0.0)
         virtualObjectManager.loadVirtualObject(object, to: position, cameraTransform: cameraTransform)
         if object.parent == nil {
             serialQueue.async {

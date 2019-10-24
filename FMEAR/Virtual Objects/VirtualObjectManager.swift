@@ -11,10 +11,11 @@ import ARKit
 class VirtualObjectManager {
 	
 	weak var delegate: VirtualObjectManagerDelegate?
-	
 	var virtualObjects = [VirtualObject]()
-    
 	var lastUsedObject: VirtualObject?
+
+    // MARK: - Cached state from model
+    var allowScaling = true
     
     /// The queue with updates to the virtual objects are made on.
     var updateQueue: DispatchQueue
@@ -51,7 +52,7 @@ class VirtualObjectManager {
             else { return }
         
 		unloadVirtualObject(object)
-		if let pos = virtualObjects.index(of: object) {
+		if let pos = virtualObjects.firstIndex(of: object) {
 			virtualObjects.remove(at: pos)
 		}
 	}
@@ -183,12 +184,13 @@ class VirtualObjectManager {
 	private func setNewVirtualObjectPosition(_ object: VirtualObject, to pos: float3, cameraTransform: matrix_float4x4) {
 		let cameraWorldPos = cameraTransform.translation
 		var cameraToPosition = pos - cameraWorldPos
-		
-		// Limit the distance of the object from the camera to a maximum of 10 meters.
-        if simd_length(cameraToPosition) > 10 {
-            cameraToPosition = simd_normalize(cameraToPosition)
-            cameraToPosition *= 10
-        }
+
+        // We want to place the object without the 10 meter limit.
+//		// Limit the distance of the object from the camera to a maximum of 10 meters.
+//        if simd_length(cameraToPosition) > 10 {
+//            cameraToPosition = simd_normalize(cameraToPosition)
+//            cameraToPosition *= 10
+//        }
 
 		object.simdPosition = cameraWorldPos + cameraToPosition
 		object.recentVirtualObjectDistances.removeAll()
@@ -197,12 +199,13 @@ class VirtualObjectManager {
 	private func updateVirtualObjectPosition(_ object: VirtualObject, to pos: float3, filterPosition: Bool, cameraTransform: matrix_float4x4) {
 		let cameraWorldPos = cameraTransform.translation
 		var cameraToPosition = pos - cameraWorldPos
-		
-		// Limit the distance of the object from the camera to a maximum of 10 meters.
-        if simd_length(cameraToPosition) > 10 {
-            cameraToPosition = simd_normalize(cameraToPosition)
-            cameraToPosition *= 10
-        }
+
+        // We want to place the object without the 10 meter limit.
+//		// Limit the distance of the object from the camera to a maximum of 10 meters.
+//        if simd_length(cameraToPosition) > 10 {
+//            cameraToPosition = simd_normalize(cameraToPosition)
+//            cameraToPosition *= 10
+//        }
 
 		// Compute the average distance of the object from the camera over the last ten
 		// updates. If filterPosition is true, compute a new position for the object
@@ -252,7 +255,7 @@ class VirtualObjectManager {
 				
 				SCNTransaction.begin()
 				SCNTransaction.animationDuration = CFTimeInterval(distanceToPlane * 500) // Move 2 mm per second.
-				SCNTransaction.animationTimingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+				SCNTransaction.animationTimingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
 				object.position.y = anchor.transform.columns.3.y
 				SCNTransaction.commit()
 			}

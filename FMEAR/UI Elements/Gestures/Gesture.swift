@@ -60,10 +60,17 @@ class Gesture {
     
     /// Hit tests against the `sceneView` to find an object at the provided point.
     func virtualObject(at point: CGPoint) -> VirtualObject? {
-        let hitTestOptions: [SCNHitTestOption: Any] = [.boundingBoxOnly: true]
-        let hitTestResults: [SCNHitTestResult] = sceneView.hitTest(point, options: hitTestOptions)
         
-        return hitTestResults.lazy.flatMap { result in
+        // Add a categoryBitMask to include only the virtual object in the hit
+        // test. Also set the search mode to all to make sure that the virtual
+        // object is included in the hit test results.
+        let categoryBitMask = HitTestOptionCategoryBitMasks.virtualObject.rawValue
+        let hitTestOptions: [SCNHitTestOption: Any] = [.boundingBoxOnly: true,
+                                                       .searchMode: SCNHitTestSearchMode.all.rawValue,
+                                                       .categoryBitMask: categoryBitMask]
+        let hitTestResults: [SCNHitTestResult] = sceneView.hitTest(point, options: hitTestOptions)
+
+        return hitTestResults.lazy.compactMap { result in
             VirtualObject.isNodePartOfVirtualObject(result.node)
         }.first
     }

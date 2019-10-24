@@ -70,7 +70,7 @@ class TwoFingerGesture: Gesture {
         // Check if any of the two fingers or their midpoint is touching the object.
         // Based on that, translation, rotation and scale will be enabled or disabled.
         let allPoints = [firstTouchPoint, secondTouchPoint, thirdCorner, fourthCorner, initialMidPoint] + midPoints
-        firstTouchedObject = allPoints.lazy.flatMap { point in
+        firstTouchedObject = allPoints.lazy.compactMap { point in
             return self.virtualObject(at: point)
         }.first
         if let virtualObject = firstTouchedObject {
@@ -78,12 +78,7 @@ class TwoFingerGesture: Gesture {
             
             allowTranslation = true
             allowRotation = true
-            allowScaling = true
-            
-//            // Allow scale if the fingers are on the object or if the object is scaled very small,
-//            // and if the scale gesture has been enabled in Settings.
-//            let scaleGestureEnabled = UserDefaults.standard.bool(for: .scaleWithPinchGesture)
-//            allowScaling = scaleGestureEnabled
+            allowScaling = objectManager.allowScaling
 
             initialDistanceBetweenFingers = (firstTouchPoint - secondTouchPoint).length()
             
@@ -251,7 +246,7 @@ class TwoFingerGesture: Gesture {
                  newScale = 1.0 // Snap scale to 100% when getting close.
                  }*/
                 
-                virtualObject.simdScale = float3(newScale)
+                virtualObject.simdScale = float3(repeating: newScale)
                 lastUsedObject = virtualObject
                 
 //                ViewController.serialQueue.async {
