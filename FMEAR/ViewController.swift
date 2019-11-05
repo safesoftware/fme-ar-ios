@@ -35,6 +35,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     // Scale properties
     var scaleMode: ScaleMode = .customScale
     var scaleLockEnabled: Bool = false
+    var scaling: Double?
     
     // MARK: - ARKit Config Properties
     

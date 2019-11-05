@@ -131,8 +131,12 @@ extension ViewController: FileManagerDelegate {
             if let scaling = self.settings?.scaling {
                 if scaling == 1.0 {
                     self.scaleMode = .fullScale
-                    self.scaleLockEnabled = true
+                } else {
+                    self.scaleMode = .customScale
                 }
+
+                self.scaleLockEnabled = true
+                self.scaling = scaling
             }
                    
             // Update the scale options button
@@ -286,9 +290,15 @@ extension ViewController: FileManagerDelegate {
             if maxLength > 0 {
                 // By default, scale the model to be within a 0.5 meter cube.
                 // If the scaling is set in the model json file, use it instead.
-                let preferredScale = (self.scaleMode == .fullScale) ? 1.0 : (Float(0.5) / maxLength)
-                object.scale = SCNVector3(preferredScale, preferredScale, preferredScale)
-
+                if self.scaleMode == .fullScale {
+                    object.scale = SCNVector3(1.0, 1.0, 1.0)
+                } else if let userSpecifiedScale = self.scaling {
+                    object.scale = SCNVector3(userSpecifiedScale, userSpecifiedScale, userSpecifiedScale)
+                } else {
+                    let preferredScale = (Float(0.5) / maxLength)
+                    object.scale = SCNVector3(preferredScale, preferredScale, preferredScale)
+                }
+                
                 // Set scale lock
                 self.virtualObjectManager.allowScaling = !self.scaleLockEnabled
             }

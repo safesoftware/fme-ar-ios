@@ -47,6 +47,12 @@ let kLatitude = "latitude"
 // Example: {"version":"3","scaling":"1to1","anchor":{"x":"5.23","y":"-2.56","latitude":"45.678901","longitude":"123.456789"}}
 // Example: {"version":"3","scaling":"1to1","anchor":{"latitude":"45.678901","longitude":"123.456789"}}
 // Example: {"version":"3","scaling":"1to1","anchor":[{"x":"1.1","y":"-2.2","latitude":"3.3","longitude":"-4.4"},{"x":"5.5","y":"-6.6","latitude":"7.7","longitude":"-8.8"}]}
+// Example: {"version":"3","scaling":"1to100"}
+// Example: {"version":"3","scaling":"100to2.5"}
+// Example: {"version":"3","scaling":"1:100"}
+// Example: {"version":"3","scaling":"100:2.5"}
+// Example: {"version":"3","scaling":"40"}
+// Example: {"version":"3","scaling":"0.04"}
 
 enum SettingsSerializationError: Error {
     case missing(String)
@@ -118,6 +124,40 @@ class Settings {
             case kScalingFit: self.scaling = nil
             case kScaling1To1: self.scaling = 1
             default:
+                // Try parsing the value. The value should be in one of the
+                // three following formats:
+                // 1. <number>to<number>
+                // 2. <number>:<number>
+                // 3. <number>
+                
+                if scalingValue.contains("to") {
+                    let numbers = scalingValue.components(separatedBy: "to")
+                    if numbers.count == 2 {
+                        if let firstNum = Double(numbers.first!), let secondNum = Double(numbers.last!) {
+                            if firstNum > 0.0 && secondNum > 0.0 {
+                                self.scaling = firstNum / secondNum
+                                break;
+                            }
+                        }
+                    }
+                } else if scalingValue.contains(":") {
+                    let numbers = scalingValue.components(separatedBy: ":")
+                    if numbers.count == 2 {
+                        if let firstNum = Double(numbers.first!), let secondNum = Double(numbers.last!) {
+                            if firstNum > 0.0 && secondNum > 0.0 {
+                                self.scaling = firstNum / secondNum
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    if let number = Double(scalingValue) {
+                        self.scaling = number
+                        break;
+                    }
+                }
+                
+                print("SETTINGS ERROR: scaling = \(scalingValue) is not a valid value. It will be ignored")
                 throw SettingsSerializationError.invalid(kScaling, scalingValue)
             }
         }

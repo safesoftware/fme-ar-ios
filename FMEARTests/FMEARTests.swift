@@ -293,5 +293,107 @@ class FMEARUnitTestsForSettings: XCTestCase {
                 XCTFail("Settings init throws an exception with data '\(testString)'")
             }
         }
+        
+        do // Test: {"version":"3","scaling":"1to100"}
+        {
+            let testString = "{\"version\":\"3\",\"scaling\":\"1to100\"}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "3", "version should be 3")
+                XCTAssertEqual(settings.scaling, 0.01, "scaling should be 0.01")
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+
+        do // Test: {"version":"3","scaling":"1:100"}
+        {
+            let testString = "{\"version\":\"3\",\"scaling\":\"1:100\"}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "3", "version should be 3")
+                XCTAssertEqual(settings.scaling, 0.01, "scaling should be 0.01")
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+
+        do // Test: {"version":"3","scaling":"100to2.5"}
+        {
+            let testString = "{\"version\":\"3\",\"scaling\":\"100to2.5\"}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "3", "version should be 3")
+                XCTAssertEqual(settings.scaling, 40, "scaling should be 40")
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+
+        do // Test: {"version":"3","scaling":"100:2.5"}
+        {
+            let testString = "{\"version\":\"3\",\"scaling\":\"100:2.5\"}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "3", "version should be 3")
+                XCTAssertEqual(settings.scaling, 40, "scaling should be 40")
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+
+        do // Test: {"version":"3","scaling":"40"}
+        {
+            let testString = "{\"version\":\"3\",\"scaling\":\"40\"}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "3", "version should be 3")
+                XCTAssertEqual(settings.scaling, 40, "scaling should be 40")
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+
+        do // Test: {"version":"3","scaling":"0.04"}
+        {
+            let testString = "{\"version\":\"3\",\"scaling\":\"0.04\"}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "3", "version should be 3")
+                XCTAssertEqual(settings.scaling, 0.04, "scaling should be 0.04")
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
     }
 }
