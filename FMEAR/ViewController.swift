@@ -41,7 +41,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     var screenCenter: CGPoint?
 
     let session = ARSession()
-    let standardConfiguration: ARWorldTrackingConfiguration = {
+    var standardConfiguration: ARWorldTrackingConfiguration = {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
         configuration.worldAlignment = ARConfiguration.WorldAlignment.gravityAndHeading
@@ -136,6 +136,16 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         self.viewSize = self.sceneView.bounds.size
 		setupUIControls()
         setupScene()
+    }
+    
+    func setARWorldTrackingConfiguration(worldAlignment: ARConfiguration.WorldAlignment) {
+        standardConfiguration = {
+            let configuration = ARWorldTrackingConfiguration()
+            configuration.planeDetection = .horizontal
+            configuration.worldAlignment = worldAlignment
+            configuration.isLightEstimationEnabled = true
+            return configuration
+        }()
     }
     
     func virtualObject() -> SCNNode? {
