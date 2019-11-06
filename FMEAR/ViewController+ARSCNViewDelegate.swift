@@ -138,6 +138,8 @@ extension ViewController: ARSCNViewDelegate {
     func session(_ session: ARSession, didFailWithError error: Error) {
         guard let arError = error as? ARError else { return }
         
+        var title = "Error"
+        var isRecoverable = false
         let nsError = error as NSError
         var sessionErrorMsg = "\(nsError.localizedDescription) \(nsError.localizedFailureReason ?? "")"
         if let recoveryOptions = nsError.localizedRecoveryOptions {
@@ -145,15 +147,50 @@ extension ViewController: ARSCNViewDelegate {
                 sessionErrorMsg.append("\(option).")
             }
         }
-        
-        let isRecoverable = (arError.code == .worldTrackingFailed)
-        if isRecoverable {
+
+        switch arError.code {
+        case .cameraUnauthorized:
+            title = "Camera Unauthorized"
+        case .unsupportedConfiguration:
+            title = "Unsupported Configuration"
+        case .sensorUnavailable:
+            title = "Sensor Unavailable"
+        case .sensorFailed:
+            title = "Sensor Failed"
+            setARWorldTrackingConfiguration(worldAlignment: .gravity)
+            isRecoverable = true
+            sessionErrorMsg += "\nFailed to access the direction. You can reset the session without direction access."
+        case .microphoneUnauthorized:
+            title = "Microphone Unauthorized"
+        case .worldTrackingFailed:
+            title = "World Tracking Failed"
+            isRecoverable = true
             sessionErrorMsg += "\nYou can try resetting the session or quit the application."
-        } else {
+        case .invalidReferenceImage:
+            title = "Invalid Reference Image"
+        case .invalidReferenceObject:
+            title = "Invalid Reference Object"
+        case .invalidWorldMap:
+            title = "Invalid World Map"
+        case .invalidConfiguration:
+            title = "Invalid Configuration"
+        case .collaborationDataUnavailable:
+            title = "Collaboration Data Unavailable"
+        case .insufficientFeatures:
+            title = "Insufficient Features"
+        case .objectMergeFailed:
+            title = "Object Merge Failed"
+        case .fileIOFailed:
+            title = "File IO Failed"
+        @unknown default:
+            title = "Unknown Error"
+        }
+        
+        if !isRecoverable {
             sessionErrorMsg += "\nThis is an unrecoverable error that requires to quit the application."
         }
         
-        displayErrorMessage(title: "We're sorry!", message: sessionErrorMsg, allowRestart: isRecoverable)
+        displayErrorMessage(title: title, message: sessionErrorMsg, allowRestart: isRecoverable)
     }
     
     func sessionWasInterrupted(_ session: ARSession) {
