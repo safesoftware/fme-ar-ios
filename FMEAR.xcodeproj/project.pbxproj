@@ -737,6 +737,7 @@
 				INFOPLIST_FILE = FMEAR/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.3.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.safe.fmear;
 				PRODUCT_NAME = "FME AR";
 				SWIFT_OBJC_BRIDGING_HEADER = "FMEAR/3rd/FMEAR-Bridging-Header.h";
@@ -759,6 +760,7 @@
 				INFOPLIST_FILE = FMEAR/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.3.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.safe.fmear;
 				PRODUCT_NAME = "FME AR";
 				SWIFT_OBJC_BRIDGING_HEADER = "FMEAR/3rd/FMEAR-Bridging-Header.h";
