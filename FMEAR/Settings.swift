@@ -210,44 +210,79 @@ class Settings {
     
     func extractAnchor(json: [String: Any]) throws {
         var anchor: Anchor?
+        var x: Double?
+        var y: Double?
         
-        if let xString = json[kX] as? String, let yString = json[kY] as? String {
-            if let x = Double(xString), let y = Double(yString) {
-                if anchor == nil {
-                    anchor = Anchor()
-                }
+        if let xString = json[kX] as? String {
+            if let xDouble = Double(xString) {
+                x = xDouble
+            }
+        } else if let xDouble = json[kX] as? Double {
+            x = xDouble
+        }
+        
+        if let yString = json[kY] as? String {
+            if let yDouble = Double(yString) {
+                y = yDouble
+            }
+        } else if let yDouble = json[kY] as? Double {
+            y = yDouble
+        }
+        
+        if let x = x, let y = y {
+            anchor = Anchor()
+            anchor?.x = x
+            anchor?.y = y
+        }
                 
-                anchor?.x = x
-                anchor?.y = y
+        if anchor != nil {
+            if let zString = json[kZ] as? String {
+                if let z = Double(zString) {
+                    anchor?.z = z
+                }
             }
         }
         
-        if let zString = json[kZ] as? String {
-            if let z = Double(zString) {
-                if anchor == nil {
-                    anchor = Anchor()
-                }
-                
-                anchor?.z = z
-            }
-        }
-        
-        if let latitudeString = json[kLatitude] as? String, let longitudeString = json[kLongitude] as? String {
-            if let latitude = Double(latitudeString), let longitude = Double(longitudeString) {
-                guard case (-90...90, -180...180) = (latitude, longitude) else {
-                    throw SettingsSerializationError.invalid(kAnchor, (latitude, longitude))
-                }
-                
-                if anchor == nil {
-                    anchor = Anchor()
-                }
-                
-                anchor?.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-            }
+        do {
+            var coordinate = try extractCoordinate(json: json)
+            anchor?.coordinate = coordinate
+        } catch {
+            print("Settings: Coordinate is invalid")
         }
         
         if let anchor = anchor {
             self.anchors.append(anchor)
+        }
+    }
+    
+    func extractCoordinate(json: [String: Any]) throws -> CLLocationCoordinate2D? {
+        var latitude: Double?
+        var longitude: Double?
+        
+        if let latitudeString = json[kLatitude] as? String {
+            if let latitudeDouble = Double(latitudeString) {
+                latitude = latitudeDouble
+            }
+        } else if let latitudeDouble = json[kLatitude] as? Double {
+            latitude = latitudeDouble
+        }
+        
+        if let longitudeString = json[kLongitude] as? String {
+            if let longitudeDouble = Double(longitudeString) {
+                longitude = longitudeDouble
+            }
+        } else if let longitudeDouble = json[kLongitude] as? Double {
+            longitude = longitudeDouble
+        }
+        
+        if let latitude = latitude, let longitude = longitude {
+            guard case (-90...90, -180...180) = (latitude, longitude) else {
+                throw SettingsSerializationError.invalid(kAnchor, (latitude, longitude))
+            }
+            
+            return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        } else {
+            return nil
         }
     }
 }
