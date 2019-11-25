@@ -286,7 +286,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 		sceneView.setup()
 		sceneView.delegate = self
 		sceneView.session = session
-		sceneView.showsStatistics = true
+		sceneView.showsStatistics = false
         setupLighting()
         session.delegate = self
 		
