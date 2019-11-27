@@ -617,4 +617,36 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
             }
         }
     }
+    
+    @IBAction func userLocationTapped(_ sender: Any) {
+        if let geomarker = geolocationNode() {
+            if let userLocation = geomarker.userLocation {
+                if let url = URL(string: "http://maps.apple.com/ll=\(userLocation.coordinate.latitude),\(userLocation.coordinate.longitude)") {
+                    
+                    let alert = UIAlertController(title: "Open Device Location in Maps",
+                                                  message: "Do you want to open the current device location in the Maps app?",
+                                                  preferredStyle: .alert)
+                    
+                    // Create OK button with action handler
+                    let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
+                        print("Ok button tapped")
+                        UIApplication.shared.open(url)
+                    })
+                    
+                    // Create Cancel button with action handlder
+                    let cancel = UIAlertAction(title: "No", style: .cancel) { (action) -> Void in
+                        print("Cancel button tapped")
+                    }
+                    
+                    //Add OK and Cancel button to dialog message
+                    alert.addAction(ok)
+                    alert.addAction(cancel)
+                    
+                    // Present dialog message to user
+                    self.present(alert, animated: true, completion: nil)
+                }
+            }
+        }
+    }
+    
 }
