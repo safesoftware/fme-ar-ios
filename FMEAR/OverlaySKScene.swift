@@ -35,6 +35,7 @@ class OverlaySKScene: SKScene {
         } else {
             let newLabelNode = PointLabelNode()
             newLabelNode.name = labelName
+            newLabelNode.buttonText = "Move model here >>>"
             newLabelNode.isUserInteractionEnabled = true
             addChild(newLabelNode)
             return newLabelNode
@@ -93,7 +94,7 @@ class PointLabelNode: SKNode {
     var labelNode: SKLabelNode!
     var lineNode: SKShapeNode!
     var pointNode: SKShapeNode!
-    var buttonNode: ButtonNode!
+    var buttonNode: ButtonNode?
     
     var point = CGPoint(x: 0, y: 0) {
         didSet {
@@ -108,6 +109,23 @@ class PointLabelNode: SKNode {
             self.labelNode.text = text
             updateLabelNodePosition()
             updateLineNode()
+        }
+    }
+    
+    var buttonText: String = "" {
+        didSet {
+            if buttonText.isEmpty {
+                if let buttonNode = buttonNode {
+                    self.removeChildren(in: [buttonNode])
+                }
+            } else {
+                if self.buttonNode == nil {
+                    self.buttonNode = ButtonNode()
+                    self.addChild(self.buttonNode!)
+                }
+                
+                self.buttonNode!.text = buttonText
+            }
         }
     }
     
@@ -127,14 +145,10 @@ class PointLabelNode: SKNode {
         
         self.pointNode = SKShapeNode(circleOfRadius: 1)
         self.pointNode.fillColor = .white
-        
-        self.buttonNode = ButtonNode()
-        self.buttonNode.text = "Move model here >>>"
-        
+                
         self.addChild(self.labelNode)
         self.addChild(self.lineNode)
         self.addChild(self.pointNode)
-        self.addChild(self.buttonNode)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -164,8 +178,10 @@ class PointLabelNode: SKNode {
         
         self.labelNode.position = CGPoint(x: x, y: y)
         
-        let buttonSize = self.buttonNode.calculateAccumulatedFrame().size
-        self.buttonNode.position = CGPoint(x: x + self.labelNode.frame.width - buttonSize.width, y: y - buttonSize.height)
+        if let buttonNode = self.buttonNode {
+            let buttonSize = buttonNode.calculateAccumulatedFrame().size
+            buttonNode.position = CGPoint(x: x + self.labelNode.frame.width - buttonSize.width, y: y - buttonSize.height)
+        }
     }
     
     func updateLineNode() {
