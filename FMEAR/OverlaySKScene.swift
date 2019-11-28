@@ -35,7 +35,6 @@ class OverlaySKScene: SKScene {
         } else {
             let newLabelNode = PointLabelNode()
             newLabelNode.name = labelName
-            newLabelNode.buttonText = "Move model here >>>"
             newLabelNode.isUserInteractionEnabled = true
             addChild(newLabelNode)
             return newLabelNode

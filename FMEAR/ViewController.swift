@@ -14,6 +14,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     let geomarkerLabelName = "Geomarker Label"
     let geomarkerNodeName = "Geomarker Node"
+    let anchorLabelName = "Anchor Label"
     
     var document: UIDocument?
     var documentOpened = false
@@ -134,7 +135,6 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         locationService = LocationService()
         locationService?.delegate = self
 
-        self.viewSize = self.sceneView.bounds.size
 		setupUIControls()
         setupScene()
     }
@@ -152,7 +152,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     func virtualObject() -> SCNNode? {
         return self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true)
     }
-    
+
+    func virtualObjectContent() -> SCNNode? {
+        return self.sceneView.scene.rootNode.childNode(withName: "VirtualObjectContent", recursively: true)
+    }
+
     func anchorNode() -> SCNNode? {
         return self.sceneView.scene.rootNode.childNode(withName: "Anchor Node", recursively: true)
     }
@@ -214,6 +218,9 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 		
         locationService?.startLocationService()
         
+        // Get the current view size
+        self.viewSize = self.sceneView.bounds.size
+        
 		// Prevent the screen from being dimmed after a while.
 		UIApplication.shared.isIdleTimerDisabled = true
 		
@@ -246,7 +253,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 	}
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        print("viewWillTransition")
+        print("viewWillTransition = \(size)")
         self.viewSize = size
     }
 	

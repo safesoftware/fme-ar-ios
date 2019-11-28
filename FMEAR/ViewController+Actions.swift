@@ -93,19 +93,13 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     }
     
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawAnchor on: Bool) {
-        if let anchorNode = anchorNode() {
-            anchorNode.isHidden = !on
-        }
+        anchorNode()?.isHidden = !on
+        overlayView.childNode(withName: self.anchorLabelName)?.isHidden = !on
     }
     
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawGeomarker on: Bool) {
-        if let geolocationNode = geolocationNode() {
-            geolocationNode.isHidden = !on
-        }
-        
-        if let geolocationLabel = overlayView.childNode(withName: self.geomarkerLabelName) {
-            geolocationLabel.isHidden = !on
-        }
+        geolocationNode()?.isHidden = !on
+        overlayView.childNode(withName: self.geomarkerLabelName)?.isHidden = !on
     }
 
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float) {
