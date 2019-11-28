@@ -365,7 +365,7 @@
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Agr-m4-DTE" userLabel="Draw Detected Plane Switch">
                                                     <rect key="frame" x="320" y="6.5" width="51" height="31"/>
                                                     <connections>
-                                                        <action selector="didChangeSetting:" destination="Sxv-We-6Lq" eventType="valueChanged" id="FQ2-c6-mBx"/>
+                                                        <action selector="didChangeSetting:" destination="qS5-BA-VKT" eventType="valueChanged" id="qrT-ff-GmA"/>
                                                     </connections>
                                                 </switch>
                                             </subviews>
@@ -395,7 +395,7 @@
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T7T-9p-U0L" userLabel="Draw Detected Plane Switch">
                                                     <rect key="frame" x="320" y="6.5" width="51" height="31"/>
                                                     <connections>
-                                                        <action selector="didChangeSetting:" destination="Sxv-We-6Lq" eventType="valueChanged" id="CNW-t3-BYz"/>
+                                                        <action selector="didChangeSetting:" destination="qS5-BA-VKT" eventType="valueChanged" id="j6N-pl-Q0y"/>
                                                     </connections>
                                                 </switch>
                                             </subviews>
@@ -425,7 +425,7 @@
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2eX-lV-KT2" userLabel="Draw Detected Plane Switch">
                                                     <rect key="frame" x="320" y="6.5" width="51" height="31"/>
                                                     <connections>
-                                                        <action selector="didChangeSetting:" destination="Sxv-We-6Lq" eventType="valueChanged" id="agQ-tT-49L"/>
+                                                        <action selector="didChangeSetting:" destination="qS5-BA-VKT" eventType="valueChanged" id="2eg-y7-9Ct"/>
                                                     </connections>
                                                 </switch>
                                             </subviews>
