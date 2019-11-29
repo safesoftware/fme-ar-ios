@@ -628,7 +628,9 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     @IBAction func userLocationTapped(_ sender: Any) {
         if let geomarker = geolocationNode() {
             if let userLocation = geomarker.userLocation {
-                if let url = URL(string: "http://maps.apple.com/ll=\(userLocation.coordinate.latitude),\(userLocation.coordinate.longitude)") {
+                
+                let urlString = "http://maps.apple.com/?ll=\(userLocation.coordinate.latitude),\(userLocation.coordinate.longitude)"
+                if let url = URL(string: urlString) {
                     
                     let alert = UIAlertController(title: "Open Device Location in Maps",
                                                   message: "Do you want to open the current device location in the Maps app?",
