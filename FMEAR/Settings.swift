@@ -43,8 +43,11 @@ let kLatitude = "latitude"
 // Deprecated: "scaling":"fit"
 // Deprecated: "anchor":<feature type name>
 // Example: {"version":"3","anchor":{"x":"5.23","y":"-2.56"}}
+// Example: {"version":"3","anchor":{"x":"5.23","y":-2.56}}
+// Example: {"version":"3","anchor":{"x":5.23,"y":"-2.56"}}
 // Example: {"version":"3","scaling":"1to1","anchor":{"x":"5.23","y":"-2.56","z":"10"}}
 // Example: {"version":"3","scaling":"1to1","anchor":{"x":"5.23","y":"-2.56","latitude":"45.678901","longitude":"123.456789"}}
+// Example: {"version":"3","scaling":"1to1","anchor":{"x":5.23,"y":-2.56,"latitude":45.678901,"longitude":123.456789}}
 // Example: {"version":"3","scaling":"1to1","anchor":{"latitude":"45.678901","longitude":"123.456789"}}
 // Example: {"version":"3","scaling":"1to1","anchor":[{"x":"1.1","y":"-2.2","latitude":"3.3","longitude":"-4.4"},{"x":"5.5","y":"-6.6","latitude":"7.7","longitude":"-8.8"}]}
 // Example: {"version":"3","scaling":"1to100"}
@@ -53,6 +56,8 @@ let kLatitude = "latitude"
 // Example: {"version":"3","scaling":"100:2.5"}
 // Example: {"version":"3","scaling":"40"}
 // Example: {"version":"3","scaling":"0.04"}
+// Example: {"version":"3","scaling":40}
+// Example: {"version":"3","scaling":0.04}
 
 enum SettingsSerializationError: Error {
     case missing(String)
@@ -116,49 +121,49 @@ class Settings {
     
     func extractScaling(json: [String: Any]) throws {
         if let scaling = json[kScaling] {
-            guard let scalingValue = scaling as? String else {
-                throw SettingsSerializationError.invalid(kScaling, scaling)
-            }
-            
-            switch scalingValue {
-            case kScalingFit: self.scaling = nil
-            case kScaling1To1: self.scaling = 1
-            default:
-                // Try parsing the value. The value should be in one of the
-                // three following formats:
-                // 1. <number>to<number>
-                // 2. <number>:<number>
-                // 3. <number>
-                
-                if scalingValue.contains("to") {
-                    let numbers = scalingValue.components(separatedBy: "to")
-                    if numbers.count == 2 {
-                        if let firstNum = Double(numbers.first!), let secondNum = Double(numbers.last!) {
-                            if firstNum > 0.0 && secondNum > 0.0 {
-                                self.scaling = firstNum / secondNum
-                                break;
-                            }
-                        }
+            if let scalingValue = scaling as? Double {
+                self.scaling = scalingValue
+            } else if let scalingValue = scaling as? String {
+                switch scalingValue {
+                case kScalingFit: self.scaling = nil
+                case kScaling1To1: self.scaling = 1
+                default:
+                    // Try parsing the value. The value should be in one of the
+                    // three following formats:
+                    // 1. <number>to<number>
+                    // 2. <number>:<number>
+                    // 3. <number>
+
+                    if scalingValue.contains("to") {
+                      let numbers = scalingValue.components(separatedBy: "to")
+                      if numbers.count == 2 {
+                          if let firstNum = Double(numbers.first!), let secondNum = Double(numbers.last!) {
+                              if firstNum > 0.0 && secondNum > 0.0 {
+                                  self.scaling = firstNum / secondNum
+                                  break;
+                              }
+                          }
+                      }
+                    } else if scalingValue.contains(":") {
+                      let numbers = scalingValue.components(separatedBy: ":")
+                      if numbers.count == 2 {
+                          if let firstNum = Double(numbers.first!), let secondNum = Double(numbers.last!) {
+                              if firstNum > 0.0 && secondNum > 0.0 {
+                                  self.scaling = firstNum / secondNum
+                                  break;
+                              }
+                          }
+                      }
+                    } else {
+                      if let number = Double(scalingValue) {
+                          self.scaling = number
+                          break;
+                      }
                     }
-                } else if scalingValue.contains(":") {
-                    let numbers = scalingValue.components(separatedBy: ":")
-                    if numbers.count == 2 {
-                        if let firstNum = Double(numbers.first!), let secondNum = Double(numbers.last!) {
-                            if firstNum > 0.0 && secondNum > 0.0 {
-                                self.scaling = firstNum / secondNum
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    if let number = Double(scalingValue) {
-                        self.scaling = number
-                        break;
-                    }
+
+                    print("SETTINGS ERROR: scaling = \(scalingValue) is not a valid value. It will be ignored")
+                    throw SettingsSerializationError.invalid(kScaling, scalingValue)
                 }
-                
-                print("SETTINGS ERROR: scaling = \(scalingValue) is not a valid value. It will be ignored")
-                throw SettingsSerializationError.invalid(kScaling, scalingValue)
             }
         }
     }
@@ -210,44 +215,83 @@ class Settings {
     
     func extractAnchor(json: [String: Any]) throws {
         var anchor: Anchor?
+        var x: Double?
+        var y: Double?
         
-        if let xString = json[kX] as? String, let yString = json[kY] as? String {
-            if let x = Double(xString), let y = Double(yString) {
-                if anchor == nil {
-                    anchor = Anchor()
-                }
+        if let xString = json[kX] as? String {
+            if let xDouble = Double(xString) {
+                x = xDouble
+            }
+        } else if let xDouble = json[kX] as? Double {
+            x = xDouble
+        }
+        
+        if let yString = json[kY] as? String {
+            if let yDouble = Double(yString) {
+                y = yDouble
+            }
+        } else if let yDouble = json[kY] as? Double {
+            y = yDouble
+        }
+        
+        if let x = x, let y = y {
+            anchor = Anchor()
+            anchor?.x = x
+            anchor?.y = y
+        }
                 
-                anchor?.x = x
-                anchor?.y = y
+        if anchor != nil {
+            if let zString = json[kZ] as? String {
+                if let z = Double(zString) {
+                    anchor?.z = z
+                }
             }
         }
         
-        if let zString = json[kZ] as? String {
-            if let z = Double(zString) {
+        do {
+            if let coordinate = try extractCoordinate(json: json) {
                 if anchor == nil {
                     anchor = Anchor()
                 }
-                
-                anchor?.z = z
+                anchor?.coordinate = coordinate
             }
-        }
-        
-        if let latitudeString = json[kLatitude] as? String, let longitudeString = json[kLongitude] as? String {
-            if let latitude = Double(latitudeString), let longitude = Double(longitudeString) {
-                guard case (-90...90, -180...180) = (latitude, longitude) else {
-                    throw SettingsSerializationError.invalid(kAnchor, (latitude, longitude))
-                }
-                
-                if anchor == nil {
-                    anchor = Anchor()
-                }
-                
-                anchor?.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-            }
+        } catch {
+            print("Settings: Coordinate is invalid")
         }
         
         if let anchor = anchor {
             self.anchors.append(anchor)
+        }
+    }
+    
+    func extractCoordinate(json: [String: Any]) throws -> CLLocationCoordinate2D? {
+        var latitude: Double?
+        var longitude: Double?
+        
+        if let latitudeString = json[kLatitude] as? String {
+            if let latitudeDouble = Double(latitudeString) {
+                latitude = latitudeDouble
+            }
+        } else if let latitudeDouble = json[kLatitude] as? Double {
+            latitude = latitudeDouble
+        }
+        
+        if let longitudeString = json[kLongitude] as? String {
+            if let longitudeDouble = Double(longitudeString) {
+                longitude = longitudeDouble
+            }
+        } else if let longitudeDouble = json[kLongitude] as? Double {
+            longitude = longitudeDouble
+        }
+        
+        if let latitude = latitude, let longitude = longitude {
+            guard case (-90...90, -180...180) = (latitude, longitude) else {
+                throw SettingsSerializationError.invalid(kAnchor, (latitude, longitude))
+            }
+            
+            return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        } else {
+            return nil
         }
     }
 }

@@ -119,7 +119,6 @@ extension ViewController: FileManagerDelegate {
             let jsonData = try Data(contentsOf: file)
             let jsonDict = try JSONSerialization.jsonObject(with: jsonData, options: [])
             settings = try Settings(json: jsonDict)
-            
         } catch {
             print("No settings")
             settings = nil
@@ -237,9 +236,15 @@ extension ViewController: FileManagerDelegate {
             let groundZ = 0.0
             var anchor: SCNVector3 = SCNVector3(centerX, Float(groundZ), centerY)
             var geolocation: CLLocation?
+            var isDefaultAnchor = true
             
             if let anchors = settings?.anchors {
                 if let firstAnchor = anchors.first {
+                    
+                    if firstAnchor.x != nil && firstAnchor.y != nil {
+                        isDefaultAnchor = false
+                    }
+                    
                     anchor = SCNVector3(firstAnchor.x ?? Double(centerX),
                                         firstAnchor.z ?? groundZ,
                                         firstAnchor.y ?? Double(centerY))
@@ -248,6 +253,14 @@ extension ViewController: FileManagerDelegate {
                         geolocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
                     }
                 }
+            }
+
+            var anchorLabelNode = self.overlayView.labelNode(labelName: self.anchorLabelName)
+            anchorLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
+            if isDefaultAnchor {
+                anchorLabelNode.text = "Default anchor at (\(anchor.x),\(anchor.y),\(anchor.z))"
+            } else {
+                anchorLabelNode.text = "Custom anchor at (\(anchor.x),\(anchor.y),\(anchor.z))"
             }
             
             // TEST - The bottom-left corner of the Arc de Triomphe, using the
@@ -263,7 +276,8 @@ extension ViewController: FileManagerDelegate {
                         
             let modelDimension = self.dimension(modelNode)
             let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
-
+            
+            
             // Add the anchor geometry and node
             let anchorHeight: CGFloat = CGFloat(modelDimension.z * 2)
             let anchorRadius: CGFloat = anchorHeight * 0.01

@@ -179,7 +179,33 @@ class FMEARUnitTestsForSettings: XCTestCase {
                 XCTFail("Settings init throws an exception with data '\(testString)'")
             }
         }
-        
+
+        do // Test: {"version":"3","anchor":{"x":5.23,"y":-2.56}}
+        {
+            let testString = "{\"version\":\"3\",\"anchor\":{\"x\":5.23,\"y\":-2.56}}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "3", "version should be 3")
+                XCTAssertNil(settings.scaling, "scaling should be nil")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 1, "anchors should have 1 entry")
+                if let anchor = settings.anchors.first {
+                    XCTAssertEqual(anchor.x, 5.23)
+                    XCTAssertEqual(anchor.y, -2.56)
+                    XCTAssertNil(anchor.z, "z should be nil when it's not set")
+                    XCTAssertNil(anchor.coordinate, "coordinate should be nil when it's not set")
+                }
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+
         do // Test: {"version":"3","scaling":"1to1","anchor":{"x":"5.23","y":"-2.56","z":"10"}}
         {
             let testString = "{\"version\":\"3\",\"scaling\":\"1to1\",\"anchor\":{\"x\":\"5.23\",\"y\":\"-2.56\",\"z\":\"10\"}}"
@@ -232,7 +258,34 @@ class FMEARUnitTestsForSettings: XCTestCase {
                 XCTFail("Settings init throws an exception with data '\(testString)'")
             }
         }
-
+        
+        do // Test: {"version":"3","anchor":{"x":5.23,"y":-2.56,"latitude":45.678901,"longitude":123.456789}}
+        {
+            let testString = "{\"version\":\"3\",\"anchor\":{\"x\":5.23,\"y\":-2.56,\"latitude\":45.678901,\"longitude\":123.456789}}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "3", "version should be 3")
+                XCTAssertNil(settings.scaling, "scaling should be nil")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 1, "anchors should have 1 entry")
+                if let anchor = settings.anchors.first {
+                    XCTAssertEqual(anchor.x, 5.23)
+                    XCTAssertEqual(anchor.y, -2.56)
+                    XCTAssertNil(anchor.z, "z should be nil when it's not set")
+                    XCTAssertEqual(anchor.coordinate?.latitude, 45.678901)
+                    XCTAssertEqual(anchor.coordinate?.longitude, 123.456789)
+                }
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
         do // Test: {"version":"3","anchor":{"latitude":"45.678901","longitude":"123.456789"}}
         {
             let testString = "{\"version\":\"3\",\"anchor\":{\"latitude\":\"45.678901\",\"longitude\":\"123.456789\"}}"
@@ -379,9 +432,43 @@ class FMEARUnitTestsForSettings: XCTestCase {
             }
         }
 
+        do // Test: {"version":"3","scaling":40}
+        {
+            let testString = "{\"version\":\"3\",\"scaling\":40}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "3", "version should be 3")
+                XCTAssertEqual(settings.scaling, 40, "scaling should be 40")
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
         do // Test: {"version":"3","scaling":"0.04"}
         {
             let testString = "{\"version\":\"3\",\"scaling\":\"0.04\"}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "3", "version should be 3")
+                XCTAssertEqual(settings.scaling, 0.04, "scaling should be 0.04")
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
+        do // Test: {"version":"3","scaling":0.04}
+        {
+            let testString = "{\"version\":\"3\",\"scaling\":0.04}"
             do {
                 let data = testString.data(using: .utf8)
                 XCTAssertNotNil(data, "Invalid test data: \(testString)")

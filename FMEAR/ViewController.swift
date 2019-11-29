@@ -14,6 +14,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     let geomarkerLabelName = "Geomarker Label"
     let geomarkerNodeName = "Geomarker Node"
+    let anchorLabelName = "Anchor Label"
     
     var document: UIDocument?
     var documentOpened = false
@@ -134,7 +135,6 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         locationService = LocationService()
         locationService?.delegate = self
 
-        self.viewSize = self.sceneView.bounds.size
 		setupUIControls()
         setupScene()
     }
@@ -152,7 +152,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     func virtualObject() -> SCNNode? {
         return self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true)
     }
-    
+
+    func virtualObjectContent() -> SCNNode? {
+        return self.sceneView.scene.rootNode.childNode(withName: "VirtualObjectContent", recursively: true)
+    }
+
     func anchorNode() -> SCNNode? {
         return self.sceneView.scene.rootNode.childNode(withName: "Anchor Node", recursively: true)
     }
@@ -214,6 +218,9 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 		
         locationService?.startLocationService()
         
+        // Get the current view size
+        self.viewSize = self.sceneView.bounds.size
+        
 		// Prevent the screen from being dimmed after a while.
 		UIApplication.shared.isIdleTimerDisabled = true
 		
@@ -246,7 +253,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 	}
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        print("viewWillTransition")
+        print("viewWillTransition = \(size)")
         self.viewSize = size
     }
 	
@@ -286,7 +293,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 		sceneView.setup()
 		sceneView.delegate = self
 		sceneView.session = session
-		sceneView.showsStatistics = true
+		sceneView.showsStatistics = false
         setupLighting()
         session.delegate = self
 		
@@ -617,4 +624,38 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
             }
         }
     }
+    
+    @IBAction func userLocationTapped(_ sender: Any) {
+        if let geomarker = geolocationNode() {
+            if let userLocation = geomarker.userLocation {
+                
+                let urlString = "http://maps.apple.com/?ll=\(userLocation.coordinate.latitude),\(userLocation.coordinate.longitude)"
+                if let url = URL(string: urlString) {
+                    
+                    let alert = UIAlertController(title: "Open Device Location in Maps",
+                                                  message: "Do you want to open the current device location in the Maps app?",
+                                                  preferredStyle: .alert)
+                    
+                    // Create OK button with action handler
+                    let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
+                        print("Ok button tapped")
+                        UIApplication.shared.open(url)
+                    })
+                    
+                    // Create Cancel button with action handlder
+                    let cancel = UIAlertAction(title: "No", style: .cancel) { (action) -> Void in
+                        print("Cancel button tapped")
+                    }
+                    
+                    //Add OK and Cancel button to dialog message
+                    alert.addAction(ok)
+                    alert.addAction(cancel)
+                    
+                    // Present dialog message to user
+                    self.present(alert, animated: true, completion: nil)
+                }
+            }
+        }
+    }
+    
 }

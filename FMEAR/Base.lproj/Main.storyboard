@@ -365,7 +365,7 @@
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Agr-m4-DTE" userLabel="Draw Detected Plane Switch">
                                                     <rect key="frame" x="320" y="6.5" width="51" height="31"/>
                                                     <connections>
-                                                        <action selector="didChangeSetting:" destination="Sxv-We-6Lq" eventType="valueChanged" id="FQ2-c6-mBx"/>
+                                                        <action selector="didChangeSetting:" destination="qS5-BA-VKT" eventType="valueChanged" id="qrT-ff-GmA"/>
                                                     </connections>
                                                 </switch>
                                             </subviews>
@@ -395,7 +395,7 @@
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T7T-9p-U0L" userLabel="Draw Detected Plane Switch">
                                                     <rect key="frame" x="320" y="6.5" width="51" height="31"/>
                                                     <connections>
-                                                        <action selector="didChangeSetting:" destination="Sxv-We-6Lq" eventType="valueChanged" id="CNW-t3-BYz"/>
+                                                        <action selector="didChangeSetting:" destination="qS5-BA-VKT" eventType="valueChanged" id="j6N-pl-Q0y"/>
                                                     </connections>
                                                 </switch>
                                             </subviews>
@@ -425,7 +425,7 @@
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2eX-lV-KT2" userLabel="Draw Detected Plane Switch">
                                                     <rect key="frame" x="320" y="6.5" width="51" height="31"/>
                                                     <connections>
-                                                        <action selector="didChangeSetting:" destination="Sxv-We-6Lq" eventType="valueChanged" id="agQ-tT-49L"/>
+                                                        <action selector="didChangeSetting:" destination="qS5-BA-VKT" eventType="valueChanged" id="2eg-y7-9Ct"/>
                                                     </connections>
                                                 </switch>
                                             </subviews>
@@ -687,8 +687,9 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="🧭 ---°" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sx3-NA-bdE" userLabel="Compass">
+                            <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="🧭 ---°" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sx3-NA-bdE" userLabel="Compass">
                                 <rect key="frame" x="98" y="43" width="179" height="12"/>
+                                <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="12" id="iD3-kb-Q8x"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="179" id="qq5-NI-K1I"/>
@@ -696,6 +697,9 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="Pb9-Bn-Hgf" appends="YES" id="GWp-ON-DWR"/>
+                                </connections>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eXn-YA-YKa" userLabel="Add Object Button">
                                 <rect key="frame" x="307" y="599" width="48" height="48"/>
@@ -773,6 +777,11 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yxD-bP-iJz" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="Pb9-Bn-Hgf">
+                    <connections>
+                        <action selector="userLocationTapped:" destination="Py6-ck-70I" id="s6f-B5-i9G"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-6674.3999999999996" y="120.98950524737631"/>
         </scene>
