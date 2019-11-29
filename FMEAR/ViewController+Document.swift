@@ -256,6 +256,7 @@ extension ViewController: FileManagerDelegate {
             }
 
             var anchorLabelNode = self.overlayView.labelNode(labelName: self.anchorLabelName)
+            anchorLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
             if isDefaultAnchor {
                 anchorLabelNode.text = "Default anchor at (\(anchor.x),\(anchor.y),\(anchor.z))"
             } else {

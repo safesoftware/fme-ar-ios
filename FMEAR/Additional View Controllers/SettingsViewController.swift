@@ -99,6 +99,7 @@ class SettingsViewController: UITableViewController {
         lightEstimationSwitch.isOn = defaults.bool(for: .estimateLight)
         drawDetectedPlaneSwitch.isOn = defaults.bool(for: .drawDetectedPlane)
         drawAnchorSwitch.isOn = defaults.bool(for: .drawAnchor)
+        drawGeomarkerSwitch.isOn = defaults.bool(for: .drawGeomarker)
         updateScaleSettings()
     }
     

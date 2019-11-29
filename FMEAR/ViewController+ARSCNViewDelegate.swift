@@ -89,6 +89,7 @@ extension ViewController: ARSCNViewDelegate {
                     labelNode.text = "📍 \(latitude), \(longitude) (\(distance)m)"
                     labelNode.point = geomarkerScreenPosition
                     labelNode.buttonText = "Move model here >>>"
+                    labelNode.isHidden = !(UserDefaults.standard.bool(for: .drawGeomarker))
                 }
             }
         }
