@@ -483,4 +483,493 @@ class FMEARUnitTestsForSettings: XCTestCase {
             }
         }
     }
+    
+    func testVersion4() {
+        
+        // Test: Initial Model Scaling = <Empty>
+        // {"version":"4","viewpoints":[]}
+        do
+        {
+            let testString = "{\"version\":\"4\",\"viewpoints\":[]}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "4", "version should be 4")
+                XCTAssertNil(settings.scaling, "scaling should be nil")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 0, "anchors should have 0 entry")
+                XCTAssertNotNil(settings.viewpoints, "viewpoints should not be nil by default")
+                XCTAssertEqual(settings.viewpoints.count, 0, "viewpoints should have 0 entry")
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
+        // Test: Initial Model Scaling = Fit
+        // {"version":"4","scaling":"fit","viewpoints":[]}
+        do
+        {
+            let testString = "{\"version\":\"4\",\"scaling\":\"fit\",\"viewpoints\":[]}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "4", "version should be 4")
+                XCTAssertNil(settings.scaling, "scaling should be nil when \"scaling\":\"fit\" is set")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 0, "anchors should have 0 entry")
+                XCTAssertNotNil(settings.viewpoints, "viewpoints should not be nil by default")
+                XCTAssertEqual(settings.viewpoints.count, 0, "viewpoints should have 0 entry")
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
+        // Test: Initial Model Scaling = Full Scale
+        // {"version":"4","scaling":"1to1","viewpoints":[]}
+        do
+        {
+            let testString = "{\"version\":\"4\",\"scaling\":\"1to1\",\"viewpoints\":[]}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "4", "version should be 4")
+                XCTAssertEqual(settings.scaling, 1, "scaling should be 1 when \"scaling\":\"1to1\" is set")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 0, "anchors should have 0 entry")
+                XCTAssertNotNil(settings.viewpoints, "viewpoints should not be nil by default")
+                XCTAssertEqual(settings.viewpoints.count, 0, "viewpoints should have 0 entry")
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
+        // Test: Initial Model Scaling = Custom = 1
+        // {"version":"4","scaling":"1","viewpoints":[]}
+        do
+        {
+            let testString = "{\"version\":\"4\",\"scaling\":\"1\",\"viewpoints\":[]}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "4", "version should be 4")
+                XCTAssertEqual(settings.scaling, 1, "scaling should be 1 when \"scaling\":\"1\" is set")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 0, "anchors should have 0 entry")
+                XCTAssertNotNil(settings.viewpoints, "viewpoints should not be nil by default")
+                XCTAssertEqual(settings.viewpoints.count, 0, "viewpoints should have 0 entry")
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
+        // Test: Initial Model Scaling = Custom = 0.2
+        // {"version":"4","scaling":"0.2","viewpoints":[]}
+        do
+        {
+            let testString = "{\"version\":\"4\",\"scaling\":\"0.2\",\"viewpoints\":[]}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "4", "version should be 4")
+                XCTAssertEqual(settings.scaling, 0.2, "scaling should be 0.2 when \"scaling\":\"0.2\" is set")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 0, "anchors should have 0 entry")
+                XCTAssertNotNil(settings.viewpoints, "viewpoints should not be nil by default")
+                XCTAssertEqual(settings.viewpoints.count, 0, "viewpoints should have 0 entry")
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
+        // Test: Initial Model Scaling = Fit, One viewpoint
+        // {"version":"4","scaling":"fit","viewpoints":[{"x":-99.69291200000043,"y":851.8795360000004}]}
+        do
+        {
+            let testString = "{\"version\":\"4\",\"scaling\":\"fit\",\"viewpoints\":[{\"x\":-99.69291200000043,\"y\":851.8795360000004}]}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "4", "version should be 4")
+                XCTAssertNil(settings.scaling, "scaling should be nil when \"scaling\":\"fit\" is set")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 0, "anchors should have 0 entry")
+                XCTAssertNotNil(settings.viewpoints, "viewpoints should not be nil by default")
+                XCTAssertEqual(settings.viewpoints.count, 1, "viewpoints should have 1 entry")
+                if let viewpoint = settings.viewpoints.first {
+                    XCTAssertEqual(viewpoint.x, -99.69291200000043)
+                    XCTAssertEqual(viewpoint.y, 851.8795360000004)
+                    XCTAssertNil(viewpoint.z, "z should be nil when it's not set")
+                    XCTAssertNil(viewpoint.name, "name should be nil when it's not set")
+                }
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
+        // Test: Initial Model Scaling = Fit, One viewpoint with a name
+        // {"version":"4","scaling":"fit","viewpoints":[
+        //     {"x":-99.69291200000043,"y":851.8795360000004,"name":"x4000y4000"}
+        // ]}
+        do
+        {
+            let testString = "{\"version\":\"4\",\"scaling\":\"fit\",\"viewpoints\":[{\"x\":-99.69291200000043,\"y\":851.8795360000004,\"name\":\"x4000y4000\"}]}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "4", "version should be 4")
+                XCTAssertNil(settings.scaling, "scaling should be nil when \"scaling\":\"fit\" is set")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 0, "anchors should have 0 entry")
+                XCTAssertNotNil(settings.viewpoints, "viewpoints should not be nil by default")
+                XCTAssertEqual(settings.viewpoints.count, 1, "viewpoints should have 1 entry")
+                if let viewpoint = settings.viewpoints.first {
+                    XCTAssertEqual(viewpoint.x, -99.69291200000043)
+                    XCTAssertEqual(viewpoint.y, 851.8795360000004)
+                    XCTAssertNil(viewpoint.z, "z should be nil when it's not set")
+                    XCTAssertEqual(viewpoint.name, "x4000y4000")
+                }
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
+        // Test: Initial Model Scaling = Fit, Multiple viewpoints with names
+        // {"version":"4","scaling":"fit","viewpoints":[
+        //     {"x":15900.307088,"y":4851.879536,"name":"x20000y-8000"},
+        //     {"x":-9099.692912,"y":-23148.120464,"name":"x-5000y-20000"},
+        //     {"x":-99.69291200000043,"y":851.8795360000004,"name":"x4000y4000"}
+        // ]}
+        do
+        {
+            let testString =
+                "{\"version\":\"4\",\"scaling\":\"fit\",\"viewpoints\":[" +
+                     "{\"x\":15900.307088,\"y\":4851.879536,\"name\":\"x20000y-8000\"}," +
+                     "{\"x\":-9099.692912,\"y\":-23148.120464,\"name\":\"x-5000y-20000\"}," +
+                     "{\"x\":-99.69291200000043,\"y\":851.8795360000004,\"name\":\"x4000y4000\"}" +
+                "]}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "4", "version should be 4")
+                XCTAssertNil(settings.scaling, "scaling should be nil when \"scaling\":\"fit\" is set")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 0, "anchors should have 0 entry")
+                XCTAssertNotNil(settings.viewpoints, "viewpoints should not be nil by default")
+                XCTAssertEqual(settings.viewpoints.count, 3, "viewpoints should have 3 entries")
+
+                XCTAssertEqual(settings.viewpoints[0].x, 15900.307088)
+                XCTAssertEqual(settings.viewpoints[0].y, 4851.879536)
+                XCTAssertNil(settings.viewpoints[0].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[0].name, "x20000y-8000")
+
+                XCTAssertEqual(settings.viewpoints[1].x, -9099.692912)
+                XCTAssertEqual(settings.viewpoints[1].y, -23148.120464)
+                XCTAssertNil(settings.viewpoints[1].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[1].name, "x-5000y-20000")
+                
+                XCTAssertEqual(settings.viewpoints[2].x, -99.69291200000043)
+                XCTAssertEqual(settings.viewpoints[2].y, 851.8795360000004)
+                XCTAssertNil(settings.viewpoints[2].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[2].name, "x4000y4000")
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
+        // Test: Intial Model Scaling = Fit, Multiple viewpoints with names, geolocated anchor without coordinate
+        // {"version":"4","scaling":"fit","anchor":{"latitude":49.178121,"longitude":-122.842716},"viewpoints":[
+        //     {"x":15900.307088,"y":4851.879536,"name":"x20000y-8000"},
+        //     {"x":-9099.692912,"y":-23148.120464,"name":"x-5000y-20000"},
+        //     {"x":-99.69291200000043,"y":851.8795360000004,"name":"x4000y4000"}
+        // ]}
+        do
+        {
+            let testString =
+                "{\"version\":\"4\",\"scaling\":\"fit\",\"anchor\":{\"latitude\":49.178121,\"longitude\":-122.842716},\"viewpoints\":[" +
+                     "{\"x\":15900.307088,\"y\":4851.879536,\"name\":\"x20000y-8000\"}," +
+                     "{\"x\":-9099.692912,\"y\":-23148.120464,\"name\":\"x-5000y-20000\"}," +
+                     "{\"x\":-99.69291200000043,\"y\":851.8795360000004,\"name\":\"x4000y4000\"}" +
+                "]}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "4", "version should be 4")
+                XCTAssertNil(settings.scaling, "scaling should be nil when \"scaling\":\"fit\" is set")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 1, "anchors should have 0 entry")
+                XCTAssertNotNil(settings.viewpoints, "viewpoints should not be nil by default")
+                XCTAssertEqual(settings.viewpoints.count, 3, "viewpoints should have 3 entries")
+
+                XCTAssertEqual(settings.viewpoints[0].x, 15900.307088)
+                XCTAssertEqual(settings.viewpoints[0].y, 4851.879536)
+                XCTAssertNil(settings.viewpoints[0].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[0].name, "x20000y-8000")
+
+                XCTAssertEqual(settings.viewpoints[1].x, -9099.692912)
+                XCTAssertEqual(settings.viewpoints[1].y, -23148.120464)
+                XCTAssertNil(settings.viewpoints[1].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[1].name, "x-5000y-20000")
+                
+                XCTAssertEqual(settings.viewpoints[2].x, -99.69291200000043)
+                XCTAssertEqual(settings.viewpoints[2].y, 851.8795360000004)
+                XCTAssertNil(settings.viewpoints[2].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[2].name, "x4000y4000")
+                
+                if let anchor = settings.anchors.first {
+                    XCTAssertEqual(anchor.x, 0.0)
+                    XCTAssertEqual(anchor.y, 0.0)
+                    XCTAssertEqual(anchor.z, 0.0)
+                    XCTAssertEqual(anchor.coordinate?.latitude, 49.178121)
+                    XCTAssertEqual(anchor.coordinate?.longitude, -122.842716)
+                }
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
+        // Test: Initial Model Scaling = Fit, No viewpoints, geolocated anchor without coordinate
+        // {"version":"4","scaling":"fit","anchor":{"latitude":49.178121,"longitude":-122.842716},"viewpoints":[]}
+        do
+        {
+            let testString =
+                "{\"version\":\"4\",\"scaling\":\"fit\",\"anchor\":{\"latitude\":49.178121,\"longitude\":-122.842716},\"viewpoints\":[]}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "4", "version should be 4")
+                XCTAssertNil(settings.scaling, "scaling should be nil when \"scaling\":\"fit\" is set")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 1, "anchors should have 0 entry")
+                XCTAssertNotNil(settings.viewpoints, "viewpoints should not be nil by default")
+                XCTAssertEqual(settings.viewpoints.count, 0, "viewpoints should have 3 entries")
+                if let anchor = settings.anchors.first {
+                    XCTAssertEqual(anchor.x, 0.0)
+                    XCTAssertEqual(anchor.y, 0.0)
+                    XCTAssertEqual(anchor.z, 0.0)
+                    XCTAssertEqual(anchor.coordinate?.latitude, 49.178121)
+                    XCTAssertEqual(anchor.coordinate?.longitude, -122.842716)
+                }
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
+        // Test: Initial Model Scaling = Fit, Multiple viewpoints with names, anchor located at the last viewpoint
+        // {"version":"4","scaling":"fit","anchor":{"latitude":49.178121,"longitude":-122.842716,"x":-99.69291200000043,"y":851.8795360000004},"viewpoints":[
+        //     {"x":15900.307088,"y":4851.879536,"name":"x20000y-8000"},
+        //     {"x":-9099.692912,"y":-23148.120464,"name":"x-5000y-20000"},
+        //     {"x":-99.69291200000043,"y":851.8795360000004,"name":"x4000y4000"}
+        // ]}
+        do {
+            let testString =
+                "{\"version\":\"4\",\"scaling\":\"fit\"," +
+                     "\"anchor\":{\"latitude\":49.178121,\"longitude\":-122.842716,\"x\":-99.69291200000043,\"y\":851.8795360000004},\"viewpoints\":[" +
+                     "{\"x\":15900.307088,\"y\":4851.879536,\"name\":\"x20000y-8000\"}," +
+                     "{\"x\":-9099.692912,\"y\":-23148.120464,\"name\":\"x-5000y-20000\"}," +
+                     "{\"x\":-99.69291200000043,\"y\":851.8795360000004,\"name\":\"x4000y4000\"}" +
+                "]}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "4", "version should be 4")
+                XCTAssertNil(settings.scaling, "scaling should be nil when \"scaling\":\"fit\" is set")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 1, "anchors should have 0 entry")
+                XCTAssertNotNil(settings.viewpoints, "viewpoints should not be nil by default")
+                XCTAssertEqual(settings.viewpoints.count, 3, "viewpoints should have 3 entries")
+
+                XCTAssertEqual(settings.viewpoints[0].x, 15900.307088)
+                XCTAssertEqual(settings.viewpoints[0].y, 4851.879536)
+                XCTAssertNil(settings.viewpoints[0].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[0].name, "x20000y-8000")
+
+                XCTAssertEqual(settings.viewpoints[1].x, -9099.692912)
+                XCTAssertEqual(settings.viewpoints[1].y, -23148.120464)
+                XCTAssertNil(settings.viewpoints[1].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[1].name, "x-5000y-20000")
+                
+                XCTAssertEqual(settings.viewpoints[2].x, -99.69291200000043)
+                XCTAssertEqual(settings.viewpoints[2].y, 851.8795360000004)
+                XCTAssertNil(settings.viewpoints[2].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[2].name, "x4000y4000")
+                
+                if let anchor = settings.anchors.first {
+                    XCTAssertEqual(anchor.x, -99.69291200000043)
+                    XCTAssertEqual(anchor.y, 851.8795360000004)
+                    XCTAssertEqual(anchor.z, 0.0)
+                    XCTAssertEqual(anchor.coordinate?.latitude, 49.178121)
+                    XCTAssertEqual(anchor.coordinate?.longitude, -122.842716)
+                }
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
+        // Test: Initial Model Scaling = Fit, Multiple viewpoints with names, anchor not located at any of the viewpoints
+        // {"version":"4","scaling":"fit","anchor":{"latitude":49.178121,"longitude":-122.842716,"x":900.3070879999996,"y":1851.8795360000004},"viewpoints":[
+        //     {"x":15900.307088,"y":4851.879536,"name":"x20000y-8000"},
+        //     {"x":-9099.692912,"y":-23148.120464,"name":"x-5000y-20000"},
+        //     {"x":-99.69291200000043,"y":851.8795360000004,"name":"x4000y4000"}
+        // ]}
+        do {
+            let testString =
+                "{\"version\":\"4\",\"scaling\":\"fit\"," +
+                     "\"anchor\":{\"latitude\":49.178121,\"longitude\":-122.842716,\"x\":900.3070879999996,\"y\":1851.8795360000004},\"viewpoints\":[" +
+                     "{\"x\":15900.307088,\"y\":4851.879536,\"name\":\"x20000y-8000\"}," +
+                     "{\"x\":-9099.692912,\"y\":-23148.120464,\"name\":\"x-5000y-20000\"}," +
+                     "{\"x\":-99.69291200000043,\"y\":851.8795360000004,\"name\":\"x4000y4000\"}" +
+                "]}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "4", "version should be 4")
+                XCTAssertNil(settings.scaling, "scaling should be nil when \"scaling\":\"fit\" is set")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 1, "anchors should have 0 entry")
+                XCTAssertNotNil(settings.viewpoints, "viewpoints should not be nil by default")
+                XCTAssertEqual(settings.viewpoints.count, 3, "viewpoints should have 3 entries")
+
+                XCTAssertEqual(settings.viewpoints[0].x, 15900.307088)
+                XCTAssertEqual(settings.viewpoints[0].y, 4851.879536)
+                XCTAssertNil(settings.viewpoints[0].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[0].name, "x20000y-8000")
+
+                XCTAssertEqual(settings.viewpoints[1].x, -9099.692912)
+                XCTAssertEqual(settings.viewpoints[1].y, -23148.120464)
+                XCTAssertNil(settings.viewpoints[1].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[1].name, "x-5000y-20000")
+                
+                XCTAssertEqual(settings.viewpoints[2].x, -99.69291200000043)
+                XCTAssertEqual(settings.viewpoints[2].y, 851.8795360000004)
+                XCTAssertNil(settings.viewpoints[2].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[2].name, "x4000y4000")
+                
+                if let anchor = settings.anchors.first {
+                    XCTAssertEqual(anchor.x, 900.3070879999996)
+                    XCTAssertEqual(anchor.y, 1851.8795360000004)
+                    XCTAssertEqual(anchor.z, 0.0)
+                    XCTAssertEqual(anchor.coordinate?.latitude, 49.178121)
+                    XCTAssertEqual(anchor.coordinate?.longitude, -122.842716)
+                }
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+        
+        // Test: Initial Model Scaling = Fit, Multiple viewpoints with names, anchor with z
+        // {"version":"4","scaling":"fit","anchor":{"latitude":49.178121,"longitude":-122.842716,"x":-99.69291200000043,"y":851.8795360000004,"z":7264},"viewpoints":[
+        //     {"x":15900.307088,"y":4851.879536,"name":"x20000y-8000"},
+        //     {"x":-9099.692912,"y":-23148.120464,"name":"x-5000y-20000"},
+        //     {"x":-99.69291200000043,"y":851.8795360000004,"name":"x4000y4000"}
+        // ]}
+        do {
+            let testString =
+                "{\"version\":\"4\",\"scaling\":\"fit\"," +
+                     "\"anchor\":{\"latitude\":49.178121,\"longitude\":-122.842716,\"x\":-99.69291200000043,\"y\":851.8795360000004,\"z\":7264},\"viewpoints\":[" +
+                     "{\"x\":15900.307088,\"y\":4851.879536,\"name\":\"x20000y-8000\"}," +
+                     "{\"x\":-9099.692912,\"y\":-23148.120464,\"name\":\"x-5000y-20000\"}," +
+                     "{\"x\":-99.69291200000043,\"y\":851.8795360000004,\"name\":\"x4000y4000\"}" +
+                "]}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "4", "version should be 4")
+                XCTAssertNil(settings.scaling, "scaling should be nil when \"scaling\":\"fit\" is set")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 1, "anchors should have 0 entry")
+                XCTAssertNotNil(settings.viewpoints, "viewpoints should not be nil by default")
+                XCTAssertEqual(settings.viewpoints.count, 3, "viewpoints should have 3 entries")
+
+                XCTAssertEqual(settings.viewpoints[0].x, 15900.307088)
+                XCTAssertEqual(settings.viewpoints[0].y, 4851.879536)
+                XCTAssertNil(settings.viewpoints[0].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[0].name, "x20000y-8000")
+
+                XCTAssertEqual(settings.viewpoints[1].x, -9099.692912)
+                XCTAssertEqual(settings.viewpoints[1].y, -23148.120464)
+                XCTAssertNil(settings.viewpoints[1].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[1].name, "x-5000y-20000")
+                
+                XCTAssertEqual(settings.viewpoints[2].x, -99.69291200000043)
+                XCTAssertEqual(settings.viewpoints[2].y, 851.8795360000004)
+                XCTAssertNil(settings.viewpoints[2].z, "z should be nil when it's not set")
+                XCTAssertEqual(settings.viewpoints[2].name, "x4000y4000")
+                
+                if let anchor = settings.anchors.first {
+                    XCTAssertEqual(anchor.x, -99.69291200000043)
+                    XCTAssertEqual(anchor.y, 851.8795360000004)
+                    XCTAssertEqual(anchor.z, 7264)
+                    XCTAssertEqual(anchor.coordinate?.latitude, 49.178121)
+                    XCTAssertEqual(anchor.coordinate?.longitude, -122.842716)
+                }
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
+    }
 }
