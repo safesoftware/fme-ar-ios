@@ -78,13 +78,13 @@ let kName = "name"
 //         {"x":-9099.692912,"y":-23148.120464,"name":"x-5000y-20000"},
 //         {"x":-99.69291200000043,"y":851.8795360000004,"name":"x4000y4000"}
 //     ]}
-// Example: Intial Model Scaling = Fit, Multiple viewpoints with names, null anchor:
+// Example: Intial Model Scaling = Fit, Multiple viewpoints with names, geolocated anchor without coordinate:
 //     {"version":"4","scaling":"fit","anchor":{"latitude":49.178121,"longitude":-122.842716},"viewpoints":[
 //         {"x":15900.307088,"y":4851.879536,"name":"x20000y-8000"},
 //         {"x":-9099.692912,"y":-23148.120464,"name":"x-5000y-20000"},
 //         {"x":-99.69291200000043,"y":851.8795360000004,"name":"x4000y4000"}
 //     ]}
-// Example: Initial Model Scaling = Fit, No viewpoints, null anchor:
+// Example: Initial Model Scaling = Fit, No viewpoints, geolocated anchor without coordinate:
 //     {"version":"4","scaling":"fit","anchor":{"latitude":49.178121,"longitude":-122.842716},"viewpoints":[]}
 // Example: Initial Model Scaling = Fit, Multiple viewpoints with names, anchor located at the last viewpoint
 //     {"version":"4","scaling":"fit","anchor":{"latitude":49.178121,"longitude":-122.842716,"x":-99.69291200000043,"y":851.8795360000004},"viewpoints":[
@@ -124,6 +124,7 @@ struct Viewpoint {
     var x: Double?
     var y: Double?
     var z: Double?
+    var name: String?
 }
 
 class Settings {
@@ -139,7 +140,8 @@ class Settings {
     // Version 3 - We only use the first anchor, which may or may not have
     // a geolocation
     // Version 4 - We only use the first anchor, which must have a geolocation
-    // but may not have a x,y,z coordinate in model coordinate.
+    // but may not have a x,y,z coordinate in model coordinate. When the
+    // coordinate is not set, the values will be set as 0.
     var anchors: [Anchor] = []
     
     // Version 4
@@ -188,7 +190,7 @@ class Settings {
     func extractVersion4Settings(json: [String: Any]) throws {
         try extractScaling(json: json)
         try extractViewpoints(json: json)
-        try extractAnchors(json: json)
+        try extractGeolocatedAnchor(json: json)
     }
     
     func extractScaling(json: [String: Any]) throws {
@@ -288,6 +290,7 @@ class Settings {
         var viewpoint: Viewpoint?
         var x: Double?
         var y: Double?
+        var name: String?
         
         if let xString = json[kX] as? String {
             if let xDouble = Double(xString) {
@@ -305,10 +308,13 @@ class Settings {
             y = yDouble
         }
         
+        name = json[kName] as? String
+
         if let x = x, let y = y {
             viewpoint = Viewpoint()
             viewpoint?.x = x
             viewpoint?.y = y
+            viewpoint?.name = name
         }
                 
         if viewpoint != nil {
@@ -337,6 +343,48 @@ class Settings {
                 try extractAnchor(json: anchorDict)
             } else {
                 throw SettingsSerializationError.invalid(kAnchor, anchor)
+            }
+        }
+    }
+    
+    func extractGeolocatedAnchor(json: [String: Any]) throws {
+        if let anchorDict = json[kAnchor] as? [String: Any] {
+            do {
+                if let coordinate = try extractCoordinate(json: anchorDict) {
+                    var anchor = Anchor()
+                    anchor.coordinate = coordinate
+                    anchor.x = 0.0
+                    anchor.y = 0.0
+                    anchor.z = 0.0
+                    
+                    if let xString = anchorDict[kX] as? String {
+                        if let xDouble = Double(xString) {
+                            anchor.x = xDouble
+                        }
+                    } else if let xDouble = anchorDict[kX] as? Double {
+                        anchor.x = xDouble
+                    }
+                    
+                    if let yString = anchorDict[kY] as? String {
+                        if let yDouble = Double(yString) {
+                            anchor.y = yDouble
+                        }
+                    } else if let yDouble = anchorDict[kY] as? Double {
+                        anchor.y = yDouble
+                    }
+
+                    if let zString = anchorDict[kZ] as? String {
+                        if let zDouble = Double(zString) {
+                            anchor.z = zDouble
+                        }
+                    } else if let zDouble = anchorDict[kZ] as? Double {
+                        anchor.z = zDouble
+                    }
+                    
+                    self.anchors.append(anchor)
+                }
+            } catch {
+                print("Settings: Coordinate is invalid")
             }
         }
     }
