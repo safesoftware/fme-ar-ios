@@ -70,6 +70,10 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, AssetVie
         self.scaleLabel.text = dimensionAndScaleText(scale: object.scale.x, node: object)
     }
     
+    func virtualObjectManager(_ manager: VirtualObjectManager, didTranslate object: VirtualObject) {
+        self.isModelAtGeolocation = false
+    }
+    
     // MARK: - VirtualObjectSelectionViewControllerDelegate
     
     func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didSelectObjectAt index: Int) {

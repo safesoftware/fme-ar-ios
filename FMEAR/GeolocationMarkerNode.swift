@@ -78,7 +78,7 @@ class GeolocationMarkerNode: SCNNode {
         }
     }
     
-    func updatePosition() {
+    func calculatePosition() -> SCNVector3? {
         if let userLocation = self.userLocation, let geolocation = self.geolocation {
             
             // Latitude: geomarker - user location
@@ -88,14 +88,18 @@ class GeolocationMarkerNode: SCNNode {
             let deltaLongitude = CLLocation(latitude: userLocation.coordinate.latitude, longitude: geolocation.coordinate.longitude).distance(from: userLocation)
 
             // North: -Z, South: +Z, East: +X, West: -X, Up: +Y, Down: -Y
-            let newLocation = SCNVector3(Float(deltaLongitude), self.position.y, -Float(deltaLatitude))
-            // TODO: The new location is calculated from the current device geolocation to the
-            // geomarker. If the device has moved away from the world origin (i.e. the starting
-            // device location), the calculation of the above newLocation will be inaccurate. We
-            // should offset the newLocation by the origin.
-            // let newLocation = SCNVector3(Float(deltaLongitude) - cameraPos.x, self.position.y, -Float(deltaLatitude) - cameraPos.z)
-
-            move(to: newLocation)
+            return SCNVector3(Float(deltaLongitude), self.position.y, -Float(deltaLatitude))
+        } else {
+            return nil
+        }
+    }
+    
+    func updatePosition() {
+        if let userLocation = self.userLocation, let geolocation = self.geolocation {
+            let newLocation = calculatePosition()
+            if let newLocation = newLocation {
+                move(to: newLocation)
+            }
             
             let shouldDrawGeomarker = !(UserDefaults.standard.bool(for: .drawGeomarker))
             isHidden = shouldDrawGeomarker

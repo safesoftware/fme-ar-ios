@@ -67,6 +67,8 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         }
     }
     
+    var isModelAtGeolocation: Bool = false
+    
     // SCNSceneRenderer time
     var lastUpdateTime: TimeInterval?
     
@@ -111,13 +113,14 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         
         if let geomarker = geolocationNode() {
             //print("UPDATING GEOMARKER...")
+            
             geomarker.userLocation = location
             
-            // TODO: Apply the current camera world position to the geomarker
-            //// Also set the camera world position to match the user location
-            //if let cameraTransform = session.currentFrame?.camera.transform  {
-            //    geomarker.cameraWorldPosition = cameraTransform.translation
-            //}
+            if isModelAtGeolocation, let newLocation = geomarker.calculatePosition(), let model = virtualObject() {
+                let action = SCNAction.move(to: newLocation, duration: 0.0)
+                action.timingMode = .easeInEaseOut
+                model.runAction(action)
+            }
         }
     }
     
@@ -196,7 +199,9 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
             print("FAILED TO MOVE MODEL TO GEOLOCATION")
             return
         }
-              
+        
+        self.isModelAtGeolocation = true
+        
         let action = SCNAction.move(to: geomarker.position, duration: 1.0)
         action.timingMode = .easeInEaseOut
         model.runAction(action)
