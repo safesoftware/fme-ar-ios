@@ -971,5 +971,61 @@ class FMEARUnitTestsForSettings: XCTestCase {
                 XCTFail("Settings init throws an exception with data '\(testString)'")
             }
         }
+        
+        // Test: Initial Model Scaling = Fit, Multiple 3D viewpoints with names, anchor with z
+        // {"version":"4","scaling":"fit","anchor":{"latitude":49.178121,"longitude":-122.842716,"x":-99.69291200000043,"y":851.8795360000004,"z":7264},"viewpoints":[
+        //     {"x":15900.307088,"y":4851.879536, "z":1, "name":"x20000y-8000"},
+        //     {"x":-9099.692912,"y":-23148.120464, "z":2, "name":"x-5000y-20000"},
+        //     {"x":-99.69291200000043,"y":851.8795360000004, "z":3, "name":"x4000y4000"}
+        // ]}
+        do {
+            let testString =
+                "{\"version\":\"4\",\"scaling\":\"fit\"," +
+                     "\"anchor\":{\"latitude\":49.178121,\"longitude\":-122.842716,\"x\":-99.69291200000043,\"y\":851.8795360000004,\"z\":7264},\"viewpoints\":[" +
+                     "{\"x\":15900.307088,\"y\":4851.879536,\"z\":1,\"name\":\"x20000y-8000\"}," +
+                     "{\"x\":-9099.692912,\"y\":-23148.120464,\"z\":2,\"name\":\"x-5000y-20000\"}," +
+                     "{\"x\":-99.69291200000043,\"y\":851.8795360000004,\"z\":3,\"name\":\"x4000y4000\"}" +
+                "]}"
+            do {
+                let data = testString.data(using: .utf8)
+                XCTAssertNotNil(data, "Invalid test data: \(testString)")
+                
+                let jsonDict = try JSONSerialization.jsonObject(with: data!, options: [])
+                let settings = try Settings(json: jsonDict)
+                
+                XCTAssertEqual(settings.version, "4", "version should be 4")
+                XCTAssertNil(settings.scaling, "scaling should be nil when \"scaling\":\"fit\" is set")
+                XCTAssertNil(settings.anchorFeatureType, "anchorFeatureType should be nil")
+                XCTAssertNotNil(settings.anchors, "anchors should not be nil by default")
+                XCTAssertEqual(settings.anchors.count, 1, "anchors should have 0 entry")
+                XCTAssertNotNil(settings.viewpoints, "viewpoints should not be nil by default")
+                XCTAssertEqual(settings.viewpoints.count, 3, "viewpoints should have 3 entries")
+
+                XCTAssertEqual(settings.viewpoints[0].x, 15900.307088)
+                XCTAssertEqual(settings.viewpoints[0].y, 4851.879536)
+                XCTAssertEqual(settings.viewpoints[0].z, 1)
+                XCTAssertEqual(settings.viewpoints[0].name, "x20000y-8000")
+
+                XCTAssertEqual(settings.viewpoints[1].x, -9099.692912)
+                XCTAssertEqual(settings.viewpoints[1].y, -23148.120464)
+                XCTAssertEqual(settings.viewpoints[1].z, 2)
+                XCTAssertEqual(settings.viewpoints[1].name, "x-5000y-20000")
+                
+                XCTAssertEqual(settings.viewpoints[2].x, -99.69291200000043)
+                XCTAssertEqual(settings.viewpoints[2].y, 851.8795360000004)
+                XCTAssertEqual(settings.viewpoints[2].z, 3)
+                XCTAssertEqual(settings.viewpoints[2].name, "x4000y4000")
+                
+                if let anchor = settings.anchors.first {
+                    XCTAssertEqual(anchor.x, -99.69291200000043)
+                    XCTAssertEqual(anchor.y, 851.8795360000004)
+                    XCTAssertEqual(anchor.z, 7264)
+                    XCTAssertEqual(anchor.coordinate?.latitude, 49.178121)
+                    XCTAssertEqual(anchor.coordinate?.longitude, -122.842716)
+                }
+            } catch {
+                XCTFail("Settings init throws an exception with data '\(testString)'")
+            }
+        }
     }
 }
