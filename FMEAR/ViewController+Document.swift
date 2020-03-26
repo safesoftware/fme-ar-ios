@@ -320,23 +320,23 @@ extension ViewController: FileManagerDelegate {
             let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
             
             
-//            // Add the anchor/viewpoint geometry and node
-//            let anchorHeight: CGFloat = CGFloat(modelDimension.z * 2)
-//            let anchorRadius: CGFloat = anchorHeight * 0.01
-//            let anchorMaterial = SCNMaterial()
-//            anchorMaterial.diffuse.contents = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 0.8)
-//            let anchorGeometry = SCNCone(topRadius: anchorRadius, bottomRadius: 0, height: anchorHeight)
-//            anchorGeometry.firstMaterial = anchorMaterial
-//            let anchorNode = SCNNode(geometry: anchorGeometry)
-//            anchorNode.name = "Anchor Node"
-//            // Need to shift the SCNCone up since it's origin is the middle of the
-//            // cone.
-//            anchorNode.simdPosition =  float3(0, Float(anchorHeight * 0.5), 0)
-//            // Initial visibility of the anchor node
-//            anchorNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
+            // Add the anchor/viewpoint geometry and node
+            let anchorHeight: CGFloat = CGFloat(modelDimension.z * 2)
+            let anchorRadius: CGFloat = anchorHeight * 0.01
+            let anchorMaterial = SCNMaterial()
+            anchorMaterial.diffuse.contents = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 0.8)
+            let anchorGeometry = SCNCone(topRadius: anchorRadius, bottomRadius: 0, height: anchorHeight)
+            anchorGeometry.firstMaterial = anchorMaterial
+            let anchorNode = SCNNode(geometry: anchorGeometry)
+            anchorNode.name = "Anchor Node"
+            // Need to shift the SCNCone up since it's origin is the middle of the
+            // cone.
+            anchorNode.simdPosition =  float3(0, Float(anchorHeight * 0.5), 0)
+            // Initial visibility of the anchor node
+            anchorNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
 
             let definition = VirtualObjectDefinition(modelName: "model", displayName: "model", particleScaleInfo: [:])
-            let object = VirtualObject(definition: definition, childNodes: [modelNode]) // [modelNode, anchorNode])
+            let object = VirtualObject(definition: definition, childNodes: [modelNode, anchorNode])
             object.name = "VirtualObject"
             
             // Set a cteagory bit mask to include the virtual object in the hit test.
