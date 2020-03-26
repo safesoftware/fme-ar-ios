@@ -322,6 +322,8 @@ class Settings {
                 if let z = Double(zString) {
                     viewpoint?.z = z
                 }
+            } else if let zDouble = json[kZ] as? Double {
+                viewpoint?.z = zDouble
             }
         }
         
