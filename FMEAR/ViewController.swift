@@ -14,7 +14,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     let geomarkerLabelName = "Geomarker Label"
     let geomarkerNodeName = "Geomarker Node"
-    let anchorLabelName = "Anchor Label"
+    let viewpointLabelName = "Viewpoint Label"
     
     var document: UIDocument?
     var documentOpened = false

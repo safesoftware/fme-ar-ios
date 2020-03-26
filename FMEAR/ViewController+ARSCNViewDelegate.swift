@@ -85,7 +85,7 @@ extension ViewController: ARSCNViewDelegate {
                         x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
                         y: viewSize.height - CGFloat(screenCoord.y))
 
-                    var labelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
+                    let labelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
                     labelNode.text = "📍 \(latitude), \(longitude) (\(distance)m)"
                     labelNode.point = geomarkerScreenPosition
                     labelNode.buttonText = "Move model here >>>"
@@ -94,7 +94,7 @@ extension ViewController: ARSCNViewDelegate {
             }
         }
 
-        if let anchor = self.anchorNode(), let virtualObject = virtualObject() {
+        if let virtualObject = virtualObject() {
 
             let modelPosition = SCNVector3(virtualObject.position.x,
                                            virtualObject.position.y,
@@ -106,12 +106,13 @@ extension ViewController: ARSCNViewDelegate {
                 // the opposite direction or invalid, and the screenCoord.x is wrong.
                 // We can simply use a very large screen value, such as 10000,
                 // to make the geolocation offscreen.
-                let anchorScreenPosition = CGPoint(
+                let screenPosition = CGPoint(
                     x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
                     y: viewSize.height - CGFloat(screenCoord.y))
-
-                var labelNode = self.overlayView.labelNode(labelName: self.anchorLabelName)
-                labelNode.point = anchorScreenPosition
+                
+                if let viewpointLabelNode = self.overlayView.labelNodeOrNil(labelName: self.viewpointLabelName) {
+                    viewpointLabelNode.point = screenPosition
+                }
             }
         }
     }
@@ -126,7 +127,7 @@ extension ViewController: ARSCNViewDelegate {
         }
     }
     
-    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
+    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {        
 //        let isPlane = (anchor as? ARPlaneAnchor != nil) ? "PLANE" : "POINT"
 //        print("ARAnchor (\(isPlane)) UPDATE \(anchor.identifier): \(anchor.transform)")
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }

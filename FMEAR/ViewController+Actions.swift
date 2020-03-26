@@ -93,8 +93,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     }
     
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawAnchor on: Bool) {
-        anchorNode()?.isHidden = !on
-        overlayView.childNode(withName: self.anchorLabelName)?.isHidden = !on
+        overlayView.childNode(withName: self.viewpointLabelName)?.isHidden = !on
     }
     
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawGeomarker on: Bool) {
