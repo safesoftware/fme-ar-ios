@@ -40,6 +40,10 @@ class OverlaySKScene: SKScene {
             return newLabelNode
         }
     }
+    
+    func labelNodeOrNil(labelName: String) -> PointLabelNode? {
+        return childNode(withName: labelName) as? PointLabelNode;
+    }
 }
 
 class ButtonNode: SKNode {
