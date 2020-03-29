@@ -94,26 +94,37 @@ extension ViewController: ARSCNViewDelegate {
             }
         }
 
+        // Update viewpoint labels
         if let virtualObject = virtualObject() {
+            for viewpoint in virtualObject.viewpoints {
+                if let vPos = virtualObject.viewpointWorldPosition(viewpointId: viewpoint.id) {
+                    let screenCoord = self.sceneView.projectPoint(vPos)
 
-            let modelPosition = SCNVector3(virtualObject.position.x,
-                                           virtualObject.position.y,
-                                           virtualObject.position.z)
-            let screenCoord = self.sceneView.projectPoint(modelPosition)
-
-            if viewSize.width > 0 && viewSize.height > 0 {
-                // When the z is larger than 1, the geomarker is actually at
-                // the opposite direction or invalid, and the screenCoord.x is wrong.
-                // We can simply use a very large screen value, such as 10000,
-                // to make the geolocation offscreen.
-                let screenPosition = CGPoint(
-                    x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
-                    y: viewSize.height - CGFloat(screenCoord.y))
-                
-                if let viewpointLabelNode = self.overlayView.labelNodeOrNil(labelName: self.viewpointLabelName) {
-                    viewpointLabelNode.point = screenPosition
+                    if viewSize.width > 0 && viewSize.height > 0 {
+                        // When the z is larger than 1, the geomarker is actually at
+                        // the opposite direction or invalid, and the screenCoord.x is wrong.
+                        // We can simply use a very large screen value, such as 10000,
+                        // to make the geolocation offscreen.
+                        let screenPosition = CGPoint(
+                            x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
+                            y: viewSize.height - CGFloat(screenCoord.y))
+                        
+                        if let labelNode = self.overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString) {
+                            labelNode.point = screenPosition
+                            labelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
+                            
+                            if viewpoint.id == virtualObject.currentViewpoint {
+                                labelNode.lineNode.strokeColor = .green
+                                labelNode.pointNode.strokeColor = .green
+                            } else {
+                                labelNode.lineNode.strokeColor = .white
+                                labelNode.pointNode.strokeColor = .white
+                            }
+                        }
+                    }
                 }
             }
+            
         }
     }
     

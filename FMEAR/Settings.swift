@@ -120,11 +120,18 @@ struct Anchor {
     var coordinate: CLLocationCoordinate2D?
 }
 
+// Viewpoint is in FME coordinate system, i.e. z is the elevation
 struct Viewpoint {
     var x: Double?
     var y: Double?
     var z: Double?
     var name: String?
+    let id: UUID
+    
+    init() {
+        id = UUID()
+    }
+
 }
 
 class Settings {

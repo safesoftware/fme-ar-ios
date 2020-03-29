@@ -14,6 +14,7 @@ class GeolocationMarkerNode: SCNNode {
     
     var textGeometry: SCNText?
     var markerGeometry: SCNCone
+    var anchor: Anchor?
     
     override init() {
 

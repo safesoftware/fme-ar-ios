@@ -152,8 +152,8 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         }()
     }
     
-    func virtualObject() -> SCNNode? {
-        return self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true)
+    func virtualObject() -> VirtualObject? {
+        return self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) as? VirtualObject
     }
 
     func virtualObjectContent() -> SCNNode? {
@@ -202,7 +202,30 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         
         self.isModelAtGeolocation = true
         
-        let action = SCNAction.move(to: geomarker.position, duration: 1.0)
+        // If the model content is not at the zero position, we should offset
+        // it back to zero (center), and then we move to the anchor position.
+        let newPosition = geomarker.calculatePosition() ?? SCNVector3Zero
+        if let modelContent = virtualObjectContent() {
+            let (minCoord, maxCoord) = modelContent.boundingBox
+            let centerX = (minCoord.x + maxCoord.x) * 0.5
+            let centerY = (minCoord.y + maxCoord.y) * 0.5
+            let groundZ: Float = 0.0
+            var anchorVector = SCNVector3Make(centerX, centerY, groundZ)
+            if let anchor = geomarker.anchor {
+                if let x = anchor.x {
+                    anchorVector.x = Float(x)
+                }
+                if let y = anchor.y {
+                    anchorVector.y = Float(y)
+                }
+                if let z = anchor.z {
+                    anchorVector.z = Float(z)
+                }
+            }
+            model.anchorAt(position: anchorVector)
+        }
+        
+        let action = SCNAction.move(to: newPosition, duration: 1.0)
         action.timingMode = .easeInEaseOut
         model.runAction(action)
     }
