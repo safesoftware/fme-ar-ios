@@ -167,26 +167,29 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             } else if let uuid = UUID(uuidString: nodeName), let model = virtualObject() {
                 if let viewpoint = model.viewpoint(id: uuid) {
                     
-                    let viewpointName = viewpoint.name ?? "this viewpoint"
-                    
-                    let dialogMessage = UIAlertController(title: "Set Current Viewpoint", message: "Do you want to use \'\(viewpointName)\' as the current viewpoint?", preferredStyle: .alert)
-                    
-                    // Create OK button with action handler
-                    let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
-                        print("Ok button tapped")
-                        model.anchorAtViewpoint(viewpointId: viewpoint.id)
-                    })
-                    
-                    // Create Cancel button with action handlder
-                    let cancel = UIAlertAction(title: "No", style: .cancel) { (action) -> Void in
-                        print("Cancel button tapped")
-                    }
-                    
-                    dialogMessage.addAction(ok)
-                    dialogMessage.addAction(cancel)
+                    if viewpoint.id != model.currentViewpoint {
+                        
+                        let viewpointName = viewpoint.name ?? "this viewpoint"
+                        
+                        let dialogMessage = UIAlertController(title: "Set Current Viewpoint", message: "Do you want to use \'\(viewpointName)\' as the current viewpoint?", preferredStyle: .alert)
+                        
+                        // Create OK button with action handler
+                        let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
+                            print("Ok button tapped")
+                            model.anchorAtViewpoint(viewpointId: viewpoint.id)
+                        })
+                        
+                        // Create Cancel button with action handlder
+                        let cancel = UIAlertAction(title: "No", style: .cancel) { (action) -> Void in
+                            print("Cancel button tapped")
+                        }
+                        
+                        dialogMessage.addAction(ok)
+                        dialogMessage.addAction(cancel)
 
-                    // Present dialog message to user
-                    self.present(dialogMessage, animated: true, completion: nil)
+                        // Present dialog message to user
+                        self.present(dialogMessage, animated: true, completion: nil)
+                    }
                 }
             }
         }
