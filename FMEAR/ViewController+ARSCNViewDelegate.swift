@@ -115,7 +115,8 @@ extension ViewController: ARSCNViewDelegate {
                             labelNode.point = screenPosition
                             labelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
                             
-                            if viewpoint.id == virtualObject.currentViewpoint {
+                            if viewpoint.id == virtualObject.currentViewpoint &&
+                                virtualObject.viewpoints.count > 1 {
                                 labelNode.lineNode.strokeColor = .green
                                 labelNode.pointNode.strokeColor = .green
                             } else {
