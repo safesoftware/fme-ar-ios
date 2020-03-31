@@ -232,7 +232,7 @@ extension ViewController: FileManagerDelegate {
             let centerY = (minCoord.y + maxCoord.y) * 0.5
             let groundZ = 0.0
             
-            // Viewpoints
+            // json.settings version 4 - Viewpoints
             // ----------
             //var viewpoint: SCNVector3 = SCNVector3(centerX, Float(groundZ), centerY) // default
             var viewpoint: Viewpoint?
@@ -252,14 +252,8 @@ extension ViewController: FileManagerDelegate {
                     }
                 }
             }
-            
-//            if let viewpoint = viewpoint {
-//                let viewpointLabelNode = self.overlayView.labelNode(labelName: self.viewpointLabelName)
-//                viewpointLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
-//                viewpointLabelNode.text = viewpoint.name ?? "❂ Viewpoint (Default)"
-//            }
-            
-            // Anchor
+                        
+            // json.settings version 3 - Anchor
             // ------
             // By default, set the anchor to the center of the model, with the
             // 0.0 height as the ground
@@ -283,9 +277,7 @@ extension ViewController: FileManagerDelegate {
                 }
             }
             
-            // In version 4 of json.settings, we use viewpoints instead of anchors
-            // to represent the point of interest. If we have a viewpoint, we should
-            // not display the anchor label. The anchord label node is for version 3.
+            // json.settings version 3
             if viewpoint == nil {
                 let viewpointLabelNode = self.overlayView.labelNode(labelName: self.viewpointLabelName)
                 viewpointLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
@@ -294,62 +286,25 @@ extension ViewController: FileManagerDelegate {
                 } else {
                     viewpointLabelNode.text = "❂ Viewpoint (Custom)"
                 }
+
+                // Position the container node, including the model and the anchor
+                // node, to the anchor location.
+                // The FME coordinate z axis = ARKit y axis
+                // The FME coordinate y axis = ARKit z axis
+                modelNode.position = SCNVector3(-anchor.x, -anchor.y, anchor.z)
             }
-
-            
-            
-            // TEST - The bottom-left corner of the Arc de Triomphe, using the
-            // roof as the ground (i.e. the building will be displayed underground)
-            //anchor = SCNVector3(-2132.81, 2068, -1855.440373)
-
-            // Position the container node, including the model and the anchor
-            // node, to the anchor location.
-            // The FME coordinate z axis = ARKit y axis
-            // The FME coordinate y axis = ARKit z axis
-//            if let viewpoint = viewpoint {
-//                modelNode.position = SCNVector3(-(viewpoint.x ?? Double(centerX)),
-//                                                -(viewpoint.z ?? groundZ),
-//                                                -(viewpoint.y ?? Double(centerY)))
-//            } else {
-//                modelNode.position = SCNVector3(-anchor.x, -anchor.y, anchor.z)
-//            }
             
             // Rotate to Y up
             modelNode.eulerAngles.x = -Float.pi / 2
                         
             let modelDimension = self.dimension(modelNode)
             let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
-            
-            
-            // TODO: WE NEED TO MOVE THE ANCHOR NODE AND VIEWPOINT LABEL OFF
-            // CENTER WHEN WE OFFSET THE MODEL CONTENT AT THE GEOLOCATION
-            // Add the anchor/viewpoint geometry and node
-            let anchorHeight: CGFloat = CGFloat(modelDimension.z * 2)
-            let anchorRadius: CGFloat = anchorHeight * 0.01
-            let anchorMaterial = SCNMaterial()
-            anchorMaterial.diffuse.contents = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 0.8)
-            let anchorGeometry = SCNCone(topRadius: anchorRadius, bottomRadius: 0, height: anchorHeight)
-            anchorGeometry.firstMaterial = anchorMaterial
-            let anchorNode = SCNNode(geometry: anchorGeometry)
-            anchorNode.name = "Anchor Node"
-            // Need to shift the SCNCone up since it's origin is the middle of the
-            // cone.
-            // TODO: WE NEED TO MOVE THE ANCHOR NODE AND VIEWPOINT LABEL OFF
-            // CENTER WHEN WE OFFSET THE MODEL CONTENT AT THE GEOLOCATION
-            anchorNode.simdPosition =  float3(0, Float(anchorHeight * 0.5), 0)
-            // Initial visibility of the anchor node
-            anchorNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
-
             let definition = VirtualObjectDefinition(modelName: "model", displayName: "model", particleScaleInfo: [:])
             let object = VirtualObject(definition: definition,
                                        modelNode: modelNode,
                                        viewpoints: viewpoints ?? [])
             object.name = "VirtualObject"
-            
-//            if !object.viewpoints.isEmpty {
-//                object.anchorAtViewpoint(viewpointIndex: 0)
-//            }
-            
+
             if let firstViewpoint = object.viewpoints.first {
                 object.anchorAtViewpoint(viewpointId: firstViewpoint.id)
             }

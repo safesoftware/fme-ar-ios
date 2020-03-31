@@ -362,9 +362,6 @@ class Settings {
                 if let coordinate = try extractCoordinate(json: anchorDict) {
                     var anchor = Anchor()
                     anchor.coordinate = coordinate
-                    anchor.x = 0.0
-                    anchor.y = 0.0
-                    anchor.z = 0.0
                     
                     if let xString = anchorDict[kX] as? String {
                         if let xDouble = Double(xString) {
@@ -430,6 +427,8 @@ class Settings {
                 if let z = Double(zString) {
                     anchor?.z = z
                 }
+            } else if let zDouble = json[kZ] as? Double {
+                anchor?.z = zDouble
             }
         }
         

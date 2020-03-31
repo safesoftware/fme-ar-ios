@@ -96,6 +96,8 @@ extension ViewController: ARSCNViewDelegate {
 
         // Update viewpoint labels
         if let virtualObject = virtualObject() {
+            
+            // json.settings version 4
             for viewpoint in virtualObject.viewpoints {
                 if let vPos = virtualObject.viewpointWorldPosition(viewpointId: viewpoint.id) {
                     let screenCoord = self.sceneView.projectPoint(vPos)
@@ -125,6 +127,27 @@ extension ViewController: ARSCNViewDelegate {
                 }
             }
             
+            // json.settings version 3
+            if let labelNode = self.overlayView.labelNodeOrNil(labelName: self.viewpointLabelName) {
+                let modelPosition = SCNVector3(virtualObject.position.x,
+                                               virtualObject.position.y,
+                                               virtualObject.position.z)
+                let screenCoord = self.sceneView.projectPoint(modelPosition)
+
+                if viewSize.width > 0 && viewSize.height > 0 {
+                    // When the z is larger than 1, the geomarker is actually at
+                    // the opposite direction or invalid, and the screenCoord.x is wrong.
+                    // We can simply use a very large screen value, such as 10000,
+                    // to make the geolocation offscreen.
+                    let screenPosition = CGPoint(
+                        x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
+                        y: viewSize.height - CGFloat(screenCoord.y))
+                    
+                        labelNode.point = screenPosition
+                }
+                
+                labelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
+            }
         }
     }
     
