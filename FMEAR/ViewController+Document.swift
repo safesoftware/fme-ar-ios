@@ -234,24 +234,7 @@ extension ViewController: FileManagerDelegate {
             
             // json.settings version 4 - Viewpoints
             // ----------
-            //var viewpoint: SCNVector3 = SCNVector3(centerX, Float(groundZ), centerY) // default
-            var viewpoint: Viewpoint?
-            let viewpoints = settings?.viewpoints
-            if let viewpoints = viewpoints {
-                if let firstViewpoint = viewpoints.first {
-                    if firstViewpoint.x != nil && firstViewpoint.y != nil {
-                        viewpoint = Viewpoint()
-                        viewpoint?.x = firstViewpoint.x ?? Double(centerX)
-                        viewpoint?.y = firstViewpoint.y ?? Double(centerY)
-                        viewpoint?.z = firstViewpoint.z ?? groundZ
-                        if let name = firstViewpoint.name, !name.isEmpty {
-                            viewpoint?.name = name
-                        } else {
-                            viewpoint?.name = "❂ Viewpoint 1"
-                        }
-                    }
-                }
-            }
+            let viewpoints = settings?.viewpoints ?? []
                         
             // json.settings version 3 - Anchor
             // ------
@@ -278,13 +261,13 @@ extension ViewController: FileManagerDelegate {
             }
             
             // json.settings version 3
-            if viewpoint == nil {
+            if viewpoints.isEmpty {
                 let viewpointLabelNode = self.overlayView.labelNode(labelName: self.viewpointLabelName)
                 viewpointLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
                 if isDefaultAnchor {
-                    viewpointLabelNode.text = "❂ Viewpoint (Default)"
+                    viewpointLabelNode.text = "❂ Anchor (Default)"
                 } else {
-                    viewpointLabelNode.text = "❂ Viewpoint (Custom)"
+                    viewpointLabelNode.text = "❂ Anchor (Custom)"
                 }
 
                 // Position the container node, including the model and the anchor
@@ -302,7 +285,7 @@ extension ViewController: FileManagerDelegate {
             let definition = VirtualObjectDefinition(modelName: "model", displayName: "model", particleScaleInfo: [:])
             let object = VirtualObject(definition: definition,
                                        modelNode: modelNode,
-                                       viewpoints: viewpoints ?? [])
+                                       viewpoints: viewpoints)
             object.name = "VirtualObject"
 
             if let firstViewpoint = object.viewpoints.first {
