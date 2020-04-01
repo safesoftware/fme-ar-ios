@@ -50,9 +50,18 @@ struct VirtualObjectDefinition: Codable, Equatable {
 
 class VirtualObject: SCNReferenceNode, ReactsToScale {
     let definition: VirtualObjectDefinition
+    var viewpoints: [Viewpoint]
+    let modelNode: SCNNode?
+    var currentViewpoint: UUID?
+    let currentViewpointMarker: SCNNode? = nil
+    var viewpointNodes: [UUID:SCNNode] = [:]
     
     init(definition: VirtualObjectDefinition) {
         self.definition = definition
+        self.modelNode = nil
+        self.viewpoints = []
+        self.currentViewpoint = nil
+        
         if let url = Bundle.main.url(forResource: "SceneAssets.scnassets/\(definition.modelName)/\(definition.modelName)", withExtension: "scn") {
             super.init(url: url)!
         } else if let url = Bundle.main.url(forResource: "IfcProject.scnassets/\(definition.modelName)", withExtension: "dae") {
@@ -62,19 +71,25 @@ class VirtualObject: SCNReferenceNode, ReactsToScale {
             fatalError("can't find expected virtual object bundle resources") }
     }
     
-    init(definition: VirtualObjectDefinition, childNodes: [SCNNode]) {
+    init(definition: VirtualObjectDefinition,
+         modelNode: SCNNode,
+         viewpoints: [Viewpoint]) {
         self.definition = definition
+        self.modelNode = modelNode
+        self.viewpoints = viewpoints
+        self.currentViewpoint = nil
         
         if let url = Bundle.main.url(forResource: "SceneAssets.scnassets/model/model", withExtension: "scn") {
             super.init(url: url)!
-        
-            for childNode in childNodes {
-                addChildNode(childNode)
-            }
+            addChildNode(modelNode)
+            
+            
         }
         else {
             fatalError("can't find expected virtual object bundle resources")
         }
+        
+        initViewpointNodes(modelNode: modelNode, viewpoints: viewpoints)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -90,6 +105,102 @@ class VirtualObject: SCNReferenceNode, ReactsToScale {
                 else { continue }
             particleSystem.reset()
             particleSystem.particleSize = CGFloat(scale.x * particleSize)
+        }
+    }
+    
+    func containsViewpoint(id: UUID) -> Bool {
+        return viewpointNodes[id] != nil;
+    }
+    
+    func viewpoint(id: UUID) -> Viewpoint? {
+        for viewpoint in viewpoints {
+            if viewpoint.id == id {
+                return viewpoint
+            }
+        }
+        
+        return nil
+    }
+    
+    // The position is in FME coordinate system, i.e. y is the elevation
+    func anchorAt(position: SCNVector3) {
+        // The FME coordinate z axis = ARKit y axis
+        // The FME coordinate y axis = ARKit -z axis
+        // We need to offset/subtract the position from the model position to
+        // make the position appear as the center of the anchor.
+        modelNode?.position = SCNVector3Make(-position.x, -position.z, position.y)
+        currentViewpoint = nil
+    }
+    
+    // This function initializes the viewpoint scene nodes and adds them to
+    // the model node as child nodes. We add the invisible viewpoint nodes
+    // so that the location of the viewpoints can be transformed together
+    // with the model node.
+    func initViewpointNodes(modelNode: SCNNode, viewpoints: [Viewpoint]) {
+        let material = SCNMaterial()
+        material.diffuse.contents = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
+        let geometry = SCNSphere(radius: 1.0)
+        geometry.firstMaterial = material
+
+        for viewpoint in viewpoints {
+            if let position = viewpointPosition(viewpoint: viewpoint) {
+                let node = SCNNode(geometry: geometry)
+                node.name = viewpoint.id.uuidString
+                node.simdPosition = SIMD3<Float>(x: position.x,
+                                                 y: position.y,
+                                                 z: position.z)
+                viewpointNodes[viewpoint.id] = node
+                //addChildNode(node)
+                modelNode.addChildNode(node)
+                node.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
+            }
+        }
+    }
+    
+    // This function returns the position of the viewpoint relative to the
+    // model
+    func viewpointPosition(viewpoint: Viewpoint) -> SCNVector3? {
+        if let modelNode = self.modelNode {
+            let (minCoord, maxCoord) = modelNode.boundingBox
+            let centerX = (minCoord.x + maxCoord.x) * 0.5
+            let centerY = (minCoord.y + maxCoord.y) * 0.5
+            let groundZ = 0.0
+//            return SCNVector3Make(Float(viewpoint.x ?? Double(centerX)),
+//                                  Float(viewpoint.z ?? groundZ),
+//                                  -Float(viewpoint.y ?? Double(centerY)))
+            return SCNVector3Make(Float(viewpoint.x ?? Double(centerX)),
+                                  Float(viewpoint.y ?? Double(centerY)),
+                                  Float(viewpoint.z ?? groundZ))
+        } else {
+            return nil
+        }
+    }
+
+    // This function returns the world position of the viewpoint in the scene
+    func viewpointWorldPosition(viewpointId: UUID) -> SCNVector3? {
+        if let node = viewpointNodes[viewpointId] {
+            return node.worldPosition
+        } else {
+            return nil
+        }
+    }
+
+    func anchorAtViewpoint(viewpointIndex: Int) {
+        if viewpoints.indices.contains(viewpointIndex) {
+            let viewpoint = viewpoints[viewpointIndex]
+            if let position = viewpointPosition(viewpoint: viewpoint) {
+                anchorAt(position: position)
+                currentViewpoint = viewpoint.id
+            }
+        }
+    }
+    
+    func anchorAtViewpoint(viewpointId: UUID) {
+        if let viewpoint = viewpoint(id: viewpointId) {
+            if let position = viewpointPosition(viewpoint: viewpoint) {
+                anchorAt(position: position)
+                currentViewpoint = viewpoint.id
+            }
         }
     }
 }

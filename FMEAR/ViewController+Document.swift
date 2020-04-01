@@ -228,16 +228,21 @@ extension ViewController: FileManagerDelegate {
         
         if (numObjFiles > 0) {
             let (minCoord, maxCoord) = modelNode.boundingBox
-            
-            // By default, set the anchor to the center of the model, with the
-            // 0.0 height as the ground
             let centerX = (minCoord.x + maxCoord.x) * 0.5
             let centerY = (minCoord.y + maxCoord.y) * 0.5
             let groundZ = 0.0
-            var anchor: SCNVector3 = SCNVector3(centerX, Float(groundZ), centerY)
+            
+            // json.settings version 4 - Viewpoints
+            // ----------
+            let viewpoints = settings?.viewpoints ?? []
+                        
+            // json.settings version 3 - Anchor
+            // ------
+            // By default, set the anchor to the center of the model, with the
+            // 0.0 height as the ground
+            var anchor: SCNVector3 = SCNVector3(centerX, Float(groundZ), centerY) // default
             var geolocation: CLLocation?
             var isDefaultAnchor = true
-            
             if let anchors = settings?.anchors {
                 if let firstAnchor = anchors.first {
                     
@@ -254,48 +259,38 @@ extension ViewController: FileManagerDelegate {
                     }
                 }
             }
-
-            var anchorLabelNode = self.overlayView.labelNode(labelName: self.anchorLabelName)
-            anchorLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
-            if isDefaultAnchor {
-                anchorLabelNode.text = "Default anchor at (\(anchor.x),\(anchor.y),\(anchor.z))"
-            } else {
-                anchorLabelNode.text = "Custom anchor at (\(anchor.x),\(anchor.y),\(anchor.z))"
-            }
             
-            // TEST - The bottom-left corner of the Arc de Triomphe, using the
-            // roof as the ground (i.e. the building will be displayed underground)
-            //anchor = SCNVector3(-2132.81, 2068, -1855.440373)
+            // json.settings version 3
+            if viewpoints.isEmpty {
+                let viewpointLabelNode = self.overlayView.labelNode(labelName: self.viewpointLabelName)
+                viewpointLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
+                if isDefaultAnchor {
+                    viewpointLabelNode.text = "❂ Anchor (Default)"
+                } else {
+                    viewpointLabelNode.text = "❂ Anchor (Custom)"
+                }
 
-            // Position the container node, including the model and the anchor
-            // node, to the anchor location. The z value was the
-            modelNode.position = SCNVector3(-anchor.x, -anchor.y, anchor.z)
+                // Position the container node, including the model and the anchor
+                // node, to the anchor location.
+                // The FME coordinate z axis = ARKit y axis
+                // The FME coordinate y axis = ARKit z axis
+                modelNode.position = SCNVector3(-anchor.x, -anchor.y, anchor.z)
+            }
             
             // Rotate to Y up
             modelNode.eulerAngles.x = -Float.pi / 2
                         
             let modelDimension = self.dimension(modelNode)
             let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
-            
-            
-            // Add the anchor geometry and node
-            let anchorHeight: CGFloat = CGFloat(modelDimension.z * 2)
-            let anchorRadius: CGFloat = anchorHeight * 0.01
-            let anchorMaterial = SCNMaterial()
-            anchorMaterial.diffuse.contents = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 0.8)
-            let anchorGeometry = SCNCone(topRadius: anchorRadius, bottomRadius: 0, height: anchorHeight)
-            anchorGeometry.firstMaterial = anchorMaterial
-            let anchorNode = SCNNode(geometry: anchorGeometry)
-            anchorNode.name = "Anchor Node"
-            // Need to shift the SCNCone up since it's origin is the middle of the
-            // cone.
-            anchorNode.simdPosition =  float3(0, Float(anchorHeight * 0.5), 0)
-            // Initial visibility of the anchor node
-            anchorNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
-
             let definition = VirtualObjectDefinition(modelName: "model", displayName: "model", particleScaleInfo: [:])
-            let object = VirtualObject(definition: definition, childNodes: [modelNode, anchorNode])
+            let object = VirtualObject(definition: definition,
+                                       modelNode: modelNode,
+                                       viewpoints: viewpoints)
             object.name = "VirtualObject"
+
+            if let firstViewpoint = object.viewpoints.first {
+                object.anchorAtViewpoint(viewpointId: firstViewpoint.id)
+            }
             
             // Set a cteagory bit mask to include the virtual object in the hit test.
             object.categoryBitMask = HitTestOptionCategoryBitMasks.virtualObject.rawValue
@@ -325,6 +320,21 @@ extension ViewController: FileManagerDelegate {
             if object.parent == nil {
                 self.serialQueue.async {
                     self.sceneView.scene.rootNode.addChildNode(object)
+
+                    // Add Viewpoint labels
+                    for index in object.viewpoints.indices {
+                        let viewpoint = object.viewpoints[index]
+                        
+                        let viewpointLabelNode = self.overlayView.labelNode(labelName: viewpoint.id.uuidString)
+                        //viewpointLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
+
+                        if let name = viewpoint.name, !name.isEmpty {
+                            viewpointLabelNode.text = name
+                        } else {
+                            viewpointLabelNode.text = "❂ Viewpoint \(index)"
+                            object.viewpoints[index].name = viewpointLabelNode.text
+                        }
+                    }
                     
                     // TODO: need to update the plane position on the geomarker if
                     // the model is moved to a different plane.
@@ -336,6 +346,7 @@ extension ViewController: FileManagerDelegate {
                         }
                         geomarker?.geolocation = geolocation
                         geomarker?.simdPosition = position
+                        geomarker?.anchor = self.settings?.anchors.first
                     }
                 }
             }

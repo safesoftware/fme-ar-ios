@@ -40,6 +40,10 @@ class OverlaySKScene: SKScene {
             return newLabelNode
         }
     }
+    
+    func labelNodeOrNil(labelName: String) -> PointLabelNode? {
+        return childNode(withName: labelName) as? PointLabelNode;
+    }
 }
 
 class ButtonNode: SKNode {
@@ -54,7 +58,7 @@ class ButtonNode: SKNode {
                 self.removeChildren(in: [oldLabelNode])
             }
             self.labelNode = SKLabelNode(text: text)
-            self.labelNode!.fontName = UIFont.systemFont(ofSize: 10).fontName
+            self.labelNode!.fontName = "Arial-BoldMT"
             self.labelNode!.fontColor = .white
             self.labelNode!.fontSize = 10
             self.labelNode!.horizontalAlignmentMode = .left
@@ -132,9 +136,7 @@ class PointLabelNode: SKNode {
         super.init()
         
         self.labelNode = SKLabelNode(text: "")
-//        self.labelNode.fontName = self.fontName
-//        self.labelNode.fontColor = .white
-        self.labelNode!.fontName = UIFont.systemFont(ofSize: 10).fontName
+        self.labelNode!.fontName = "Arial-BoldMT"
         self.labelNode.fontSize = 10
         self.labelNode.horizontalAlignmentMode = .left
         self.labelNode.verticalAlignmentMode = .bottom

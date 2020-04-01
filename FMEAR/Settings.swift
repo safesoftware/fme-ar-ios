@@ -33,7 +33,7 @@ let kAnchor = "anchor"
 // Example: {"version":"2","scaling":"1to1","zoom":"yes"}
 // Example: {"version":"2","scaling":"1to1","zoom":"yes","anchor":"Beam"}
 
-// Version 3
+// Version 3 - FME 2019.2
 let kVersion3 = "3"
 let kX = "x"
 let kY = "y"
@@ -59,6 +59,52 @@ let kLatitude = "latitude"
 // Example: {"version":"3","scaling":40}
 // Example: {"version":"3","scaling":0.04}
 
+// Version 4 - FME 2020.0
+let kVersion4 = "4"
+let kViewpoints = "viewpoints"
+let kName = "name"
+// Example: Initial Model Scaling = <Empty>:      {"version":"4","viewpoints":[]}
+// Example: Initial Model Scaling = Fit:          {"version":"4","scaling":"fit","viewpoints":[]}
+// Example: Initial Model Scaling = Full Scale:   {"version":"4","scaling":"1to1","viewpoints":[]}
+// Example: Initial Model Scaling = Custom = 1:   {"version":"4","scaling":"1","viewpoints":[]}
+// Example: Initial Model Scaling = Custom = 0.2: {"version":"4","scaling":"0.2","viewpoints":[]}
+// Example: Initial Model Scaling = Fit, One viewpoint:
+//     {"version":"4","scaling":"fit","viewpoints":[{"x":-99.69291200000043,"y":851.8795360000004}]}
+// Example: Initial Model Scaling = Fit, One viewpoint with a name:
+//     {"version":"4","scaling":"fit","viewpoints":[{"x":-99.69291200000043,"y":851.8795360000004,"name":"x4000y4000"}]}
+// Example: Initial Model Scaling = Fit, Multiple viewpoints with names:
+//     {"version":"4","scaling":"fit","viewpoints":[
+//         {"x":15900.307088,"y":4851.879536,"name":"x20000y-8000"},
+//         {"x":-9099.692912,"y":-23148.120464,"name":"x-5000y-20000"},
+//         {"x":-99.69291200000043,"y":851.8795360000004,"name":"x4000y4000"}
+//     ]}
+// Example: Intial Model Scaling = Fit, Multiple viewpoints with names, geolocated anchor without coordinate:
+//     {"version":"4","scaling":"fit","anchor":{"latitude":49.178121,"longitude":-122.842716},"viewpoints":[
+//         {"x":15900.307088,"y":4851.879536,"name":"x20000y-8000"},
+//         {"x":-9099.692912,"y":-23148.120464,"name":"x-5000y-20000"},
+//         {"x":-99.69291200000043,"y":851.8795360000004,"name":"x4000y4000"}
+//     ]}
+// Example: Initial Model Scaling = Fit, No viewpoints, geolocated anchor without coordinate:
+//     {"version":"4","scaling":"fit","anchor":{"latitude":49.178121,"longitude":-122.842716},"viewpoints":[]}
+// Example: Initial Model Scaling = Fit, Multiple viewpoints with names, anchor located at the last viewpoint
+//     {"version":"4","scaling":"fit","anchor":{"latitude":49.178121,"longitude":-122.842716,"x":-99.69291200000043,"y":851.8795360000004},"viewpoints":[
+//         {"x":15900.307088,"y":4851.879536,"name":"x20000y-8000"},
+//         {"x":-9099.692912,"y":-23148.120464,"name":"x-5000y-20000"},
+//         {"x":-99.69291200000043,"y":851.8795360000004,"name":"x4000y4000"}
+//     ]}
+// Example: Initial Model Scaling = Fit, Multiple viewpoints with names, anchor not located at any of the viewpoints
+//     {"version":"4","scaling":"fit","anchor":{"latitude":49.178121,"longitude":-122.842716,"x":900.3070879999996,"y":1851.8795360000004},"viewpoints":[
+//         {"x":15900.307088,"y":4851.879536,"name":"x20000y-8000"},
+//         {"x":-9099.692912,"y":-23148.120464,"name":"x-5000y-20000"},
+//         {"x":-99.69291200000043,"y":851.8795360000004,"name":"x4000y4000"}
+//     ]}
+// Example: Initial Model Scaling = Fit, Multiple viewpoints with names, anchor with z
+//     {"version":"4","scaling":"fit","anchor":{"latitude":49.178121,"longitude":-122.842716,"x":-99.69291200000043,"y":851.8795360000004,"z":7264},"viewpoints":[
+//         {"x":15900.307088,"y":4851.879536,"z":7264,"name":"x20000y-8000"},
+//         {"x":-9099.692912,"y":-23148.120464,"z":7264,"name":"x-5000y-20000"},
+//         {"x":-99.69291200000043,"y":851.8795360000004,"z":7264,"name":"x4000y4000"}
+//     ]}
+
 enum SettingsSerializationError: Error {
     case missing(String)
     case invalid(String, Any)
@@ -74,12 +120,40 @@ struct Anchor {
     var coordinate: CLLocationCoordinate2D?
 }
 
+// Viewpoint is in FME coordinate system, i.e. z is the elevation
+struct Viewpoint {
+    var x: Double?
+    var y: Double?
+    var z: Double?
+    var name: String?
+    let id: UUID
+    
+    init() {
+        id = UUID()
+    }
+
+}
+
 class Settings {
 
     var version: String?
+    
+    // Version 1+
     var scaling: Double?
+    
+    // Version 2 - We have never supported this in the mobile app
     var anchorFeatureType: String?
+    
+    // Version 3 - We only use the first anchor, which may or may not have
+    // a geolocation
+    // Version 4 - We only use the first anchor, which must have a geolocation
+    // but may not have a x,y,z coordinate in model coordinate. When the
+    // coordinate is not set, the values will be set as 0.
     var anchors: [Anchor] = []
+    
+    // Version 4
+    var viewpoints: [Viewpoint] = []
+   
 
     init() {}
     
@@ -98,6 +172,7 @@ class Settings {
         case kVersion1: try extractVersion1Settings(json: jsonDict)
         case kVersion2: try extractVersion2Settings(json: jsonDict)
         case kVersion3: try extractVersion3Settings(json: jsonDict)
+        case kVersion4: try extractVersion4Settings(json: jsonDict)
         default:
             throw SettingsSerializationError.unsupported("version", version)
         }
@@ -117,6 +192,12 @@ class Settings {
     func extractVersion3Settings(json: [String: Any]) throws {
         try extractScaling(json: json)
         try extractAnchors(json: json)
+    }
+    
+    func extractVersion4Settings(json: [String: Any]) throws {
+        try extractScaling(json: json)
+        try extractViewpoints(json: json)
+        try extractGeolocatedAnchor(json: json)
     }
     
     func extractScaling(json: [String: Any]) throws {
@@ -196,6 +277,68 @@ class Settings {
         }
     }
     
+    func extractViewpoints(json: [String: Any]) throws {
+        if let viewpoints = json[kViewpoints] {
+            if let viewpointArray = viewpoints as? [[String: Any]] {
+                // one or more viewpoints
+                for dict in viewpointArray {
+                    try extractViewpoint(json: dict)
+                }
+            } else if let viewpointDict = viewpoints as? [String: Any] {
+                // single anchor
+                try extractViewpoint(json: viewpointDict)
+            } else {
+                throw SettingsSerializationError.invalid(kViewpoints, viewpoints)
+            }
+        }
+    }
+    
+    func extractViewpoint(json: [String: Any]) throws {
+        var viewpoint: Viewpoint?
+        var x: Double?
+        var y: Double?
+        var name: String?
+        
+        if let xString = json[kX] as? String {
+            if let xDouble = Double(xString) {
+                x = xDouble
+            }
+        } else if let xDouble = json[kX] as? Double {
+            x = xDouble
+        }
+        
+        if let yString = json[kY] as? String {
+            if let yDouble = Double(yString) {
+                y = yDouble
+            }
+        } else if let yDouble = json[kY] as? Double {
+            y = yDouble
+        }
+        
+        name = json[kName] as? String
+
+        if let x = x, let y = y {
+            viewpoint = Viewpoint()
+            viewpoint?.x = x
+            viewpoint?.y = y
+            viewpoint?.name = name
+        }
+                
+        if viewpoint != nil {
+            if let zString = json[kZ] as? String {
+                if let z = Double(zString) {
+                    viewpoint?.z = z
+                }
+            } else if let zDouble = json[kZ] as? Double {
+                viewpoint?.z = zDouble
+            }
+        }
+        
+        if let viewpoint = viewpoint {
+            self.viewpoints.append(viewpoint)
+        }
+    }
+    
     func extractAnchors(json: [String: Any]) throws {
         if let anchor = json[kAnchor] {
             
@@ -209,6 +352,45 @@ class Settings {
                 try extractAnchor(json: anchorDict)
             } else {
                 throw SettingsSerializationError.invalid(kAnchor, anchor)
+            }
+        }
+    }
+    
+    func extractGeolocatedAnchor(json: [String: Any]) throws {
+        if let anchorDict = json[kAnchor] as? [String: Any] {
+            do {
+                if let coordinate = try extractCoordinate(json: anchorDict) {
+                    var anchor = Anchor()
+                    anchor.coordinate = coordinate
+                    
+                    if let xString = anchorDict[kX] as? String {
+                        if let xDouble = Double(xString) {
+                            anchor.x = xDouble
+                        }
+                    } else if let xDouble = anchorDict[kX] as? Double {
+                        anchor.x = xDouble
+                    }
+                    
+                    if let yString = anchorDict[kY] as? String {
+                        if let yDouble = Double(yString) {
+                            anchor.y = yDouble
+                        }
+                    } else if let yDouble = anchorDict[kY] as? Double {
+                        anchor.y = yDouble
+                    }
+
+                    if let zString = anchorDict[kZ] as? String {
+                        if let zDouble = Double(zString) {
+                            anchor.z = zDouble
+                        }
+                    } else if let zDouble = anchorDict[kZ] as? Double {
+                        anchor.z = zDouble
+                    }
+                    
+                    self.anchors.append(anchor)
+                }
+            } catch {
+                print("Settings: Coordinate is invalid")
             }
         }
     }
@@ -245,6 +427,8 @@ class Settings {
                 if let z = Double(zString) {
                     anchor?.z = z
                 }
+            } else if let zDouble = json[kZ] as? Double {
+                anchor?.z = zDouble
             }
         }
         

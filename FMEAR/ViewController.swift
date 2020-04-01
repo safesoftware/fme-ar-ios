@@ -14,7 +14,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     let geomarkerLabelName = "Geomarker Label"
     let geomarkerNodeName = "Geomarker Node"
-    let anchorLabelName = "Anchor Label"
+    let viewpointLabelName = "Viewpoint Label"
     
     var document: UIDocument?
     var documentOpened = false
@@ -67,6 +67,8 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         }
     }
     
+    var isModelAtGeolocation: Bool = false
+    
     // SCNSceneRenderer time
     var lastUpdateTime: TimeInterval?
     
@@ -111,13 +113,14 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         
         if let geomarker = geolocationNode() {
             //print("UPDATING GEOMARKER...")
+            
             geomarker.userLocation = location
             
-            // TODO: Apply the current camera world position to the geomarker
-            //// Also set the camera world position to match the user location
-            //if let cameraTransform = session.currentFrame?.camera.transform  {
-            //    geomarker.cameraWorldPosition = cameraTransform.translation
-            //}
+            if isModelAtGeolocation, let newLocation = geomarker.calculatePosition(), let model = virtualObject() {
+                let action = SCNAction.move(to: newLocation, duration: 0.0)
+                action.timingMode = .easeInEaseOut
+                model.runAction(action)
+            }
         }
     }
     
@@ -149,8 +152,8 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         }()
     }
     
-    func virtualObject() -> SCNNode? {
-        return self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true)
+    func virtualObject() -> VirtualObject? {
+        return self.sceneView.scene.rootNode.childNode(withName: "VirtualObject", recursively: true) as? VirtualObject
     }
 
     func virtualObjectContent() -> SCNNode? {
@@ -196,8 +199,33 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
             print("FAILED TO MOVE MODEL TO GEOLOCATION")
             return
         }
-              
-        let action = SCNAction.move(to: geomarker.position, duration: 1.0)
+        
+        self.isModelAtGeolocation = true
+        
+        // If the model content is not at the zero position, we should offset
+        // it back to zero (center), and then we move to the anchor position.
+        let newPosition = geomarker.calculatePosition() ?? SCNVector3Zero
+        if let modelContent = virtualObjectContent() {
+            let (minCoord, maxCoord) = modelContent.boundingBox
+            let centerX = (minCoord.x + maxCoord.x) * 0.5
+            let centerY = (minCoord.y + maxCoord.y) * 0.5
+            let groundZ: Float = 0.0
+            var anchorVector = SCNVector3Make(centerX, centerY, groundZ)
+            if let anchor = geomarker.anchor {
+                if let x = anchor.x {
+                    anchorVector.x = Float(x)
+                }
+                if let y = anchor.y {
+                    anchorVector.y = Float(y)
+                }
+                if let z = anchor.z {
+                    anchorVector.z = Float(z)
+                }
+            }
+            model.anchorAt(position: anchorVector)
+        }
+        
+        let action = SCNAction.move(to: newPosition, duration: 1.0)
         action.timingMode = .easeInEaseOut
         model.runAction(action)
     }

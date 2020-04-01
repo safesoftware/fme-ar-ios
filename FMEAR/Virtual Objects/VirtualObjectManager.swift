@@ -169,6 +169,7 @@ class VirtualObjectManager {
 				                      instantly: instantly,
 				                      filterPosition: !result.hitAPlane,
 				                      cameraTransform: cameraTransform)
+                self.delegate?.virtualObjectManager(self, didTranslate: object)
 			}
 		}
 	}
@@ -358,6 +359,7 @@ protocol VirtualObjectManagerDelegate: class {
 	func virtualObjectManager(_ manager: VirtualObjectManager, transformDidChangeFor object: VirtualObject)
 	func virtualObjectManager(_ manager: VirtualObjectManager, didMoveObjectOntoNearbyPlane object: VirtualObject)
 	func virtualObjectManager(_ manager: VirtualObjectManager, couldNotPlace object: VirtualObject)
+    func virtualObjectManager(_ manager: VirtualObjectManager, didTranslate object: VirtualObject)
 }
 // Optional protocol methods
 extension VirtualObjectManagerDelegate {
