@@ -63,6 +63,9 @@ let kLatitude = "latitude"
 let kVersion4 = "4"
 let kViewpoints = "viewpoints"
 let kName = "name"
+let kMetadata = "metadata"
+let kGlobal = "fmear_global"
+let kModelExpiry = "fmear_model_expiry"
 // Example: Initial Model Scaling = <Empty>:      {"version":"4","viewpoints":[]}
 // Example: Initial Model Scaling = Fit:          {"version":"4","scaling":"fit","viewpoints":[]}
 // Example: Initial Model Scaling = Full Scale:   {"version":"4","scaling":"1to1","viewpoints":[]}
@@ -104,6 +107,7 @@ let kName = "name"
 //         {"x":-9099.692912,"y":-23148.120464,"z":7264,"name":"x-5000y-20000"},
 //         {"x":-99.69291200000043,"y":851.8795360000004,"z":7264,"name":"x4000y4000"}
 //     ]}
+// {"version":"4","viewpoints":[{"x":-1,"y":-2.5,"z":10,"name":"Viewpoint at (0,0,10)"}],"metadata":{"fmear_global":{"fmear_model_expiry":"20170206111730.135-08:00"}}}
 
 enum SettingsSerializationError: Error {
     case missing(String)
@@ -131,7 +135,13 @@ struct Viewpoint {
     init() {
         id = UUID()
     }
+}
 
+// Version 4+
+struct Metadata {
+    
+    // Global
+    var modelExpiry: Date?
 }
 
 class Settings {
@@ -153,6 +163,7 @@ class Settings {
     
     // Version 4
     var viewpoints: [Viewpoint] = []
+    var metadata: Metadata?
    
 
     init() {}
@@ -198,6 +209,7 @@ class Settings {
         try extractScaling(json: json)
         try extractViewpoints(json: json)
         try extractGeolocatedAnchor(json: json)
+        try extractMetadata(json: json)
     }
     
     func extractScaling(json: [String: Any]) throws {
@@ -477,6 +489,100 @@ class Settings {
         } else {
             return nil
         }
+    }
+    
+    func extractMetadata(json: [String: Any]) throws {
+        if let metadata = json[kMetadata] as? [String: Any] {
+            
+            // Global metadata
+            if let globalMetadata = metadata[kGlobal] as? [String: Any] {
+                
+                // Model expiry
+                if let expiry = globalMetadata[kModelExpiry] as? String {
+                    
+                    print("MODEL EXPIRY: \(expiry)")
+                    if let date = getDate(fmeDateString: expiry) {
+                        print("DATE: \(date)")
+                    } else {
+                        print("DATE: INVALID")
+                    }
+                }
+            }
+        }
+    }
+    
+    func getDate(fmeDateString: String) -> Date? {
+        
+        let fmeDateParser = DateFormatter()
+        
+        // When working with fixed format dates, we should also set the locale
+        // property to a POSIX locale ("en_US_POSIX"), and set the timeZone
+        // property to UTC.
+        // REFERENCE: https://developer.apple.com/documentation/foundation/dateformatter
+        fmeDateParser.locale = Locale(identifier: "en_US_POSIX")
+        fmeDateParser.timeZone = TimeZone(secondsFromGMT: 0)
+
+        // FME Date Time Format
+        let fmeDateFormat = "yyyyMMdd"
+        let fmeTimeFormat = "HHmmss"
+        let fmeFractionalSecondFormat = ".SSSSSSSSS"
+        let fmeTimeZoneFormat = "ZZZZZ"
+        
+        // Date only
+        fmeDateParser.dateFormat = fmeDateFormat
+        if let date = fmeDateParser.date(from: fmeDateString) {
+            return date
+        }
+
+        // Time only
+        fmeDateParser.dateFormat = fmeTimeFormat
+        if var date = fmeDateParser.date(from: fmeDateString) {
+            return date
+        }
+        
+        // Time with fractional second
+        fmeDateParser.dateFormat = "\(fmeTimeFormat)\(fmeFractionalSecondFormat)"
+        if let date = fmeDateParser.date(from: fmeDateString) {
+            return date
+        }
+        
+        // Time with time zone
+        fmeDateParser.dateFormat = "\(fmeTimeFormat)\(fmeTimeZoneFormat)"
+        if let date = fmeDateParser.date(from: fmeDateString) {
+            return date
+        }
+        
+        // Time with fractional second and time zone
+        fmeDateParser.dateFormat = "\(fmeTimeFormat)\(fmeFractionalSecondFormat)\(fmeTimeZoneFormat)"
+        if let date = fmeDateParser.date(from: fmeDateString) {
+            return date
+        }
+        
+        // Date and time
+        fmeDateParser.dateFormat = "\(fmeDateFormat)\(fmeTimeFormat)"
+        if let date = fmeDateParser.date(from: fmeDateString) {
+            return date
+        }
+        
+        // Date and time with fractional second
+        fmeDateParser.dateFormat = "\(fmeDateFormat)\(fmeTimeFormat)\(fmeFractionalSecondFormat)"
+        if let date = fmeDateParser.date(from: fmeDateString) {
+            return date
+        }
+        
+        // Date and time with time zone
+        fmeDateParser.dateFormat = "\(fmeDateFormat)\(fmeTimeFormat)\(fmeTimeZoneFormat)"
+        if let date = fmeDateParser.date(from: fmeDateString) {
+            return date
+        }
+        
+        // Date and time with fractional second and time zone
+        fmeDateParser.dateFormat = "\(fmeDateFormat)\(fmeTimeFormat)\(fmeFractionalSecondFormat)\(fmeTimeZoneFormat)"
+        if let date = fmeDateParser.date(from: fmeDateString) {
+            return date
+        }
+        
+        return nil
     }
 }
 
