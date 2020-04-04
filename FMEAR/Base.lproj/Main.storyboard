@@ -558,7 +558,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="260" height="25"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hlz-BS-WOZ">
+                                        <visualEffectView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hlz-BS-WOZ">
                                             <rect key="frame" x="0.0" y="0.0" width="260" height="25"/>
                                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="XvH-3a-Pa2">
                                                 <rect key="frame" x="0.0" y="0.0" width="260" height="25"/>
@@ -588,9 +588,7 @@
                                                     <constraint firstItem="0Oh-f9-Nn1" firstAttribute="top" secondItem="XvH-3a-Pa2" secondAttribute="top" id="w27-dO-qZJ"/>
                                                 </constraints>
                                             </view>
-                                            <vibrancyEffect>
-                                                <blurEffect style="extraLight"/>
-                                            </vibrancyEffect>
+                                            <blurEffect style="dark"/>
                                         </visualEffectView>
                                     </subviews>
                                     <constraints>
@@ -716,6 +714,23 @@
                                     </segue>
                                 </connections>
                             </button>
+                            <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Wj-m5-mFL" customClass="RoundButton" customModule="FME_AR" customModuleProvider="target">
+                                <rect key="frame" x="62.5" y="10" width="250" height="24"/>
+                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="250" id="n5y-ZP-Hze"/>
+                                    <constraint firstAttribute="height" constant="24" id="oJB-ow-cnc"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                <state key="normal" title="Expiration Date: 2020-04-30 23:59:59">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="12"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -733,6 +748,7 @@
                             <constraint firstItem="vAy-FB-fex" firstAttribute="top" secondItem="sx3-NA-bdE" secondAttribute="bottom" constant="8" id="HnM-TO-RoL"/>
                             <constraint firstItem="Xj1-pu-AOT" firstAttribute="top" secondItem="aya-a4-2Pv" secondAttribute="top" constant="10" id="Hut-yk-aoJ"/>
                             <constraint firstItem="b7O-bj-7kr" firstAttribute="centerY" secondItem="Dkl-Z1-aiT" secondAttribute="centerY" id="Jhg-I4-NSo"/>
+                            <constraint firstItem="8Wj-m5-mFL" firstAttribute="centerX" secondItem="Dkl-Z1-aiT" secondAttribute="centerX" id="PEb-ea-hrS"/>
                             <constraint firstItem="zFO-V7-NQf" firstAttribute="centerY" secondItem="Dkl-Z1-aiT" secondAttribute="centerY" id="Phd-vs-ZWD"/>
                             <constraint firstItem="VnN-gI-Ngn" firstAttribute="bottom" secondItem="aya-a4-2Pv" secondAttribute="bottom" id="RiZ-qq-ftz"/>
                             <constraint firstItem="UYe-wY-eh0" firstAttribute="centerX" secondItem="Dkl-Z1-aiT" secondAttribute="centerX" id="SDF-80-JRD"/>
@@ -750,6 +766,7 @@
                             <constraint firstItem="Xj1-pu-AOT" firstAttribute="centerY" secondItem="9hL-n4-R2F" secondAttribute="centerY" id="gbF-ds-RqL"/>
                             <constraint firstItem="eXn-YA-YKa" firstAttribute="leading" secondItem="SvP-nn-Flw" secondAttribute="trailing" constant="30" id="gzq-5g-glU"/>
                             <constraint firstItem="VnN-gI-Ngn" firstAttribute="top" secondItem="Dkl-Z1-aiT" secondAttribute="top" id="hu6-BP-d80"/>
+                            <constraint firstItem="8Wj-m5-mFL" firstAttribute="top" secondItem="aya-a4-2Pv" secondAttribute="top" constant="10" id="i2V-ZV-2Th"/>
                             <constraint firstItem="aya-a4-2Pv" firstAttribute="trailing" secondItem="GMA-nS-xXC" secondAttribute="trailing" constant="20" id="lUA-aF-2dN"/>
                             <constraint firstItem="9hL-n4-R2F" firstAttribute="leading" secondItem="aya-a4-2Pv" secondAttribute="leading" constant="10" id="lV7-qR-DBc"/>
                             <constraint firstItem="b7O-bj-7kr" firstAttribute="trailing" secondItem="aya-a4-2Pv" secondAttribute="trailing" constant="-16" id="nIW-NO-Q1u"/>
@@ -761,6 +778,7 @@
                     </view>
                     <connections>
                         <outlet property="backButton" destination="9hL-n4-R2F" id="2de-Hp-ZG2"/>
+                        <outlet property="expirationDateLabel" destination="8Wj-m5-mFL" id="kaI-cl-isi"/>
                         <outlet property="headingLabel" destination="sx3-NA-bdE" id="Ze7-My-UMN"/>
                         <outlet property="messageLabel" destination="Fop-5d-BfL" id="kz6-qo-fbT"/>
                         <outlet property="messagePanel" destination="Xj1-pu-AOT" id="zZ2-Hj-dXQ"/>

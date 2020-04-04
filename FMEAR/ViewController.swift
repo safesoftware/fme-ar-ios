@@ -92,6 +92,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var scaleLabel: UILabel!
     @IBOutlet weak var headingLabel: UILabel!
+    @IBOutlet weak var expirationDateLabel: RoundButton!
     
     // Indicators to show the direction to the model when the model
     // is outside the screen area.
@@ -175,6 +176,12 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         geomarker.userLocation = self.locationService?.locationManager?.location
         self.sceneView.scene.rootNode.addChildNode(geomarker)
         return geomarker
+    }
+    
+    func removeGeolocationNode() {
+        if let node = geolocationNode() {
+            node.removeFromParentNode()
+        }
     }
 
     func currentScale() -> Float {
@@ -357,10 +364,17 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         messagePanel.layer.cornerRadius = 3.0
         messagePanel.clipsToBounds = true
         messagePanel.isHidden = true
+        messagePanel.layer.zPosition = 2
         messageLabel.text = ""
 
+        // Scale Options
         showScaleOptionsButton.setTitle(self.scaleOptionsButtonText(mode: .customScale, lockOn: false), for: .normal)
         showScaleOptionsButton.isHidden = true
+        
+        // Expiration date label
+        expirationDateLabel.isHidden = true
+        expirationDateLabel.layer.zPosition = 1
+        
     }
 	
     // MARK: - Gesture Recognizers

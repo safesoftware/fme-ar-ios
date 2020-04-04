@@ -493,16 +493,18 @@ class Settings {
     
     func extractMetadata(json: [String: Any]) throws {
         if let metadata = json[kMetadata] as? [String: Any] {
+            self.metadata = Metadata()
             
             // Global metadata
             if let globalMetadata = metadata[kGlobal] as? [String: Any] {
                 
                 // Model expiry
                 if let expiry = globalMetadata[kModelExpiry] as? String {
-                    
                     print("MODEL EXPIRY: \(expiry)")
                     if let date = getDate(fmeDateString: expiry) {
                         print("DATE: \(date)")
+                        self.metadata?.modelExpiry = date
+
                     } else {
                         print("DATE: INVALID")
                     }
@@ -520,7 +522,7 @@ class Settings {
         // property to UTC.
         // REFERENCE: https://developer.apple.com/documentation/foundation/dateformatter
         fmeDateParser.locale = Locale(identifier: "en_US_POSIX")
-        fmeDateParser.timeZone = TimeZone(secondsFromGMT: 0)
+//        fmeDateParser.timeZone = TimeZone(secondsFromGMT: 0)
 
         // FME Date Time Format
         let fmeDateFormat = "yyyyMMdd"
@@ -531,33 +533,23 @@ class Settings {
         // Date only
         fmeDateParser.dateFormat = fmeDateFormat
         if let date = fmeDateParser.date(from: fmeDateString) {
-            return date
+
+            // Create date from components
+            let userCalendar = Calendar.current // user calendar
+
+            // Make sure the time is 23:59:59
+            var dateComponents = DateComponents()
+            dateComponents.year = userCalendar.component(.year, from: date)
+            dateComponents.month = userCalendar.component(.month, from: date)
+            dateComponents.day = userCalendar.component(.day, from: date)
+            dateComponents.timeZone = .current
+            dateComponents.hour = 23
+            dateComponents.minute = 59
+            dateComponents.second = 59
+
+            return userCalendar.date(from: dateComponents)
         }
 
-        // Time only
-        fmeDateParser.dateFormat = fmeTimeFormat
-        if var date = fmeDateParser.date(from: fmeDateString) {
-            return date
-        }
-        
-        // Time with fractional second
-        fmeDateParser.dateFormat = "\(fmeTimeFormat)\(fmeFractionalSecondFormat)"
-        if let date = fmeDateParser.date(from: fmeDateString) {
-            return date
-        }
-        
-        // Time with time zone
-        fmeDateParser.dateFormat = "\(fmeTimeFormat)\(fmeTimeZoneFormat)"
-        if let date = fmeDateParser.date(from: fmeDateString) {
-            return date
-        }
-        
-        // Time with fractional second and time zone
-        fmeDateParser.dateFormat = "\(fmeTimeFormat)\(fmeFractionalSecondFormat)\(fmeTimeZoneFormat)"
-        if let date = fmeDateParser.date(from: fmeDateString) {
-            return date
-        }
-        
         // Date and time
         fmeDateParser.dateFormat = "\(fmeDateFormat)\(fmeTimeFormat)"
         if let date = fmeDateParser.date(from: fmeDateString) {
