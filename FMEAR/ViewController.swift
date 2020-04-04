@@ -83,7 +83,6 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     @IBOutlet var sceneView: ARSCNView!
     var overlayView: OverlaySKScene!
-    @IBOutlet weak var messagePanel: UIView!
     @IBOutlet weak var messageLabel: UILabel!
     @IBOutlet weak var settingsButton: UIButton!
     @IBOutlet weak var showAssetsButton: UIButton!
@@ -361,11 +360,9 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         textManager = TextManager(viewController: self)
         
         // Set appearance of message output panel
-        messagePanel.layer.cornerRadius = 3.0
-        messagePanel.clipsToBounds = true
-        messagePanel.isHidden = true
-        messagePanel.layer.zPosition = 2
+        messageLabel.isHidden = true
         messageLabel.text = ""
+        messageLabel.layer.zPosition = 2
 
         // Scale Options
         showScaleOptionsButton.setTitle(self.scaleOptionsButtonText(mode: .customScale, lockOn: false), for: .normal)
