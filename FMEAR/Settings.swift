@@ -518,11 +518,9 @@ class Settings {
         let fmeDateParser = DateFormatter()
         
         // When working with fixed format dates, we should also set the locale
-        // property to a POSIX locale ("en_US_POSIX"), and set the timeZone
-        // property to UTC.
+        // property to a POSIX locale ("en_US_POSIX")
         // REFERENCE: https://developer.apple.com/documentation/foundation/dateformatter
         fmeDateParser.locale = Locale(identifier: "en_US_POSIX")
-//        fmeDateParser.timeZone = TimeZone(secondsFromGMT: 0)
 
         // FME Date Time Format
         let fmeDateFormat = "yyyyMMdd"
