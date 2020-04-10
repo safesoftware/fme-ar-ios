@@ -356,6 +356,35 @@ extension ViewController: FileManagerDelegate {
                 self.showScaleOptionsButton.isHidden = false
                 self.scaleLabel.isHidden = false
                 self.scaleLabel.text = self.dimensionAndScaleText(scale: object.scale.x, node: object)
+                
+                if let date = self.settings?.metadata?.modelExpiry {
+
+                    // Create date from components
+                    let userCalendar = Calendar.current // user calendar
+                    let hour = userCalendar.component(.hour, from: date)
+                    let minute = userCalendar.component(.minute, from: date)
+                    let second = userCalendar.component(.second, from: date)
+                    
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.timeZone = .current
+                    if hour == 23 && minute == 59 && second == 59 {
+                        dateFormatter.dateFormat = "MMM d,yyyy"
+                    } else {
+                        dateFormatter.dateFormat = "MMM d,yyyy HH:mm:ss"
+                    }
+                    
+                    let dateString = dateFormatter.string(from: date)
+
+                    self.expirationDateLabel.isHidden = false
+                    
+                    if date < Date() {
+                        self.expirationDateLabel.backgroundColor = .red
+                        self.expirationDateLabel.setTitle("Model expired on \(dateString)", for: .normal)
+                    } else {
+                        self.expirationDateLabel.backgroundColor = .darkGray
+                         self.expirationDateLabel.setTitle("Model will expire on \(dateString)", for: .normal)
+                    }
+                }
             }
         }
         else {

@@ -82,7 +82,7 @@ class TextManager {
 			self.messageHideTimer?.invalidate()
 			
 			// set text
-			self.viewController.messageLabel.text = text
+			self.viewController.messageLabel.text = "  \(text)"
 			
 			// make sure status is showing
 			self.showHideMessage(hide: false, animated: true)
@@ -237,13 +237,6 @@ class TextManager {
 		               options: [.allowUserInteraction, .beginFromCurrentState],
 		               animations: {
 						self.viewController.messageLabel.isHidden = hide
-						self.updateMessagePanelVisibility()
 		}, completion: nil)
 	}
-	
-	private func updateMessagePanelVisibility() {
-		// Show and hide the panel depending whether there is something to show.
-		viewController.messagePanel.isHidden = viewController.messageLabel.isHidden
-	}
-    
 }

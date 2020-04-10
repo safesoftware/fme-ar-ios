@@ -45,13 +45,17 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             self.textManager.showMessage("STARTING A NEW SESSION")
             
             self.virtualObjectManager.removeAllVirtualObjects()
+            self.removeGeolocationNode()
             self.showAssetsButton.setImage(#imageLiteral(resourceName:"showAssets"), for: [])
             self.showAssetsButton.setImage(#imageLiteral(resourceName:"showAssetsPressed"), for: [.highlighted])
             self.showAssetsButton.isEnabled = false
             self.showScaleOptionsButton.isHidden = true
             self.focusSquare?.isHidden = true
             self.scaleLabel.isHidden = true
+            self.expirationDateLabel.isHidden = true
             
+            // Remove overlay labels
+            self.sceneView.overlaySKScene?.removeAllChildren()
             
             self.resetTracking()
             
