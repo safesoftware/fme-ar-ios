@@ -9,7 +9,7 @@ import ARKit
 
 // Convenience extension for colors defined in asset catalog.
 extension UIColor {
-    static let planeColor = UIColor.white
+    static let planeColor = UIColor.darkGray
 }
 
 class Plane: SCNNode {
@@ -85,7 +85,7 @@ class Plane: SCNNode {
     
     private func setupMeshVisualStyle() {
         // Make the plane visualization semitransparent to clearly show real-world placement.
-        meshNode.opacity = 0.25
+        meshNode.opacity = 0.9
         
         // Use color and blend mode to make planes stand out.
         guard let material = meshNode.geometry?.firstMaterial
@@ -95,7 +95,7 @@ class Plane: SCNNode {
     
     private func setupExtentVisualStyle() {
         // Make the extent visualization semitransparent to clearly show real-world placement.
-        extentNode.opacity = 0.6
+        extentNode.opacity = 0.9
         
         guard let material = extentNode.geometry?.firstMaterial
             else { fatalError("SCNPlane always has one material") }
