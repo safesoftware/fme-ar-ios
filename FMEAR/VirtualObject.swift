@@ -49,6 +49,9 @@ struct VirtualObjectDefinition: Codable, Equatable {
 }
 
 class VirtualObject: SCNReferenceNode, ReactsToScale {
+    
+    static let viewpointParentNodeName = "Viewpoints"
+    
     let definition: VirtualObjectDefinition
     var viewpoints: [Viewpoint]
     let modelNode: SCNNode?
@@ -137,11 +140,19 @@ class VirtualObject: SCNReferenceNode, ReactsToScale {
     // so that the location of the viewpoints can be transformed together
     // with the model node.
     func initViewpointNodes(modelNode: SCNNode, viewpoints: [Viewpoint]) {
+        if viewpoints.isEmpty {
+            return
+        }
+        
         let material = SCNMaterial()
         material.diffuse.contents = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
         let geometry = SCNSphere(radius: 1.0)
         geometry.firstMaterial = material
 
+        let viewpointParentNode = SCNNode()
+        viewpointParentNode.name = VirtualObject.viewpointParentNodeName
+        modelNode.addChildNode(viewpointParentNode)
+        
         for viewpoint in viewpoints {
             if let position = viewpointPosition(viewpoint: viewpoint) {
                 let node = SCNNode(geometry: geometry)
@@ -150,8 +161,7 @@ class VirtualObject: SCNReferenceNode, ReactsToScale {
                                                  y: position.y,
                                                  z: position.z)
                 viewpointNodes[viewpoint.id] = node
-                //addChildNode(node)
-                modelNode.addChildNode(node)
+                viewpointParentNode.addChildNode(node)
                 node.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
             }
         }

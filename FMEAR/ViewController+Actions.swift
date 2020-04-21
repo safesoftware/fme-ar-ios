@@ -237,8 +237,10 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
         if let virtualObjectNode = self.sceneView.scene.rootNode.childNode(withName: "VirtualObjectContent", recursively: true) {
             for childNode in virtualObjectNode.childNodes {
                 if let name = childNode.name {
-                    print("Asset Name = '\(name)' with opacity = \(childNode.opacity)")
-                    assets.append(Asset(name: name, selected: childNode.opacity > 0.2))
+                    if name != VirtualObject.viewpointParentNodeName {
+                        print("Asset Name = '\(name)' with opacity = \(childNode.opacity)")
+                        assets.append(Asset(name: name, selected: childNode.opacity > 0.2))
+                    }
                 }
             }
         }
