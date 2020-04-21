@@ -43,9 +43,12 @@ class GeolocationMarkerNode: SCNNode {
             
             if !text.isEmpty {
                 if textGeometry == nil {
+                    
+                    let fontSize = UserDefaults.standard.float(for: .labelFontSize)
+                    
                     textGeometry = SCNText(string: "", extrusionDepth: 0.0)
                     textGeometry!.firstMaterial = markerGeometry.firstMaterial
-                    textGeometry!.font = UIFont(name: "Helvetica", size: 10)
+                    textGeometry!.font = UIFont(name: "Helvetica", size: CGFloat(fontSize))
                     let textNode = SCNNode(geometry: textGeometry)
                     let billboardConstraint = SCNBillboardConstraint()
                     billboardConstraint.freeAxes = SCNBillboardAxis.Y

@@ -3,7 +3,7 @@
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -594,7 +594,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="▿" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UYe-wY-eh0" userLabel="Model Indicator Down">
-                                <rect key="frame" x="172.5" y="598" width="30" height="30"/>
+                                <rect key="frame" x="172.5" y="595.5" width="30" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="Y4l-pv-pIj"/>
                                     <constraint firstAttribute="width" constant="30" id="hlr-fA-vNS"/>
@@ -629,8 +629,8 @@
                                 </connections>
                             </button>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="❑ 12345.6m x 12345.6m x 12345.6m" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SvP-nn-Flw">
-                                <rect key="frame" x="98" y="635" width="179" height="12"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                <rect key="frame" x="78" y="632.5" width="219" height="14.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -641,7 +641,7 @@
                                     <constraint firstAttribute="height" constant="12" id="iD3-kb-Q8x"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="179" id="qq5-NI-K1I"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                                 <connections>
@@ -717,7 +717,7 @@
                             <constraint firstItem="VnN-gI-Ngn" firstAttribute="leading" secondItem="Dkl-Z1-aiT" secondAttribute="leading" id="eB5-OW-eBk"/>
                             <constraint firstItem="aya-a4-2Pv" firstAttribute="bottom" secondItem="eXn-YA-YKa" secondAttribute="bottom" constant="20" id="eHd-L3-2SP"/>
                             <constraint firstAttribute="trailing" secondItem="mUI-Nh-a1I" secondAttribute="trailing" id="ffH-bd-OsU"/>
-                            <constraint firstItem="eXn-YA-YKa" firstAttribute="leading" secondItem="SvP-nn-Flw" secondAttribute="trailing" constant="30" id="gzq-5g-glU"/>
+                            <constraint firstItem="eXn-YA-YKa" firstAttribute="leading" secondItem="SvP-nn-Flw" secondAttribute="trailing" constant="10" id="gzq-5g-glU"/>
                             <constraint firstItem="Fop-5d-BfL" firstAttribute="centerX" secondItem="Dkl-Z1-aiT" secondAttribute="centerX" id="hDY-cF-lI1"/>
                             <constraint firstItem="VnN-gI-Ngn" firstAttribute="top" secondItem="Dkl-Z1-aiT" secondAttribute="top" id="hu6-BP-d80"/>
                             <constraint firstItem="8Wj-m5-mFL" firstAttribute="top" secondItem="aya-a4-2Pv" secondAttribute="top" constant="10" id="i2V-ZV-2Th"/>
