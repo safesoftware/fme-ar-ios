@@ -60,7 +60,7 @@ class ButtonNode: SKNode {
             self.labelNode = SKLabelNode(text: text)
             self.labelNode!.fontName = "Arial-BoldMT"
             self.labelNode!.fontColor = .white
-            self.labelNode!.fontSize = 10
+            self.labelNode!.fontSize = CGFloat(UserDefaults.standard.float(for: .labelFontSize))
             self.labelNode!.horizontalAlignmentMode = .left
             self.labelNode!.verticalAlignmentMode = .bottom
 //            self.addChild(self.labelNode!)
@@ -137,7 +137,7 @@ class PointLabelNode: SKNode {
         
         self.labelNode = SKLabelNode(text: "")
         self.labelNode!.fontName = "Arial-BoldMT"
-        self.labelNode.fontSize = 10
+        self.labelNode.fontSize = CGFloat(UserDefaults.standard.float(for: .labelFontSize))
         self.labelNode.horizontalAlignmentMode = .left
         self.labelNode.verticalAlignmentMode = .bottom
         

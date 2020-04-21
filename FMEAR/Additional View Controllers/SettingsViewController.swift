@@ -14,6 +14,7 @@ enum Setting: String {
     case drawDetectedPlane
     case drawAnchor
     case drawGeomarker
+    case labelFontSize
     
     static func registerDefaults() {
         UserDefaults.standard.register(defaults: [
@@ -22,7 +23,8 @@ enum Setting: String {
             Setting.estimateLight.rawValue: false,
             Setting.drawDetectedPlane.rawValue: true,
             Setting.drawAnchor.rawValue: true,
-            Setting.drawGeomarker.rawValue: true
+            Setting.drawGeomarker.rawValue: true,
+            Setting.labelFontSize.rawValue: 12.0
         ])
     }
 }
@@ -33,6 +35,13 @@ extension UserDefaults {
     }
     func set(_ bool: Bool, for setting: Setting) {
         set(bool, forKey: setting.rawValue)
+    }
+    
+    func float(for setting: Setting) -> Float {
+        return float(forKey: setting.rawValue)
+    }
+    func set(_ float: Float, for setting: Setting) {
+        set(float, forKey: setting.rawValue)
     }
 }
 
