@@ -264,6 +264,7 @@ extension ViewController: FileManagerDelegate {
             if viewpoints.isEmpty {
                 let viewpointLabelNode = self.overlayView.labelNode(labelName: self.viewpointLabelName)
                 viewpointLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
+                
                 if isDefaultAnchor {
                     viewpointLabelNode.text = "❂ Anchor (Default)"
                 } else {
@@ -275,6 +276,9 @@ extension ViewController: FileManagerDelegate {
                 // The FME coordinate z axis = ARKit y axis
                 // The FME coordinate y axis = ARKit z axis
                 modelNode.position = SCNVector3(-anchor.x, -anchor.y, anchor.z)
+            } else {
+                // If we have a viewpont, we should always show it at the beginning
+                UserDefaults.standard.set(true, for: .drawAnchor)
             }
             
             // Rotate to Y up
@@ -326,7 +330,6 @@ extension ViewController: FileManagerDelegate {
                         let viewpoint = object.viewpoints[index]
                         
                         let viewpointLabelNode = self.overlayView.labelNode(labelName: viewpoint.id.uuidString)
-                        //viewpointLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
 
                         if let name = viewpoint.name, !name.isEmpty {
                             viewpointLabelNode.text = name
@@ -347,6 +350,10 @@ extension ViewController: FileManagerDelegate {
                         geomarker?.geolocation = geolocation
                         geomarker?.simdPosition = position
                         geomarker?.anchor = self.settings?.anchors.first
+                        
+                        // If there is a geolocation, we should always show
+                        // the geolocation at the beginning
+                        UserDefaults.standard.set(true, for: .drawGeomarker)
                     }
                 }
             }
