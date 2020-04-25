@@ -41,11 +41,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-    func application(_ app: UIApplication, open inputURL: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        print("Launching app with url '\(inputURL)'...")
+    func application(_ app: UIApplication, open openURL: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        print("Launching app with url '\(openURL)'...")
         
-        // Ensure the URL is a file URL
-        guard inputURL.isFileURL else { return false }
+        var fileURL : URL
+        if !openURL.isFileURL {
+            guard let sendingAppID = options[.sourceApplication] as? String else {
+                return false;
+            }
+            if !sendingAppID.elementsEqual("com.safe.fmeexpress") {
+                print("Application was not launched by FME Express")
+                return false;
+            }
+            guard let components = NSURLComponents(url: openURL, resolvingAgainstBaseURL: true),
+                let params = components.queryItems else {
+                    print("Missing components in URL: \(openURL)")
+                    return false
+            }
+            guard let fileURLString = params.first(where: { $0.name == "fileURL"})?.value else {
+                print("Missing fileURL in openURL: \(openURL)")
+                return false;
+            }
+            print("Obtained file url string: '\(fileURLString)")
+            fileURL = URL(string: fileURLString)!
+        } else {
+            fileURL = openURL
+        }
                 
         // Reveal / import the document at the URL
         if window?.rootViewController as? DocumentBrowserViewController == nil {
@@ -57,10 +78,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         guard let documentBrowserViewController = window?.rootViewController as? DocumentBrowserViewController else { return false }
 
-        documentBrowserViewController.revealDocument(at: inputURL, importIfNeeded: true) { (revealedDocumentURL, error) in
+        documentBrowserViewController.revealDocument(at: fileURL, importIfNeeded: true) { (revealedDocumentURL, error) in
             if let error = error {
                 // Handle the error appropriately
-                print("Failed to reveal the document at URL \(inputURL) with error: '\(error)'")
+                print("Failed to reveal the document at URL \(fileURL) with error: '\(error)'")
                 return
             }
             
