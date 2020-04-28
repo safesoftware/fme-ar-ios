@@ -81,6 +81,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		345D836A24525460000E0F10 /* FME AR.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "FME AR.entitlements"; sourceTree = "<group>"; };
 		6B2F710320214B25003812DB /* DocumentIcon-fmear-320x320px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentIcon-fmear-320x320px.png"; sourceTree = "<group>"; };
 		6B2F710420214B27003812DB /* DocumentIcon-fmear-64x64px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentIcon-fmear-64x64px.png"; sourceTree = "<group>"; };
 		6B2F710520214B28003812DB /* DocumentIcon-fmear-22x29px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentIcon-fmear-22x29px.png"; sourceTree = "<group>"; };
@@ -232,6 +233,7 @@
 		6BA3AA601F4EF66F00CE75E6 /* FMEAR */ = {
 			isa = PBXGroup;
 			children = (
+				345D836A24525460000E0F10 /* FME AR.entitlements */,
 				6B2A1F76232C27840003240D /* View Models */,
 				6BA8519520478B73009D26B4 /* Images */,
 				6B2F710220214AF7003812DB /* Document Icons */,
@@ -730,6 +732,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "FMEAR/FME AR.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 26;
 				DEVELOPMENT_TEAM = B3R9YZM37G;
@@ -753,6 +756,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "FMEAR/FME AR.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 26;
 				DEVELOPMENT_TEAM = B3R9YZM37G;
