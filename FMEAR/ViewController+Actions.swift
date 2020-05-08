@@ -110,6 +110,10 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
         self.centerObjectDistanceLabel.isHidden = !on
         self.centerMarker.isHidden = !on
     }
+    
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleEnablePeopleOcclusion on: Bool) {
+        self.resetTracking()
+    }
 
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float) {
         if let virtualObjectNode = virtualObject() {

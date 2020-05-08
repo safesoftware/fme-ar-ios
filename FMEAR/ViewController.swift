@@ -51,6 +51,19 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         return configuration
     }()
     
+    func setFrameSemantics(configuration: ARWorldTrackingConfiguration) {
+        if #available(iOS 13, *) {
+            if ARWorldTrackingConfiguration.supportsFrameSemantics(ARConfiguration.FrameSemantics.personSegmentationWithDepth) {
+                let userDefaults = UserDefaults.standard
+                if userDefaults.bool(for: .enablePeopleOcclusion) {
+                    configuration.frameSemantics.insert(.personSegmentationWithDepth)
+                } else {
+                    configuration.frameSemantics.remove(.personSegmentationWithDepth)
+                }
+            }
+        }
+    }
+    
     // MARK: - Virtual Object Manipulation Properties
     
     //var dragOnInfinitePlanesEnabled = false
@@ -486,6 +499,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     }
 	
 	func resetTracking() {
+        setFrameSemantics(configuration: standardConfiguration)
 		session.run(standardConfiguration, options: [.resetTracking, .removeExistingAnchors])
 		
 		textManager.scheduleMessage("FIND A SURFACE TO PLACE AN OBJECT",

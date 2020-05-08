@@ -15,6 +15,7 @@ enum Setting: String {
     case drawAnchor
     case drawGeomarker
     case showCenterDistance
+    case enablePeopleOcclusion
     case labelFontSize
     
     static func registerDefaults() {
@@ -26,6 +27,7 @@ enum Setting: String {
             Setting.drawAnchor.rawValue: true,
             Setting.drawGeomarker.rawValue: true,
             Setting.showCenterDistance.rawValue: true,
+            Setting.enablePeopleOcclusion.rawValue: true,
             Setting.labelFontSize.rawValue: 12.0
         ])
     }
@@ -53,6 +55,7 @@ protocol SettingsViewControllerDelegate: class {
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawAnchor on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawGeomarker on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleShowCenterDistance on: Bool)
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleEnablePeopleOcclusion on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeIntensity intensity: Float)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeTemperature temperature: Float)
@@ -73,6 +76,8 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var drawAnchorSwitch: UISwitch!
     @IBOutlet weak var drawGeomarkerSwitch: UISwitch!
     @IBOutlet weak var showCenterDistanceSwitch: UISwitch!
+    @IBOutlet weak var enablePeopleOcclusionSwitch: UISwitch!
+    @IBOutlet weak var enablePeopleOcclusionLabel: UILabel!
     
     
     weak var delegate: SettingsViewControllerDelegate?
@@ -114,6 +119,17 @@ class SettingsViewController: UITableViewController {
         drawAnchorSwitch.isOn = defaults.bool(for: .drawAnchor)
         drawGeomarkerSwitch.isOn = defaults.bool(for: .drawGeomarker)
         showCenterDistanceSwitch.isOn = defaults.bool(for: .showCenterDistance)
+        enablePeopleOcclusionSwitch.isOn = defaults.bool(for: .enablePeopleOcclusion)
+        
+        // Disable People Occlusion option for iOS prior to 13.0
+        if #available(iOS 13, *) {
+            enablePeopleOcclusionSwitch.isEnabled = true
+        } else {
+            enablePeopleOcclusionLabel.text = "People Occlusion (iOS 13+)"
+            enablePeopleOcclusionSwitch.isEnabled = false
+            enablePeopleOcclusionSwitch.isOn = false
+        }
+
         updateScaleSettings()
     }
     
@@ -189,6 +205,12 @@ class SettingsViewController: UITableViewController {
                 tableView.reloadData()
                 if delegate != nil {
                     delegate?.settingsViewControllerDelegate(self, didToggleShowCenterDistance: sender.isOn)
+                }
+            case enablePeopleOcclusionSwitch:
+                defaults.set(sender.isOn, for: .enablePeopleOcclusion)
+                tableView.reloadData()
+                if delegate != nil {
+                    delegate?.settingsViewControllerDelegate(self, didToggleEnablePeopleOcclusion: sender.isOn)
                 }
             default: break
 		}
