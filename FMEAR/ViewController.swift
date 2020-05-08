@@ -17,8 +17,8 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     let viewpointLabelName = "Viewpoint Label"
     
     // Safe color palette
-    let primaryOrangeColor = UIColor(hex: "#E98300FF")
-    let primaryDarkGrayColor = UIColor(hex: "#030303FF")
+    let primaryOrangeColor = UIColor(hex: "#E98300FF") ?? UIColor.orange
+    let primaryDarkGrayColor = UIColor(hex: "#030303FF") ?? UIColor.darkGray
     
     var document: UIDocument?
     var documentOpened = false

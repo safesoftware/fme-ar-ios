@@ -130,8 +130,8 @@ extension ViewController: ARSCNViewDelegate {
                             
                             if viewpoint.id == virtualObject.currentViewpoint &&
                                 virtualObject.viewpoints.count > 1 {
-                                labelNode.lineNode.strokeColor = .green
-                                labelNode.pointNode.strokeColor = .green
+                                labelNode.lineNode.strokeColor = self.primaryOrangeColor
+                                labelNode.pointNode.strokeColor = self.primaryOrangeColor
                             } else {
                                 labelNode.lineNode.strokeColor = .white
                                 labelNode.pointNode.strokeColor = .white
