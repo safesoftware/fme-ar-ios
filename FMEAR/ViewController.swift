@@ -16,6 +16,10 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     let geomarkerNodeName = "Geomarker Node"
     let viewpointLabelName = "Viewpoint Label"
     
+    // Safe color palette
+    let primaryOrangeColor = UIColor(hex: "#E98300FF")
+    let primaryDarkGrayColor = UIColor(hex: "#030303FF")
+    
     var document: UIDocument?
     var documentOpened = false
     var modelPath: URL?
@@ -390,6 +394,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         // Center marker and distance label
         self.centerObjectDistanceLabel.layer.cornerRadius = 10.0
         self.centerObjectDistanceLabel.layer.masksToBounds = true
+        self.centerObjectDistanceLabel.backgroundColor = primaryOrangeColor
+//        if let cgColor = UIColor(hex: "#E9830088")?.cgColor {
+//            self.centerObjectDistanceLabel.layer.borderColor = cgColor // Figma
+//            self.centerObjectDistanceLabel.layer.borderWidth = 1.0
+//        }
         self.centerMarker.isHidden = !UserDefaults.standard.bool(for: .showCenterDistance)
     }
 	
@@ -611,10 +620,10 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
                                     
                     self.centerObjectDistanceLabel.text = "\(distance)\(unit)"
                     self.centerObjectDistanceLabel.isHidden = false
-                    self.centerMarker.textColor = .white
+                    self.centerMarker.textColor = primaryOrangeColor
                 } else {
                     self.centerObjectDistanceLabel.isHidden = true
-                    self.centerMarker.textColor = .darkGray
+                    self.centerMarker.textColor = primaryDarkGrayColor
                 }
             }
         }
