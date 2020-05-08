@@ -92,6 +92,8 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     @IBOutlet weak var scaleLabel: UILabel!
     @IBOutlet weak var headingLabel: UILabel!
     @IBOutlet weak var expirationDateLabel: RoundButton!
+    @IBOutlet weak var centerObjectDistanceLabel: UILabel!
+    @IBOutlet weak var centerMarker: UILabel!
     
     // Indicators to show the direction to the model when the model
     // is outside the screen area.
@@ -372,6 +374,10 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         expirationDateLabel.isHidden = true
         expirationDateLabel.layer.zPosition = 1
         
+        // Center marker and distance label
+        self.centerObjectDistanceLabel.layer.cornerRadius = 10.0
+        self.centerObjectDistanceLabel.layer.masksToBounds = true
+        self.centerMarker.isHidden = !UserDefaults.standard.bool(for: .showCenterDistance)
     }
 	
     // MARK: - Gesture Recognizers
@@ -557,7 +563,47 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         if let path = modelPath {
             loadModel(path: path)
         }
-        
+     
+        updateCenterDistance(frame: frame)
+    }
+    
+    func updateCenterDistance(frame: ARFrame) {
+        if UserDefaults.standard.bool(for: .showCenterDistance) {
+            if let screenCenter = self.screenCenter, let sceneView = self.sceneView {
+                let hitResult = sceneView.hitTest(screenCenter, options: [:])
+                if !hitResult.isEmpty {
+                    let objectPosition = hitResult.first!.worldCoordinates
+                    let translation = frame.camera.transform.translation
+                    let cameraPosition = SCNVector3(translation.x, translation.y, translation.z)
+                    var length = SCNVector3.distanceFrom(vector: cameraPosition, toVector: objectPosition)
+                    var unit = ""
+                    var distance = ""
+                    
+                    if length < 1.0 {
+                        // Display as centimeter
+                        unit = "cm"
+                        length *= 100
+                        distance = String(format: "%.0f", length)
+                    } else if length < 10.0 {
+                        // Display as meter
+                        unit = "m"
+                        distance = String(format: "%.1f", length)
+                    }
+                    else {
+                        // Display as meter
+                        unit = "m"
+                        distance = String(format: "%.0f", length)
+                    }
+                                    
+                    self.centerObjectDistanceLabel.text = "\(distance)\(unit)"
+                    self.centerObjectDistanceLabel.isHidden = false
+                    self.centerMarker.textColor = .white
+                } else {
+                    self.centerObjectDistanceLabel.isHidden = true
+                    self.centerMarker.textColor = .darkGray
+                }
+            }
+        }
     }
     
     // MARK: - Log

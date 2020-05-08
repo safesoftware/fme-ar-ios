@@ -14,6 +14,7 @@ enum Setting: String {
     case drawDetectedPlane
     case drawAnchor
     case drawGeomarker
+    case showCenterDistance
     case labelFontSize
     
     static func registerDefaults() {
@@ -24,6 +25,7 @@ enum Setting: String {
             Setting.drawDetectedPlane.rawValue: true,
             Setting.drawAnchor.rawValue: true,
             Setting.drawGeomarker.rawValue: true,
+            Setting.showCenterDistance.rawValue: true,
             Setting.labelFontSize.rawValue: 12.0
         ])
     }
@@ -50,6 +52,7 @@ protocol SettingsViewControllerDelegate: class {
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawDetectedPlane on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawAnchor on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawGeomarker on: Bool)
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleShowCenterDistance on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeIntensity intensity: Float)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeTemperature temperature: Float)
@@ -69,6 +72,7 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var drawDetectedPlaneSwitch: UISwitch!
     @IBOutlet weak var drawAnchorSwitch: UISwitch!
     @IBOutlet weak var drawGeomarkerSwitch: UISwitch!
+    @IBOutlet weak var showCenterDistanceSwitch: UISwitch!
     
     
     weak var delegate: SettingsViewControllerDelegate?
@@ -109,6 +113,7 @@ class SettingsViewController: UITableViewController {
         drawDetectedPlaneSwitch.isOn = defaults.bool(for: .drawDetectedPlane)
         drawAnchorSwitch.isOn = defaults.bool(for: .drawAnchor)
         drawGeomarkerSwitch.isOn = defaults.bool(for: .drawGeomarker)
+        showCenterDistanceSwitch.isOn = defaults.bool(for: .showCenterDistance)
         updateScaleSettings()
     }
     
@@ -178,6 +183,12 @@ class SettingsViewController: UITableViewController {
                 tableView.reloadData()
                 if delegate != nil {
                     delegate?.settingsViewControllerDelegate(self, didToggleDrawGeomarker: sender.isOn)
+                }
+            case showCenterDistanceSwitch:
+                defaults.set(sender.isOn, for: .showCenterDistance)
+                tableView.reloadData()
+                if delegate != nil {
+                    delegate?.settingsViewControllerDelegate(self, didToggleShowCenterDistance: sender.isOn)
                 }
             default: break
 		}

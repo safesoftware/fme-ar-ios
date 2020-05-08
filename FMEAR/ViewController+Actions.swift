@@ -105,6 +105,11 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
         geolocationNode()?.isHidden = !on
         overlayView.childNode(withName: self.geomarkerLabelName)?.isHidden = !on
     }
+    
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleShowCenterDistance on: Bool) {
+        self.centerObjectDistanceLabel.isHidden = !on
+        self.centerMarker.isHidden = !on
+    }
 
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float) {
         if let virtualObjectNode = virtualObject() {
