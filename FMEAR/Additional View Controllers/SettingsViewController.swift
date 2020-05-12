@@ -6,6 +6,7 @@ Popover view controller for app settings.
 */
 
 import UIKit
+import ARKit
 
 enum Setting: String {
 //    case scaleWithPinchGesture
@@ -123,13 +124,20 @@ class SettingsViewController: UITableViewController {
         
         // Disable People Occlusion option for iOS prior to 13.0
         if #available(iOS 13, *) {
-            enablePeopleOcclusionSwitch.isEnabled = true
+            if ARWorldTrackingConfiguration.supportsFrameSemantics(ARConfiguration.FrameSemantics.personSegmentationWithDepth) {
+                enablePeopleOcclusionSwitch.isEnabled = true
+            } else {
+                enablePeopleOcclusionSwitch.isEnabled = false
+            }
         } else {
-            enablePeopleOcclusionLabel.text = "People Occlusion (iOS 13+)"
             enablePeopleOcclusionSwitch.isEnabled = false
-            enablePeopleOcclusionSwitch.isOn = false
         }
 
+        if enablePeopleOcclusionSwitch.isEnabled == false {
+            enablePeopleOcclusionLabel.text = "People Occlusion (N/A)"
+            enablePeopleOcclusionSwitch.isOn = false
+        }
+        
         updateScaleSettings()
     }
     
