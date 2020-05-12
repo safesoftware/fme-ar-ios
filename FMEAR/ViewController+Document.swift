@@ -123,21 +123,21 @@ extension ViewController: FileManagerDelegate {
             print("No settings")
             settings = nil
         }
-    
-        DispatchQueue.main.async {
-            self.scaleMode = .customScale
-            self.scaleLockEnabled = false
-            if let scaling = self.settings?.scaling {
-                if scaling == 1.0 {
-                    self.scaleMode = .fullScale
-                } else {
-                    self.scaleMode = .customScale
-                }
 
-                self.scaleLockEnabled = true
-                self.scaling = scaling
+        self.scaleMode = .customScale
+        self.scaleLockEnabled = false
+        if let scaling = self.settings?.scaling {
+            if scaling == 1.0 {
+                self.scaleMode = .fullScale
+            } else {
+                self.scaleMode = .customScale
             }
-                   
+
+            self.scaleLockEnabled = true
+            self.scaling = scaling
+        }
+
+        DispatchQueue.main.async {                   
             // Update the scale options button
             self.setShowScaleOptionsButton(mode: self.scaleMode, lockOn: self.scaleLockEnabled)
         }
