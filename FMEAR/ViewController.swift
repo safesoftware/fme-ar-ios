@@ -50,8 +50,9 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     var standardConfiguration: ARWorldTrackingConfiguration = {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
-        configuration.worldAlignment = ARConfiguration.WorldAlignment.gravityAndHeading
+        configuration.worldAlignment = ARConfiguration.WorldAlignment.gravityAndHeading // This gravityAndHeading keeps updating the heading causing the model to rotate
         configuration.isLightEstimationEnabled = true
+        initSceneReconstruction(configuration: configuration)
         return configuration
     }()
     
@@ -64,6 +65,14 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
                 } else {
                     configuration.frameSemantics.remove(.personSegmentationWithDepth)
                 }
+            }
+        }
+    }
+    
+    class func initSceneReconstruction(configuration: ARWorldTrackingConfiguration) {
+        if #available(iOS 13.4, *) {
+            if ARWorldTrackingConfiguration.supportsSceneReconstruction(ARConfiguration.SceneReconstruction.meshWithClassification) {
+                configuration.sceneReconstruction = .meshWithClassification
             }
         }
     }
