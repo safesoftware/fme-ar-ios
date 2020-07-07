@@ -7,6 +7,19 @@ ARSCNViewDelegate interactions for `ViewController`.
 
 import ARKit
 
+extension SCNVector3 {
+    static func distanceFrom(vector vector1: SCNVector3, toVector vector2: SCNVector3) -> Float {
+        let x0 = vector1.x
+        let x1 = vector2.x
+        let y0 = vector1.y
+        let y1 = vector2.y
+        let z0 = vector1.z
+        let z1 = vector2.z
+
+        return sqrtf(powf(x1-x0, 2) + powf(y1-y0, 2) + powf(z1-z0, 2))
+    }
+}
+
 extension ViewController: ARSCNViewDelegate {
     // MARK: - ARSCNViewDelegate
     
@@ -117,8 +130,8 @@ extension ViewController: ARSCNViewDelegate {
                             
                             if viewpoint.id == virtualObject.currentViewpoint &&
                                 virtualObject.viewpoints.count > 1 {
-                                labelNode.lineNode.strokeColor = .green
-                                labelNode.pointNode.strokeColor = .green
+                                labelNode.lineNode.strokeColor = self.primaryOrangeColor
+                                labelNode.pointNode.strokeColor = self.primaryOrangeColor
                             } else {
                                 labelNode.lineNode.strokeColor = .white
                                 labelNode.pointNode.strokeColor = .white
