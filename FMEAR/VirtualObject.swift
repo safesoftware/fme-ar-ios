@@ -131,8 +131,10 @@ class VirtualObject: SCNReferenceNode, ReactsToScale {
         // The FME coordinate y axis = ARKit -z axis
         // We need to offset/subtract the position from the model position to
         // make the position appear as the center of the anchor.
-        modelNode?.position = SCNVector3Make(-position.x, -position.z, position.y)
-        currentViewpoint = nil
+        let newPosition = SCNVector3Make(-position.x, -position.z, position.y)
+        let action = SCNAction.move(to: newPosition, duration: 1.0)
+        action.timingMode = .easeInEaseOut
+        modelNode?.runAction(action)
     }
     
     // This function initializes the viewpoint scene nodes and adds them to
