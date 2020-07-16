@@ -154,10 +154,10 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     
     func overlaySKSceneDelegate(_ overlayView: OverlaySKScene, didTapNode node: SKNode) {
         
-        if let nodeName = node.name, let geolocationNode = self.geolocationNode() {
+        if let nodeName = node.name {
             print("Tapped \(nodeName)")
             
-            if nodeName == self.geomarkerLabelName  {
+            if nodeName == self.geomarkerLabelName, let geolocationNode = self.geolocationNode() {
                 
                 if self.updateUserLocationEnabled {
                     // Disable user location (and geolocation anchor) update since
