@@ -69,7 +69,7 @@ class ButtonNode: SKNode {
     
     var labelNode: SKLabelNode
     var shapeNode: SKShapeNode
-    let cornerRadius: CGFloat = 5.0
+    let cornerRadius: CGFloat = 10.0
     let maxWidth: CGFloat = 150
     private(set) var size: CGSize = CGSize()
     let padding: CGFloat = 20.0
