@@ -10,15 +10,16 @@ import SceneKit
 import UIKit
 import CoreLocation
 
+struct Texts {
+    static let moveModelHere = "Move model here"
+    static let rescan = "Rescan"
+}
+
 class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelegate {
     
     let geomarkerLabelName = "Geomarker Label"
     let geomarkerNodeName = "Geomarker Node"
     let viewpointLabelName = "Viewpoint Label"
-    
-    // Safe color palette
-    let primaryOrangeColor = UIColor(hex: "#E98300FF") ?? UIColor.orange
-    let primaryDarkGrayColor = UIColor(hex: "#030303FF") ?? UIColor.darkGray
     
     var document: UIDocument?
     var documentOpened = false
@@ -41,6 +42,10 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     var scaleMode: ScaleMode = .customScale
     var scaleLockEnabled: Bool = false
     var scaling: Double?
+    
+    // Location properties
+    var updateUserLocationEnabled = true
+    var latestLocation = CLLocation(latitude: 0.0, longitude: 0.0)
     
     // MARK: - ARKit Config Properties
     
@@ -137,12 +142,15 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     }
     
     func didUpdateLocation(_ locationService: LocationService, location: CLLocation) {
-//        print("UPDATE LOCATION: \(location)")
+        latestLocation = location
+        
+        if !updateUserLocationEnabled {
+            return   // Skip the location
+        }
         
         if let geomarker = geolocationNode() {
-            //print("UPDATING GEOMARKER...")
-            
             geomarker.userLocation = location
+            self.isModelAtGeolocation = false
             
             if isModelAtGeolocation, let newLocation = geomarker.calculatePosition(), let model = virtualObject() {
                 let action = SCNAction.move(to: newLocation, duration: 0.0)
@@ -307,15 +315,13 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         locationService?.stopLocationService()
         
 		session.pause()
-        
-        print("viewWillDisappear")
+
         if let document = self.document {
             closeDocument(document: document)
         }
 	}
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        print("viewWillTransition = \(size)")
         self.viewSize = size
     }
 	
@@ -365,17 +371,15 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         sceneView.overlaySKScene = overlayView
         
 		//sceneView.scene.enableEnvironmentMapWithIntensity(25, queue: serialQueue)
-        
-        
-		
+
         // Debug visualizations
-//        sceneView.debugOptions =  [
-//            SCNDebugOptions.showBoundingBoxes,
-//            SCNDebugOptions.showWireframe,
-//            SCNDebugOptions.showLightExtents,
-//            ARSCNDebugOptions.showWorldOrigin,
-//            ARSCNDebugOptions.showFeaturePoints
-//        ]
+        //        sceneView.debugOptions =  [
+        //            SCNDebugOptions.showBoundingBoxes,
+        //            SCNDebugOptions.showWireframe,
+        //            SCNDebugOptions.showLightExtents,
+        //            ARSCNDebugOptions.showWorldOrigin,
+        //            ARSCNDebugOptions.showFeaturePoints
+        //        ]
         
 		setupFocusSquare()
 		
@@ -403,11 +407,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         // Center marker and distance label
         self.centerObjectDistanceLabel.layer.cornerRadius = 10.0
         self.centerObjectDistanceLabel.layer.masksToBounds = true
-        self.centerObjectDistanceLabel.backgroundColor = primaryOrangeColor
-//        if let cgColor = UIColor(hex: "#E9830088")?.cgColor {
-//            self.centerObjectDistanceLabel.layer.borderColor = cgColor // Figma
-//            self.centerObjectDistanceLabel.layer.borderWidth = 1.0
-//        }
+        self.centerObjectDistanceLabel.backgroundColor = DesignSystem.Colour.SemanticPalette.mayaBlueDark10
         self.centerMarker.isHidden = !UserDefaults.standard.bool(for: .showCenterDistance)
     }
 	
@@ -422,15 +422,6 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         if let hit = hitResultsFeaturePoints.first {
             sceneView.session.add(anchor: ARAnchor(transform: hit.worldTransform))
         }
-        
-//        for result in hitResultsFeaturePoints {
-//            print("hit result = \(result)")
-//        }
-//        
-//        let hitResults = sceneView.hitTest(location, options: nil)
-//        for result in hitResults {
-//            logSCNHitTestResult(result)
-//        }
 	}
 	
 	override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -438,12 +429,6 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 	}
 	
 	override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        let location = touches.first!.location(in: sceneView)
-//        if addObjectButton.point(inside: location, with: nil) {
-//            chooseObject(addObjectButton)
-//            return
-//        }
-        
 		virtualObjectManager.reactToTouchesEnded(touches, with: event)
 	}
 	
@@ -476,10 +461,6 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
                 documentOpened = true
             }
         }
-
-//        if virtualObjectManager.virtualObjects.isEmpty {
-//            textManager.scheduleMessage("TAP + TO PLACE AN OBJECT", inSeconds: 7.5, messageType: .contentPlacement)
-//        }
 	}
 		
     func updatePlane(node: SCNNode, anchor: ARPlaneAnchor) {
@@ -629,10 +610,10 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
                                     
                     self.centerObjectDistanceLabel.text = "\(distance)\(unit)"
                     self.centerObjectDistanceLabel.isHidden = false
-                    self.centerMarker.textColor = primaryOrangeColor
+                    self.centerMarker.textColor = DesignSystem.Colour.SemanticPalette.mayaBlueDark10
                 } else {
                     self.centerObjectDistanceLabel.isHidden = true
-                    self.centerMarker.textColor = primaryDarkGrayColor
+                    self.centerMarker.textColor = DesignSystem.Colour.NeutralPalette.grey
                 }
             }
         }

@@ -85,8 +85,6 @@ extension ViewController: ARSCNViewDelegate {
                 let worldPosition = geomarker.position
                 let geomarkerPosition = SCNVector3(worldPosition.x, worldPosition.y, worldPosition.z)
                 let screenCoord = self.sceneView.projectPoint(geomarkerPosition)
-                let latitude = String(format: "%.6f", markerLocation.coordinate.latitude)
-                let longitude = String(format: "%.6f", markerLocation.coordinate.longitude)
                 let distance = String(format: "%.2f", markerLocation.distance(from: userLocation))
                 
                 if viewSize.width > 0 && viewSize.height > 0 {
@@ -98,11 +96,17 @@ extension ViewController: ARSCNViewDelegate {
                         x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
                         y: viewSize.height - CGFloat(screenCoord.y))
 
-                    let labelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
-                    labelNode.text = "📍 \(latitude), \(longitude) (\(distance)m)"
-                    labelNode.point = geomarkerScreenPosition
-                    labelNode.buttonText = "Move model here >>>"
-                    labelNode.isHidden = !(UserDefaults.standard.bool(for: .drawGeomarker))
+                    var labelNode = self.overlayView.labelNodeOrNil(labelName: self.geomarkerLabelName)
+                    if labelNode == nil {
+                        labelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
+                        labelNode!.buttonNode.secondaryText = Texts.moveModelHere
+                        labelNode!.buttonNode.callToAction = true
+                        labelNode!.isHidden = !(UserDefaults.standard.bool(for: .drawGeomarker))
+                    }
+                    
+                    labelNode?.text = "Geolocation Anchor (\(distance)m)"
+                    labelNode?.point = geomarkerScreenPosition
+
                 }
             }
         }
@@ -127,15 +131,6 @@ extension ViewController: ARSCNViewDelegate {
                         if let labelNode = self.overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString) {
                             labelNode.point = screenPosition
                             labelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
-                            
-                            if viewpoint.id == virtualObject.currentViewpoint &&
-                                virtualObject.viewpoints.count > 1 {
-                                labelNode.lineNode.strokeColor = self.primaryOrangeColor
-                                labelNode.pointNode.strokeColor = self.primaryOrangeColor
-                            } else {
-                                labelNode.lineNode.strokeColor = .white
-                                labelNode.pointNode.strokeColor = .white
-                            }
                         }
                     }
                 }
@@ -166,8 +161,6 @@ extension ViewController: ARSCNViewDelegate {
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-//        let isPlane = (anchor as? ARPlaneAnchor != nil) ? "PLANE" : "POINT"
-//        print("ARAnchor (\(isPlane)) ADD \(anchor.identifier): \(anchor.transform)")
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         serialQueue.async {
             self.addPlane(node: node, anchor: planeAnchor)
@@ -175,9 +168,7 @@ extension ViewController: ARSCNViewDelegate {
         }
     }
     
-    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {        
-//        let isPlane = (anchor as? ARPlaneAnchor != nil) ? "PLANE" : "POINT"
-//        print("ARAnchor (\(isPlane)) UPDATE \(anchor.identifier): \(anchor.transform)")
+    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         serialQueue.async {
             self.updatePlane(node: node, anchor: planeAnchor)
@@ -186,8 +177,6 @@ extension ViewController: ARSCNViewDelegate {
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didRemove node: SCNNode, for anchor: ARAnchor) {
-//        let isPlane = (anchor as? ARPlaneAnchor != nil) ? "PLANE" : "POINT"
-//        print("ARAnchor (\(isPlane)) REMOVE \(anchor.identifier): \(anchor.transform)")
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
         serialQueue.async {
             self.removePlane(node: node, anchor: planeAnchor)

@@ -194,16 +194,6 @@ class VirtualObject: SCNReferenceNode, ReactsToScale {
             return nil
         }
     }
-
-    func anchorAtViewpoint(viewpointIndex: Int) {
-        if viewpoints.indices.contains(viewpointIndex) {
-            let viewpoint = viewpoints[viewpointIndex]
-            if let position = viewpointPosition(viewpoint: viewpoint) {
-                anchorAt(position: position)
-                currentViewpoint = viewpoint.id
-            }
-        }
-    }
     
     func anchorAtViewpoint(viewpointId: UUID) {
         if let viewpoint = viewpoint(id: viewpointId) {

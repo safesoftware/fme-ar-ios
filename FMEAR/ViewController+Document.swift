@@ -333,6 +333,10 @@ extension ViewController: FileManagerDelegate {
 
                         if let name = viewpoint.name, !name.isEmpty {
                             viewpointLabelNode.text = name
+                            if (object.currentViewpoint == viewpoint.id) {
+                                viewpointLabelNode.buttonNode.secondaryText = "Current viewpoint"
+                                viewpointLabelNode.buttonNode.callToAction = false
+                            }
                         } else {
                             viewpointLabelNode.text = "❂ Viewpoint \(index)"
                             object.viewpoints[index].name = viewpointLabelNode.text

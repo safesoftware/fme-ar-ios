@@ -152,31 +152,68 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     
     // MARK: - OverlaySKSceneDelegate
     
-    func overlaySKSceneDelegate(_: OverlaySKScene, didTapNode node: SKNode) {
+    func overlaySKSceneDelegate(_ overlayView: OverlaySKScene, didTapNode node: SKNode) {
         
-        if let nodeName = node.name {
+        if let nodeName = node.name, let geolocationNode = self.geolocationNode() {
             print("Tapped \(nodeName)")
             
-            if nodeName == self.geomarkerLabelName {
-                let dialogMessage = UIAlertController(title: "Move Model", message: "Are you sure you want to move the model to the geolocation so that the anchor aligns with the geomarker?", preferredStyle: .alert)
+            if nodeName == self.geomarkerLabelName  {
                 
-                // Create OK button with action handler
-                let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
-                    print("Ok button tapped")
-                    self.moveModelToGeolocation()
-                })
-                
-                // Create Cancel button with action handlder
-                let cancel = UIAlertAction(title: "No", style: .cancel) { (action) -> Void in
-                    print("Cancel button tapped")
+                if self.updateUserLocationEnabled {
+                    // Disable user location (and geolocation anchor) update since
+                    // we are going into a modal dialog.
+                    self.updateUserLocationEnabled = false
+                    
+                    var coordinates = ""
+                    if let geolocation = geolocationNode.geolocation {
+                        let latitude = String(format: "%.6f", geolocation.coordinate.latitude)
+                        let longitude = String(format: "%.6f", geolocation.coordinate.longitude)
+                        coordinates = " (\(latitude),\(longitude))"
+                    }
+                    
+                    let dialogMessage = UIAlertController(title: "Move Model",
+                                                          message: "Are you sure you want to move the model to the geolocation\(coordinates) so that the anchor aligns with the geomarker?", preferredStyle: .alert)
+                    
+                    // Create OK button with action handler
+                    let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
+                        self.moveModelToGeolocation()
+                        let geomarkerLabelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
+                        geomarkerLabelNode.buttonNode.secondaryText = Texts.rescan
+                    })
+                    
+                    // Create Cancel button with action handlder
+                    let cancel = UIAlertAction(title: "No", style: .cancel) { (action) -> Void in
+                        // Re-enable user location update
+                        geolocationNode.userLocation = self.latestLocation
+                        self.updateUserLocationEnabled = true
+                    }
+                    
+                    // Present dialog message to user
+                    dialogMessage.addAction(ok)
+                    dialogMessage.addAction(cancel)
+                    self.present(dialogMessage, animated: true, completion: nil)
+                } else {
+                    let dialogMessage = UIAlertController(title: "Rescan location",
+                                                          message: "Do you want to rescan the geolocation?", preferredStyle: .alert)
+                    
+                    // Create OK button with action handler
+                    let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
+                        geolocationNode.userLocation = self.latestLocation
+                        self.updateUserLocationEnabled = true
+                        let geomarkerLabelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
+                        geomarkerLabelNode.buttonNode.secondaryText = Texts.moveModelHere
+                    })
+                    
+                    let cancel = UIAlertAction(title: "No", style: .cancel) { (action) -> Void in
+                        // Do nothing
+                    }
+                    
+                    // Present dialog message to user
+                    dialogMessage.addAction(ok)
+                    dialogMessage.addAction(cancel)
+                    self.present(dialogMessage, animated: true, completion: nil)
                 }
                 
-                //Add OK and Cancel button to dialog message
-                dialogMessage.addAction(ok)
-                dialogMessage.addAction(cancel)
-                
-                // Present dialog message to user
-                self.present(dialogMessage, animated: true, completion: nil)
             } else if let uuid = UUID(uuidString: nodeName), let model = virtualObject() {
                 if let viewpoint = model.viewpoint(id: uuid) {
                     
@@ -189,7 +226,23 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                         // Create OK button with action handler
                         let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
                             print("Ok button tapped")
+                            
+                            // Restore the original viewpoint label
+                            if let currentViewpointId = model.currentViewpoint {
+                                if let currentViewpoint = model.viewpoint(id: currentViewpointId) {
+                                    if let currentViewpointNode = overlayView.labelNodeOrNil(labelName: currentViewpoint.id.uuidString) {
+                                        currentViewpointNode.buttonNode.secondaryText = ""
+                                        currentViewpointNode.buttonNode.callToAction = true
+                                    }
+                                }
+                            }
+                            
                             model.anchorAtViewpoint(viewpointId: viewpoint.id)
+                            
+                            if let newCurrentViewpointNode = overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString) {
+                                newCurrentViewpointNode.buttonNode.secondaryText = "Current viewpoint"
+                                newCurrentViewpointNode.buttonNode.callToAction = false
+                            }
                         })
                         
                         // Create Cancel button with action handlder
