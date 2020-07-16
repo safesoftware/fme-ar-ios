@@ -98,8 +98,6 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         }
     }
     
-    var isModelAtGeolocation: Bool = false
-    
     // SCNSceneRenderer time
     var lastUpdateTime: TimeInterval?
     
@@ -150,13 +148,6 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         
         if let geomarker = geolocationNode() {
             geomarker.userLocation = location
-            self.isModelAtGeolocation = false
-            
-            if isModelAtGeolocation, let newLocation = geomarker.calculatePosition(), let model = virtualObject() {
-                let action = SCNAction.move(to: newLocation, duration: 0.0)
-                action.timingMode = .easeInEaseOut
-                model.runAction(action)
-            }
         }
     }
     
@@ -241,8 +232,6 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
             print("FAILED TO MOVE MODEL TO GEOLOCATION")
             return
         }
-        
-        self.isModelAtGeolocation = true
         
         // If the model content is not at the zero position, we should offset
         // it back to zero (center), and then we move to the anchor position.
