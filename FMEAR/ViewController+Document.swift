@@ -332,13 +332,16 @@ extension ViewController: FileManagerDelegate {
                         let viewpointLabelNode = self.overlayView.labelNode(labelName: viewpoint.id.uuidString)
 
                         if let name = viewpoint.name, !name.isEmpty {
-                            viewpointLabelNode.text = name
+                            viewpointLabelNode.buttonNode.secondaryText = name
                             if (object.currentViewpoint == viewpoint.id) {
-                                viewpointLabelNode.buttonNode.secondaryText = "Current viewpoint"
+                                viewpointLabelNode.buttonNode.text = "CURRENT VIEWPOINT"
                                 viewpointLabelNode.buttonNode.callToAction = false
+                                viewpointLabelNode.callToAction = false
+                            } else {
+                                viewpointLabelNode.callToAction = true
                             }
                         } else {
-                            viewpointLabelNode.text = "❂ Viewpoint \(index)"
+                            viewpointLabelNode.buttonNode.secondaryText = "❂ Viewpoint \(index)"
                             object.viewpoints[index].name = viewpointLabelNode.text
                         }
                     }

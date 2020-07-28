@@ -172,7 +172,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                     }
                     
                     let dialogMessage = UIAlertController(title: "Move Model",
-                                                          message: "Are you sure you want to move the model to the geolocation\(coordinates) so that the anchor aligns with the geomarker?", preferredStyle: .alert)
+                                                          message: "Are you sure you want to move the model to the geolocation anchor at \(coordinates)?", preferredStyle: .alert)
                     
                     // Create OK button with action handler
                     let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
@@ -231,8 +231,9 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                             if let currentViewpointId = model.currentViewpoint {
                                 if let currentViewpoint = model.viewpoint(id: currentViewpointId) {
                                     if let currentViewpointNode = overlayView.labelNodeOrNil(labelName: currentViewpoint.id.uuidString) {
-                                        currentViewpointNode.buttonNode.secondaryText = ""
+                                        currentViewpointNode.buttonNode.text = ""
                                         currentViewpointNode.buttonNode.callToAction = true
+                                        currentViewpointNode.callToAction = true
                                     }
                                 }
                             }
@@ -240,8 +241,9 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                             model.anchorAtViewpoint(viewpointId: viewpoint.id)
                             
                             if let newCurrentViewpointNode = overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString) {
-                                newCurrentViewpointNode.buttonNode.secondaryText = "Current viewpoint"
+                                newCurrentViewpointNode.buttonNode.text = "CURRENT VIEWPOINT"
                                 newCurrentViewpointNode.buttonNode.callToAction = false
+                                newCurrentViewpointNode.callToAction = false
                             }
                         })
                         

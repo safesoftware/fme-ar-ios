@@ -81,12 +81,12 @@ extension ViewController: ARSCNViewDelegate {
     func updateOverlay() {
         if let geomarker = self.geolocationNode() {
             if let userLocation = geomarker.userLocation, let markerLocation = geomarker.geolocation {
-                
+
                 let worldPosition = geomarker.position
                 let geomarkerPosition = SCNVector3(worldPosition.x, worldPosition.y, worldPosition.z)
                 let screenCoord = self.sceneView.projectPoint(geomarkerPosition)
                 let distance = String(format: "%.2f", markerLocation.distance(from: userLocation))
-                
+
                 if viewSize.width > 0 && viewSize.height > 0 {
                     // When the z is larger than 1, the geomarker is actually at
                     // the opposite direction or invalid, and the screenCoord.x is wrong.
@@ -98,14 +98,18 @@ extension ViewController: ARSCNViewDelegate {
 
                     var labelNode = self.overlayView.labelNodeOrNil(labelName: self.geomarkerLabelName)
                     if labelNode == nil {
+                        print("new geomarker label")
                         labelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
-                        labelNode!.buttonNode.secondaryText = Texts.moveModelHere
+                        labelNode?.text = "GEOLOCATION ANCHOR"
                         labelNode!.buttonNode.callToAction = true
+                        labelNode!.callToAction = true
                         labelNode!.isHidden = !(UserDefaults.standard.bool(for: .drawGeomarker))
                     }
-                    
-                    labelNode?.text = "Geolocation Anchor (\(distance)m)"
+
+
+                    labelNode?.buttonNode.secondaryText = "\(distance)m"
                     labelNode?.point = geomarkerScreenPosition
+                    labelNode?.alwaysVisibleOnScreen = true
 
                 }
             }
