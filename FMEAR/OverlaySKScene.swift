@@ -34,7 +34,6 @@ class OverlaySKScene: SKScene {
         } else {
             let newLabelNode = PointLabelNode()
             newLabelNode.name = labelName
-            newLabelNode.isUserInteractionEnabled = true
             addChild(newLabelNode)
             return newLabelNode
         }
@@ -45,150 +44,21 @@ class OverlaySKScene: SKScene {
     }
 }
 
-class ButtonNode: SKNode {
-        
-    var iconNode: SKSpriteNode?
-    
-    var labelNode: SKLabelNode
-    var shapeNode: SKShapeNode
-    let cornerRadius: CGFloat = 10.0
-    let maxWidth: CGFloat = 150
-    private(set) var size: CGSize = CGSize()
-    let padding: CGFloat = 20.0
-    
-    var callToAction: Bool = false {
-        didSet {
-            updateLabelNode()
-        }
-    }
-    
-    var primaryText: String = "" {
-        didSet {
-            updateLabelNode()
-        }
-    }
-    
-    var secondaryText: String = "" {
-        didSet {
-            updateLabelNode()
-        }
-    }
-    
-    func updateLabelNode() {
-        // 2020-07-10: As of today, SKLabelNode is not able to properly
-        // center the text. Attributed string can workaround the issue
-        let newline = "\n"
-        
-        var str: String = ""
-        if primaryText.isEmpty {
-            str = secondaryText
-        } else {
-            if !secondaryText.isEmpty {
-                str = "\(secondaryText)\(newline)\(primaryText)"
-            } else {
-                str = primaryText
-            }
-        }
-        
-        let attrString = NSMutableAttributedString(string: str)
-        
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .center
-        paragraphStyle.paragraphSpacing = 3
-        
-        var textLocation = 0
-        if !secondaryText.isEmpty {
-            // Text
-            let textRange = NSRange(location: 0, length: secondaryText.count)
-            attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle,
-                                    range: textRange)
-            attrString.addAttributes([
-                NSAttributedString.Key.foregroundColor : Colors.secondaryText,
-                NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .caption2)],
-                range: textRange)
-        }
-        
-        if !primaryText.isEmpty {
-            if !secondaryText.isEmpty {
-                textLocation = secondaryText.count + newline.count
-            } else {
-                textLocation = secondaryText.count
-            }
-        
-            // Secondary Text
-            let secondaryTextRange = NSRange(location: textLocation, length: primaryText.count)
-            attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle,
-                                    range: secondaryTextRange)
-            attrString.addAttributes([
-                NSAttributedString.Key.foregroundColor : Colors.primaryText,
-                NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .footnote)],
-                range: secondaryTextRange)
-        }
-        
-        labelNode.attributedText = attrString
-        updateShape()
-    }
-        
-    override init() {
-        
-        labelNode = SKLabelNode()
-        
-        let systemFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize
-        labelNode.fontSize = systemFontSize - 4 // System font is 14 - 23 (or 53 for Larger Accessibiliy Sizes)
-        labelNode.horizontalAlignmentMode = .left
-        labelNode.verticalAlignmentMode = .bottom
-        labelNode.preferredMaxLayoutWidth = maxWidth
-        labelNode.lineBreakMode = .byWordWrapping
-        labelNode.numberOfLines = 0
-        labelNode.zPosition = 1
-        labelNode.position = CGPoint(x: padding, y: padding)
-
-        shapeNode = SKShapeNode()
-        
-        super.init()
-        
-        if let iconNode = iconNode {
-            self.addChild(iconNode)
-        }
-        self.addChild(labelNode)
-        self.addChild(shapeNode)
-        
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func updateShape() {
-        self.removeChildren(in: [shapeNode])
-
-        let buttonOrigin = CGPoint.zero // CGPoint(x: -padding, y: -padding)
-        let buttonSize = CGSize(width: labelNode.frame.size.width + (padding * 2),
-                                height: labelNode.frame.size.height + (padding * 2))
-        let rect = CGRect(origin: buttonOrigin, size: buttonSize)
-        shapeNode = SKShapeNode(rect: rect, cornerRadius: cornerRadius)
-        shapeNode.fillColor =  Colors.labelFill
-        shapeNode.strokeColor =  Colors.labelBorder
-        self.addChild(shapeNode)
-        
-        self.size = calculateAccumulatedFrame().size
-    }
-}
-
-
 class PointLabelNode: SKNode {
 
 //    var triangleNode: SKShapeNode?
-    var buttonNode: ButtonNode!
+    var buttonNode: LabelNode!
     var pointNode: SKShapeNode!
     var ellipseNode: SKShapeNode!
     var lineNode: SKShapeNode!
-    var userInteractionNode: SKShapeNode!
+    //var userInteractionNode: SKShapeNode!
     
     var alwaysVisibleOnScreen: Bool = false
     
     var callToAction: Bool = false {
         didSet {
+            ellipseNode.isUserInteractionEnabled = callToAction
+            
             let anim = CABasicAnimation.init(keyPath: "path")
             anim.duration = 10.0
             anim.isRemovedOnCompletion  = false
@@ -228,31 +98,33 @@ class PointLabelNode: SKNode {
     override init() {
         super.init()
 
+        self.isUserInteractionEnabled = true
+        
         self.pointNode = SKShapeNode(ellipseOf: CGSize(width: 6.0, height: 3.0))
         pointNode.fillColor = DesignSystem.Colour.ExtendedPalette.orange
         pointNode.strokeColor = pointNode.fillColor
-        //pointNode.isUserInteractionEnabled = false
+        pointNode.isUserInteractionEnabled = false
         self.addChild(self.pointNode)
         
         self.ellipseNode = SKShapeNode(ellipseOf: CGSize(width: 60.0, height: 30.0))
         ellipseNode.fillColor = DesignSystem.Colour.ExtendedPalette.orangeLight20.withAlphaComponent(0.5)
         ellipseNode.strokeColor = DesignSystem.Colour.ExtendedPalette.orange
-        //ellipseNode.isUserInteractionEnabled = false
+        ellipseNode.isUserInteractionEnabled = false
         self.addChild(self.ellipseNode)
         
-        userInteractionNode = SKShapeNode(ellipseOf: CGSize(width: 120.0, height: 60.0))
-        userInteractionNode.fillColor = ellipseNode.fillColor .withAlphaComponent(CGFloat.leastNonzeroMagnitude)
-        userInteractionNode.strokeColor = ellipseNode.strokeColor .withAlphaComponent(CGFloat.leastNonzeroMagnitude)
-        //userInteractionNode.isUserInteractionEnabled = true
-        self.addChild(userInteractionNode)
+//        userInteractionNode = SKShapeNode(ellipseOf: CGSize(width: 120.0, height: 60.0))
+//        userInteractionNode.fillColor = ellipseNode.fillColor .withAlphaComponent(CGFloat.leastNonzeroMagnitude)
+//        userInteractionNode.strokeColor = ellipseNode.strokeColor .withAlphaComponent(CGFloat.leastNonzeroMagnitude)
+//        userInteractionNode.isUserInteractionEnabled = true
+//        self.addChild(userInteractionNode)
         
         self.lineNode = SKShapeNode()
         lineNode.strokeColor =  Colors.labelFill
-        //self.lineNode.isUserInteractionEnabled = false
+        self.lineNode.isUserInteractionEnabled = false
         self.addChild(self.lineNode)
         
-        self.buttonNode = ButtonNode()
-        //self.buttonNode.isUserInteractionEnabled = false
+        self.buttonNode = LabelNode()
+        self.buttonNode.isUserInteractionEnabled = false
         self.addChild(self.buttonNode)
         
     }
@@ -273,7 +145,7 @@ class PointLabelNode: SKNode {
         // Point Node
         pointNode.position = point
         ellipseNode.position = point
-        userInteractionNode.position = point
+        //userInteractionNode.position = point
         
         // We don't want to have the button "tail" to start from the corner
         // since it's more difficult to create the shape for the tail, and
@@ -314,21 +186,13 @@ class PointLabelNode: SKNode {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch: AnyObject in touches {
 
-            let location = touch.location(in: self)
-
-            if userInteractionNode.contains(location) {
-                print("Point Label Touch Began")
+            if let nextResponder = self.next {
+                print("HAS NEXT RESPONDER")
             }
-        }
-    }
-
-
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for touch: AnyObject in touches {
-
+            
             let location = touch.location(in: self)
 
-            if userInteractionNode.contains(location) {
+            if callToAction && ellipseNode.contains(location) {
                 print("Point Label Touch Ended")
             } else {
                 continue
@@ -340,5 +204,10 @@ class PointLabelNode: SKNode {
                 }
             }
         }
+    }
+
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+
     }
 }
