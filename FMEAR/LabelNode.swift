@@ -49,43 +49,45 @@ class LabelNode: SKNode {
             }
         }
         
-        let attrString = NSMutableAttributedString(string: str)
-        
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .center
-        paragraphStyle.paragraphSpacing = 3
-        
-        var textLocation = 0
-        if !secondaryText.isEmpty {
-            // Text
-            let textRange = NSRange(location: 0, length: secondaryText.count)
-            attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle,
-                                    range: textRange)
-            attrString.addAttributes([
-                NSAttributedString.Key.foregroundColor : Colors.secondaryText,
-                NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .caption2)],
-                range: textRange)
-        }
-        
-        if !primaryText.isEmpty {
+        if !str.isEmpty {
+            let attrString = NSMutableAttributedString(string: str)
+            
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = .center
+            paragraphStyle.paragraphSpacing = 3
+            
+            var textLocation = 0
             if !secondaryText.isEmpty {
-                textLocation = secondaryText.count + newline.count
-            } else {
-                textLocation = secondaryText.count
+                // Text
+                let textRange = NSRange(location: 0, length: secondaryText.count)
+                attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle,
+                                        range: textRange)
+                attrString.addAttributes([
+                    NSAttributedString.Key.foregroundColor : Colors.secondaryText,
+                    NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .caption2)],
+                    range: textRange)
+            }
+            
+            if !primaryText.isEmpty {
+                if !secondaryText.isEmpty {
+                    textLocation = secondaryText.count + newline.count
+                } else {
+                    textLocation = 0
+                }
+            
+                // Primary Text
+                let secondaryTextRange = NSRange(location: textLocation, length: primaryText.count)
+                attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle,
+                                        range: secondaryTextRange)
+                attrString.addAttributes([
+                    NSAttributedString.Key.foregroundColor : Colors.primaryText,
+                    NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .footnote)],
+                    range: secondaryTextRange)
             }
         
-            // Secondary Text
-            let secondaryTextRange = NSRange(location: textLocation, length: primaryText.count)
-            attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle,
-                                    range: secondaryTextRange)
-            attrString.addAttributes([
-                NSAttributedString.Key.foregroundColor : Colors.primaryText,
-                NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .footnote)],
-                range: secondaryTextRange)
+            labelNode.attributedText = attrString
+            updateShape()
         }
-        
-        labelNode.attributedText = attrString
-        updateShape()
     }
         
     override init() {

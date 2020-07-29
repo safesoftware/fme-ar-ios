@@ -11,42 +11,12 @@ import SpriteKit
 
 class PointyLabelNode: SKNode {
 
-//    var triangleNode: SKShapeNode?
-    var label: LabelNode!
-    var pointNode: SKShapeNode!
-    var ellipseNode: SKShapeNode!
-    var lineNode: SKShapeNode!
-    //var userInteractionNode: SKShapeNode!
+    private var label: LabelNode!
+    private var button: ButtonNode!
+    private var lineNode: SKShapeNode!
     
     var alwaysVisibleOnScreen: Bool = false
     
-    var callToAction: Bool = false {
-        didSet {
-            ellipseNode.isUserInteractionEnabled = callToAction
-            
-            let anim = CABasicAnimation.init(keyPath: "path")
-            anim.duration = 10.0
-            anim.isRemovedOnCompletion  = false
-            
-            if callToAction {
-                self.ellipseNode.fillColor = Colors.callToActionFill
-                self.ellipseNode.strokeColor = Colors.callToActionStroke
-                self.pointNode.fillColor = DesignSystem.Colour.ExtendedPalette.orange
-                self.pointNode.strokeColor = self.pointNode.fillColor
-                let scaleAction = SKAction.scale(to: 1.0, duration: 1)
-                ellipseNode.run(scaleAction)
-            } else {
-                let scaleAction = SKAction.scale(to: 0.1, duration: 1)
-                ellipseNode.run(scaleAction) {
-                    self.ellipseNode.fillColor = Colors.labelFill
-                    self.ellipseNode.strokeColor = self.ellipseNode.fillColor
-                    self.pointNode.fillColor = Colors.labelFill
-                    self.pointNode.strokeColor = self.pointNode.fillColor
-                }
-            }
-        }
-    }
-
     var point = CGPoint(x: 0, y: 0) {
         didSet {
             updateLabelNodePosition()
@@ -55,42 +25,50 @@ class PointyLabelNode: SKNode {
     
     var text: String = "" {
         didSet {
-            label.secondaryText = text
-            updateLabelNodePosition()
+            if label.primaryText != text {
+                label.primaryText = text
+                updateLabelNodePosition()
+            }
+        }
+    }
+    
+    var secondaryText: String = "" {
+        didSet {
+            if label.secondaryText != secondaryText {
+                label.secondaryText = secondaryText
+                updateLabelNodePosition()
+            }
+        }
+    }
+    
+    var callToAction: Bool {
+        set {
+            button.callToAction = newValue
+        }
+        
+        get {
+            return button.callToAction
+        }
+    }
+    
+    override var name: String? {
+        didSet {
+            button.id = name
         }
     }
     
     override init() {
         super.init()
-
-        self.isUserInteractionEnabled = true
-        
-        self.pointNode = SKShapeNode(ellipseOf: CGSize(width: 6.0, height: 3.0))
-        pointNode.fillColor = DesignSystem.Colour.ExtendedPalette.orange
-        pointNode.strokeColor = pointNode.fillColor
-        pointNode.isUserInteractionEnabled = false
-        self.addChild(self.pointNode)
-        
-        self.ellipseNode = SKShapeNode(ellipseOf: CGSize(width: 60.0, height: 30.0))
-        ellipseNode.fillColor = DesignSystem.Colour.ExtendedPalette.orangeLight20.withAlphaComponent(0.5)
-        ellipseNode.strokeColor = DesignSystem.Colour.ExtendedPalette.orange
-        ellipseNode.isUserInteractionEnabled = false
-        self.addChild(self.ellipseNode)
-        
-//        userInteractionNode = SKShapeNode(ellipseOf: CGSize(width: 120.0, height: 60.0))
-//        userInteractionNode.fillColor = ellipseNode.fillColor .withAlphaComponent(CGFloat.leastNonzeroMagnitude)
-//        userInteractionNode.strokeColor = ellipseNode.strokeColor .withAlphaComponent(CGFloat.leastNonzeroMagnitude)
-//        userInteractionNode.isUserInteractionEnabled = true
-//        self.addChild(userInteractionNode)
         
         self.lineNode = SKShapeNode()
         lineNode.strokeColor =  Colors.labelFill
-        self.lineNode.isUserInteractionEnabled = false
         self.addChild(self.lineNode)
         
         self.label = LabelNode()
-        self.label.isUserInteractionEnabled = false
         self.addChild(self.label)
+        
+        self.button = ButtonNode()
+        self.addChild(self.button)
         
     }
     
@@ -108,9 +86,7 @@ class PointyLabelNode: SKNode {
         }
         
         // Point Node
-        pointNode.position = point
-        ellipseNode.position = point
-        //userInteractionNode.position = point
+        button.position = point
         
         // We don't want to have the button "tail" to start from the corner
         // since it's more difficult to create the shape for the tail, and
@@ -146,33 +122,79 @@ class PointyLabelNode: SKNode {
         //lineNode.path = path.copy(dashingWithPhase: 1, lengths: pattern)
         lineNode.path = path
     }
+}
 
-
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for touch: AnyObject in touches {
-
-            if let nextResponder = self.next {
-                print("HAS NEXT RESPONDER")
-            }
+class ButtonNode: SKNode {
+    
+    var pointNode: SKShapeNode!
+    var ellipseNode: SKShapeNode!
+    
+    var id: String?
+    
+    var callToAction: Bool = false {
+        didSet {
+            let anim = CABasicAnimation.init(keyPath: "path")
+            anim.duration = 10.0
+            anim.isRemovedOnCompletion  = false
             
-            let location = touch.location(in: self)
-
-            if callToAction && ellipseNode.contains(location) {
-                print("Point Label Touch Ended")
+            if callToAction {
+                self.ellipseNode.fillColor = Colors.callToActionFill
+                self.ellipseNode.strokeColor = Colors.callToActionStroke
+                self.pointNode.fillColor = DesignSystem.Colour.ExtendedPalette.orange
+                self.pointNode.strokeColor = self.pointNode.fillColor
+                let scaleAction = SKAction.scale(to: 1.0, duration: 1)
+                ellipseNode.run(scaleAction)
             } else {
-                continue
-            }
-            
-            if let overlaySKScene = scene as? OverlaySKScene {
-                if let delegate = overlaySKScene.overlaySKSceneDelegate {
-                    delegate.overlaySKSceneDelegate(overlaySKScene, didTapNode: self)
+                let scaleAction = SKAction.scale(to: 0.1, duration: 1)
+                ellipseNode.run(scaleAction) {
+                    self.ellipseNode.fillColor = Colors.labelFill
+                    self.ellipseNode.strokeColor = self.ellipseNode.fillColor
+                    self.pointNode.fillColor = Colors.labelFill
+                    self.pointNode.strokeColor = self.pointNode.fillColor
                 }
             }
         }
     }
-
-
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-
+    
+    override init() {
+        super.init()
+        
+        self.pointNode = SKShapeNode(ellipseOf: CGSize(width: 6.0, height: 3.0))
+        pointNode.fillColor = DesignSystem.Colour.ExtendedPalette.orange
+        pointNode.strokeColor = pointNode.fillColor
+        self.addChild(self.pointNode)
+        
+        self.ellipseNode = SKShapeNode(ellipseOf: CGSize(width: 60.0, height: 30.0))
+        ellipseNode.fillColor = DesignSystem.Colour.ExtendedPalette.orangeLight20.withAlphaComponent(0.5)
+        ellipseNode.strokeColor = DesignSystem.Colour.ExtendedPalette.orange
+        self.addChild(self.ellipseNode)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override var isUserInteractionEnabled: Bool {
+        get {
+            return true
+        }
+        set {
+            // ignore
+        }
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        print("TOUCHES BEGAN")
+        
+        if !callToAction {
+            return
+        }
+        
+        if let overlaySKScene = scene as? OverlaySKScene {
+            if let delegate = overlaySKScene.overlaySKSceneDelegate {
+                delegate.overlaySKSceneDelegate(overlaySKScene, didTapNode: id)
+            }
+        }
     }
 }
