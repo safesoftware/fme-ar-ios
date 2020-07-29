@@ -106,8 +106,8 @@ extension ViewController: ARSCNViewDelegate {
                     }
 
                     if let node = labelNode {
-                        if node.buttonNode.primaryText != "\(distance)m" {
-                            node.buttonNode.primaryText = "\(distance)m"
+                        if node.label.primaryText != "\(distance)m" {
+                            node.label.primaryText = "\(distance)m"
                         }
                         
                         if node.point != geomarkerScreenPosition {

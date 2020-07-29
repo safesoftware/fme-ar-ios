@@ -47,7 +47,7 @@ class OverlaySKScene: SKScene {
 class PointLabelNode: SKNode {
 
 //    var triangleNode: SKShapeNode?
-    var buttonNode: LabelNode!
+    var label: LabelNode!
     var pointNode: SKShapeNode!
     var ellipseNode: SKShapeNode!
     var lineNode: SKShapeNode!
@@ -90,7 +90,7 @@ class PointLabelNode: SKNode {
     
     var text: String = "" {
         didSet {
-            buttonNode.secondaryText = text
+            label.secondaryText = text
             updateLabelNodePosition()
         }
     }
@@ -123,9 +123,9 @@ class PointLabelNode: SKNode {
         self.lineNode.isUserInteractionEnabled = false
         self.addChild(self.lineNode)
         
-        self.buttonNode = LabelNode()
-        self.buttonNode.isUserInteractionEnabled = false
-        self.addChild(self.buttonNode)
+        self.label = LabelNode()
+        self.label.isUserInteractionEnabled = false
+        self.addChild(self.label)
         
     }
     
@@ -153,9 +153,9 @@ class PointLabelNode: SKNode {
         // from the horizontal or vertical side of the button border.
         let sceneWidth = scene.size.width
         let sceneHeight = scene.size.height
-        let cornerRadius = buttonNode.cornerRadius
-        let buttonWidth = buttonNode.size.width
-        let buttonHeight = buttonNode.size.height
+        let cornerRadius = label.cornerRadius
+        let buttonWidth = label.size.width
+        let buttonHeight = label.size.height
         let lineHeight: CGFloat = 100.0
         let ratioX = (sceneWidth <= 0.0) ? 0.0 : (point.x / sceneWidth)
         
@@ -166,9 +166,9 @@ class PointLabelNode: SKNode {
             buttonX = min(max(50.0, buttonX), sceneWidth - 50.0 - buttonWidth)
             buttonY = min(max(50.0, buttonY), sceneHeight - 50.0 - buttonHeight)
         }
-        buttonNode.position = CGPoint(x: buttonX, y: buttonY)
+        label.position = CGPoint(x: buttonX, y: buttonY)
         
-        let secondEndPoint = CGPoint(x: buttonNode.position.x + (buttonNode.size.width * 0.5),
+        let secondEndPoint = CGPoint(x: label.position.x + (label.size.width * 0.5),
                                      y: buttonY)
 
         
