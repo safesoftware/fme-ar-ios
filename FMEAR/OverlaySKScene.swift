@@ -28,23 +28,23 @@ class OverlaySKScene: SKScene {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func labelNode(labelName: String) -> PointLabelNode {
-        if let node = childNode(withName: labelName) as? PointLabelNode {
+    func labelNode(labelName: String) -> PointyLabelNode {
+        if let node = childNode(withName: labelName) as? PointyLabelNode {
             return node
         } else {
-            let newLabelNode = PointLabelNode()
+            let newLabelNode = PointyLabelNode()
             newLabelNode.name = labelName
             addChild(newLabelNode)
             return newLabelNode
         }
     }
     
-    func labelNodeOrNil(labelName: String) -> PointLabelNode? {
-        return childNode(withName: labelName) as? PointLabelNode;
+    func labelNodeOrNil(labelName: String) -> PointyLabelNode? {
+        return childNode(withName: labelName) as? PointyLabelNode;
     }
 }
 
-class PointLabelNode: SKNode {
+class PointyLabelNode: SKNode {
 
 //    var triangleNode: SKShapeNode?
     var label: LabelNode!
