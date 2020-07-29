@@ -232,7 +232,6 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                                 if let currentViewpoint = model.viewpoint(id: currentViewpointId) {
                                     if let currentViewpointNode = overlayView.labelNodeOrNil(labelName: currentViewpoint.id.uuidString) {
                                         currentViewpointNode.buttonNode.secondaryText = ""
-                                        currentViewpointNode.buttonNode.callToAction = true
                                         currentViewpointNode.callToAction = true
                                     }
                                 }
@@ -242,7 +241,6 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                             
                             if let newCurrentViewpointNode = overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString) {
                                 newCurrentViewpointNode.buttonNode.secondaryText = "CURRENT VIEWPOINT"
-                                newCurrentViewpointNode.buttonNode.callToAction = false
                                 newCurrentViewpointNode.callToAction = false
                             }
                         })

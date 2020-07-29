@@ -21,12 +21,6 @@ class LabelNode: SKNode {
     private(set) var size: CGSize = CGSize()
     let padding: CGFloat = 20.0
     
-    var callToAction: Bool = false {
-        didSet {
-            updateLabelNode()
-        }
-    }
-    
     var primaryText: String = "" {
         didSet {
             updateLabelNode()

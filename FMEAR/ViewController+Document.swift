@@ -335,7 +335,6 @@ extension ViewController: FileManagerDelegate {
                             viewpointLabelNode.buttonNode.primaryText = name
                             if (object.currentViewpoint == viewpoint.id) {
                                 viewpointLabelNode.buttonNode.secondaryText = "CURRENT VIEWPOINT"
-                                viewpointLabelNode.buttonNode.callToAction = false
                                 viewpointLabelNode.callToAction = false
                             } else {
                                 viewpointLabelNode.callToAction = true

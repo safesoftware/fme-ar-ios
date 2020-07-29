@@ -101,7 +101,6 @@ extension ViewController: ARSCNViewDelegate {
                         labelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
                         labelNode!.text = "GEOLOCATION ANCHOR"
                         labelNode!.alwaysVisibleOnScreen = true
-                        labelNode!.buttonNode.callToAction = true
                         labelNode!.callToAction = true
                         labelNode!.isHidden = !(UserDefaults.standard.bool(for: .drawGeomarker))
                     }
