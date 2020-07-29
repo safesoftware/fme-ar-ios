@@ -178,7 +178,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                     let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
                         self.moveModelToGeolocation()
                         let geomarkerLabelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
-                        geomarkerLabelNode.buttonNode.secondaryText = Texts.rescan
+                        geomarkerLabelNode.buttonNode.primaryText = Texts.rescan
                     })
                     
                     // Create Cancel button with action handlder
@@ -201,7 +201,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                         geolocationNode.userLocation = self.latestLocation
                         self.updateUserLocationEnabled = true
                         let geomarkerLabelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
-                        geomarkerLabelNode.buttonNode.secondaryText = Texts.moveModelHere
+                        geomarkerLabelNode.buttonNode.primaryText = Texts.moveModelHere
                     })
                     
                     let cancel = UIAlertAction(title: "No", style: .cancel) { (action) -> Void in
@@ -231,7 +231,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                             if let currentViewpointId = model.currentViewpoint {
                                 if let currentViewpoint = model.viewpoint(id: currentViewpointId) {
                                     if let currentViewpointNode = overlayView.labelNodeOrNil(labelName: currentViewpoint.id.uuidString) {
-                                        currentViewpointNode.buttonNode.text = ""
+                                        currentViewpointNode.buttonNode.secondaryText = ""
                                         currentViewpointNode.buttonNode.callToAction = true
                                         currentViewpointNode.callToAction = true
                                     }
@@ -241,7 +241,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                             model.anchorAtViewpoint(viewpointId: viewpoint.id)
                             
                             if let newCurrentViewpointNode = overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString) {
-                                newCurrentViewpointNode.buttonNode.text = "CURRENT VIEWPOINT"
+                                newCurrentViewpointNode.buttonNode.secondaryText = "CURRENT VIEWPOINT"
                                 newCurrentViewpointNode.buttonNode.callToAction = false
                                 newCurrentViewpointNode.callToAction = false
                             }

@@ -98,19 +98,23 @@ extension ViewController: ARSCNViewDelegate {
 
                     var labelNode = self.overlayView.labelNodeOrNil(labelName: self.geomarkerLabelName)
                     if labelNode == nil {
-                        print("new geomarker label")
                         labelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
-                        labelNode?.text = "GEOLOCATION ANCHOR"
+                        labelNode!.text = "GEOLOCATION ANCHOR"
+                        labelNode!.alwaysVisibleOnScreen = true
                         labelNode!.buttonNode.callToAction = true
                         labelNode!.callToAction = true
                         labelNode!.isHidden = !(UserDefaults.standard.bool(for: .drawGeomarker))
                     }
 
-
-                    labelNode?.buttonNode.secondaryText = "\(distance)m"
-                    labelNode?.point = geomarkerScreenPosition
-                    labelNode?.alwaysVisibleOnScreen = true
-
+                    if let node = labelNode {
+                        if node.buttonNode.primaryText != "\(distance)m" {
+                            node.buttonNode.primaryText = "\(distance)m"
+                        }
+                        
+                        if node.point != geomarkerScreenPosition {
+                            node.point = geomarkerScreenPosition
+                        }
+                    }
                 }
             }
         }

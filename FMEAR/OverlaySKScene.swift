@@ -14,7 +14,6 @@ protocol OverlaySKSceneDelegate: class {
     func overlaySKSceneDelegate(_: OverlaySKScene, didTapNode node: SKNode)
 }
 
-
 class OverlaySKScene: SKScene {
     
     weak var overlaySKSceneDelegate: OverlaySKSceneDelegate?
@@ -47,26 +46,7 @@ class OverlaySKScene: SKScene {
 }
 
 class ButtonNode: SKNode {
-    
-    struct ColourPalette {
         
-        struct LightMode {
-            static let text = DesignSystem.Colour.NeutralPalette.greyLight30
-            static let secondaryText = DesignSystem.Colour.NeutralPalette.offBlack
-            static let callToActionText = DesignSystem.Colour.ExtendedPalette.orangeLight10
-            static let fill = DesignSystem.Colour.NeutralPalette.offWhite.withAlphaComponent(0.95)
-            static let border = UIColor.clear
-        }
-        
-        struct DarkMode {
-            static let text = DesignSystem.Colour.NeutralPalette.white
-            static let secondaryText = DesignSystem.Colour.NeutralPalette.offWhite
-            static let callToActionText = DesignSystem.Colour.ExtendedPalette.blueLight30
-            static let fill = DesignSystem.Colour.NeutralPalette.grey.withAlphaComponent(0.99)
-            static let border = UIColor.clear
-        }
-    }
-    
     var iconNode: SKSpriteNode?
     
     var labelNode: SKLabelNode
@@ -82,7 +62,7 @@ class ButtonNode: SKNode {
         }
     }
     
-    var text: String = "" {
+    var primaryText: String = "" {
         didSet {
             updateLabelNode()
         }
@@ -95,66 +75,63 @@ class ButtonNode: SKNode {
     }
     
     func updateLabelNode() {
-        if labelNode.text != text {
-            // 2020-07-10: As of today, SKLabelNode is not able to properly
-            // center the text. Attributed string can workaround the issue
-            let newline = "\n"
-            
-            var str: String = ""
-            if secondaryText.isEmpty {
-                str = text
-            } else {
-                if !text.isEmpty {
-                    str = "\(text)\(newline)\(secondaryText)"
-                } else {
-                    str = secondaryText
-                }
-            }
-            
-            let attrString = NSMutableAttributedString(string: str)
-            
-            let paragraphStyle = NSMutableParagraphStyle()
-            paragraphStyle.alignment = .center
-            paragraphStyle.paragraphSpacing = 3
-            
-            var textLocation = 0
-            if !text.isEmpty {
-                // Text
-                let textRange = NSRange(location: 0, length: text.count)
-                attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle,
-                                        range: textRange)
-                attrString.addAttributes([NSAttributedString.Key.foregroundColor : ColourPalette.LightMode.text,
-                                          NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .caption2)],
-                                         range: textRange)
-            }
-            
+        // 2020-07-10: As of today, SKLabelNode is not able to properly
+        // center the text. Attributed string can workaround the issue
+        let newline = "\n"
+        
+        var str: String = ""
+        if primaryText.isEmpty {
+            str = secondaryText
+        } else {
             if !secondaryText.isEmpty {
-                if !text.isEmpty {
-                    textLocation = text.count + newline.count
-                } else {
-                    textLocation = text.count
-                }
-            
-                // Secondary Text
-                let secondaryTextRange = NSRange(location: textLocation, length: secondaryText.count)
-                attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle,
-                                        range: secondaryTextRange)
-                attrString.addAttributes([NSAttributedString.Key.foregroundColor : ColourPalette.LightMode.secondaryText,
-                                          NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .footnote)],
-                                         range: secondaryTextRange)
+                str = "\(secondaryText)\(newline)\(primaryText)"
+            } else {
+                str = primaryText
             }
-            
-            labelNode.attributedText = attrString
-            
-            updateShape()
         }
+        
+        let attrString = NSMutableAttributedString(string: str)
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .center
+        paragraphStyle.paragraphSpacing = 3
+        
+        var textLocation = 0
+        if !secondaryText.isEmpty {
+            // Text
+            let textRange = NSRange(location: 0, length: secondaryText.count)
+            attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle,
+                                    range: textRange)
+            attrString.addAttributes([
+                NSAttributedString.Key.foregroundColor : Colors.secondaryText,
+                NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .caption2)],
+                range: textRange)
+        }
+        
+        if !primaryText.isEmpty {
+            if !secondaryText.isEmpty {
+                textLocation = secondaryText.count + newline.count
+            } else {
+                textLocation = secondaryText.count
+            }
+        
+            // Secondary Text
+            let secondaryTextRange = NSRange(location: textLocation, length: primaryText.count)
+            attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle,
+                                    range: secondaryTextRange)
+            attrString.addAttributes([
+                NSAttributedString.Key.foregroundColor : Colors.primaryText,
+                NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .footnote)],
+                range: secondaryTextRange)
+        }
+        
+        labelNode.attributedText = attrString
+        updateShape()
     }
         
     override init() {
         
         labelNode = SKLabelNode()
-        labelNode.fontName = "Helvetica-Bold"
-        labelNode.fontColor = .white
         
         let systemFontSize = UIFont.preferredFont(forTextStyle: .body).pointSize
         labelNode.fontSize = systemFontSize - 4 // System font is 14 - 23 (or 53 for Larger Accessibiliy Sizes)
@@ -190,28 +167,14 @@ class ButtonNode: SKNode {
                                 height: labelNode.frame.size.height + (padding * 2))
         let rect = CGRect(origin: buttonOrigin, size: buttonSize)
         shapeNode = SKShapeNode(rect: rect, cornerRadius: cornerRadius)
-        shapeNode.fillColor = ColourPalette.LightMode.fill
-        shapeNode.strokeColor = ColourPalette.LightMode.border
+        shapeNode.fillColor =  Colors.labelFill
+        shapeNode.strokeColor =  Colors.labelBorder
         self.addChild(shapeNode)
         
         self.size = calculateAccumulatedFrame().size
     }
 }
 
-extension UIImage {
-    func withColor(_ color: UIColor) -> UIImage {
-        UIGraphicsBeginImageContextWithOptions(size, false, scale)
-        guard let ctx = UIGraphicsGetCurrentContext(), let cgImage = cgImage else { return self }
-        color.setFill()
-        ctx.translateBy(x: 0, y: size.height)
-        ctx.scaleBy(x: 1.0, y: -1.0)
-        ctx.clip(to: CGRect(x: 0, y: 0, width: size.width, height: size.height), mask: cgImage)
-        ctx.fill(CGRect(x: 0, y: 0, width: size.width, height: size.height))
-        guard let colored = UIGraphicsGetImageFromCurrentImageContext() else { return self }
-        UIGraphicsEndImageContext()
-        return colored
-    }
-}
 
 class PointLabelNode: SKNode {
 
@@ -231,24 +194,20 @@ class PointLabelNode: SKNode {
             anim.isRemovedOnCompletion  = false
             
             if callToAction {
-                ellipseNode.run(SKAction.scale(to: 1.0, duration: 1))
-
-                ellipseNode.run(SKAction.customAction(withDuration: 5, actionBlock: { (node, timeDuration) in
-                    let shapeNode = node as! SKShapeNode
-                    shapeNode.fillColor = DesignSystem.Colour.ExtendedPalette.orangeLight20.withAlphaComponent(0.5)
-                    shapeNode.strokeColor = DesignSystem.Colour.ExtendedPalette.orange
-                }))
-                pointNode.fillColor = DesignSystem.Colour.ExtendedPalette.orange
-                pointNode.strokeColor = pointNode.fillColor
+                self.ellipseNode.fillColor = Colors.callToActionFill
+                self.ellipseNode.strokeColor = Colors.callToActionStroke
+                self.pointNode.fillColor = DesignSystem.Colour.ExtendedPalette.orange
+                self.pointNode.strokeColor = self.pointNode.fillColor
+                let scaleAction = SKAction.scale(to: 1.0, duration: 1)
+                ellipseNode.run(scaleAction)
             } else {
-                ellipseNode.run(SKAction.scale(to: 0.1, duration: 1))
-                ellipseNode.run(SKAction.customAction(withDuration: 5, actionBlock: { (node, timeDuration) in
-                    let shapeNode = node as! SKShapeNode
-                    shapeNode.fillColor = DesignSystem.Colour.NeutralPalette.greyLight50.withAlphaComponent(0.5)
-                    shapeNode.strokeColor = DesignSystem.Colour.NeutralPalette.offWhite.withAlphaComponent(0.5)
-                }))
-                pointNode.fillColor = DesignSystem.Colour.NeutralPalette.greyLight50.withAlphaComponent(0.5)
-                pointNode.strokeColor = pointNode.fillColor
+                let scaleAction = SKAction.scale(to: 0.1, duration: 1)
+                ellipseNode.run(scaleAction) {
+                    self.ellipseNode.fillColor = Colors.labelFill
+                    self.ellipseNode.strokeColor = self.ellipseNode.fillColor
+                    self.pointNode.fillColor = Colors.labelFill
+                    self.pointNode.strokeColor = self.pointNode.fillColor
+                }
             }
         }
     }
@@ -261,7 +220,7 @@ class PointLabelNode: SKNode {
     
     var text: String = "" {
         didSet {
-            buttonNode.text = text
+            buttonNode.secondaryText = text
             updateLabelNodePosition()
         }
     }
@@ -288,7 +247,7 @@ class PointLabelNode: SKNode {
         self.addChild(userInteractionNode)
         
         self.lineNode = SKShapeNode()
-        lineNode.strokeColor = DesignSystem.Colour.NeutralPalette.offWhite
+        lineNode.strokeColor =  Colors.labelFill
         //self.lineNode.isUserInteractionEnabled = false
         self.addChild(self.lineNode)
         
@@ -337,7 +296,7 @@ class PointLabelNode: SKNode {
         }
         buttonNode.position = CGPoint(x: buttonX, y: buttonY)
         
-        var secondEndPoint = CGPoint(x: buttonNode.position.x + (buttonNode.size.width * 0.5),
+        let secondEndPoint = CGPoint(x: buttonNode.position.x + (buttonNode.size.width * 0.5),
                                      y: buttonY)
 
         
@@ -346,7 +305,7 @@ class PointLabelNode: SKNode {
         path.addLine(to: secondEndPoint)
         
         // 2020-07-27: The dash line copy creates a memoryleak after many calls.
-        // let pattern : [CGFloat] = [4.0, 4.0]
+        //let pattern : [CGFloat] = [2.0, 2.0]
         //lineNode.path = path.copy(dashingWithPhase: 1, lengths: pattern)
         lineNode.path = path
     }
