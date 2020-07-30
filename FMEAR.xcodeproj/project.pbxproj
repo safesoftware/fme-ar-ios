@@ -62,8 +62,13 @@
 		6BA3AB631F4F1D4800CE75E6 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AB521F4F1D4800CE75E6 /* zip.c */; };
 		6BA8519720478BA2009D26B4 /* fmeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6BA8519620478BA1009D26B4 /* fmeLogo.png */; };
 		6BA85199204A3610009D26B4 /* AssetTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA85198204A3610009D26B4 /* AssetTableViewController.swift */; };
+		6BA973CC24B489E100EE9F83 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA973CB24B489E100EE9F83 /* DesignSystem.swift */; };
 		6BAAA915231F21FD00E95C6B /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAAA914231F21FD00E95C6B /* RoundButton.swift */; };
 		6BAAA9172320454400E95C6B /* ScaleOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAAA9162320454400E95C6B /* ScaleOptionsViewController.swift */; };
+		6BD2FB2524D11A0900597781 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6BD2FB2424D11A0900597781 /* Colors.xcassets */; };
+		6BE08D6924CC461B002A1229 /* LabelNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE08D6824CC461B002A1229 /* LabelNode.swift */; };
+		6BF22FDC24D16A7F00632222 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF22FDB24D16A7F00632222 /* Colors.swift */; };
+		6BF22FDE24D1948B00632222 /* PointyLabelNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF22FDD24D1948B00632222 /* PointyLabelNode.swift */; };
 		6BF718BF23443F060050434D /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BF718BE23443F060050434D /* MapKit.framework */; };
 		6BF718C123452B710050434D /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF718C023452B710050434D /* LocationService.swift */; };
 		6BF718C3234D5C1A0050434D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF718C2234D5C1A0050434D /* Settings.swift */; };
@@ -162,8 +167,13 @@
 		6BA3AB531F4F1D4800CE75E6 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		6BA8519620478BA1009D26B4 /* fmeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fmeLogo.png; sourceTree = "<group>"; };
 		6BA85198204A3610009D26B4 /* AssetTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetTableViewController.swift; sourceTree = "<group>"; };
+		6BA973CB24B489E100EE9F83 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		6BAAA914231F21FD00E95C6B /* RoundButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
 		6BAAA9162320454400E95C6B /* ScaleOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScaleOptionsViewController.swift; sourceTree = "<group>"; };
+		6BD2FB2424D11A0900597781 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		6BE08D6824CC461B002A1229 /* LabelNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelNode.swift; sourceTree = "<group>"; };
+		6BF22FDB24D16A7F00632222 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		6BF22FDD24D1948B00632222 /* PointyLabelNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointyLabelNode.swift; sourceTree = "<group>"; };
 		6BF718BE23443F060050434D /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		6BF718C023452B710050434D /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		6BF718C2234D5C1A0050434D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -257,10 +267,15 @@
 				6BA3AA671F4EF66F00CE75E6 /* Document.swift */,
 				6BA3AA691F4EF66F00CE75E6 /* Main.storyboard */,
 				6BA3AA6C1F4EF66F00CE75E6 /* Assets.xcassets */,
+				6BD2FB2424D11A0900597781 /* Colors.xcassets */,
 				6BA3AA6E1F4EF66F00CE75E6 /* LaunchScreen.storyboard */,
 				6BA3AA711F4EF66F00CE75E6 /* Info.plist */,
 				6BF718C2234D5C1A0050434D /* Settings.swift */,
 				6B5162D4235A4F9B003CEC8C /* OverlaySKScene.swift */,
+				6BE08D6824CC461B002A1229 /* LabelNode.swift */,
+				6BF22FDD24D1948B00632222 /* PointyLabelNode.swift */,
+				6BA973CB24B489E100EE9F83 /* DesignSystem.swift */,
+				6BF22FDB24D16A7F00632222 /* Colors.swift */,
 			);
 			path = FMEAR;
 			sourceTree = "<group>";
@@ -501,6 +516,7 @@
 			files = (
 				6BA3AAB61F4EF86100CE75E6 /* VirtualObjects.json in Resources */,
 				6BA3AA701F4EF66F00CE75E6 /* LaunchScreen.storyboard in Resources */,
+				6BD2FB2524D11A0900597781 /* Colors.xcassets in Resources */,
 				6BA3AA6D1F4EF66F00CE75E6 /* Assets.xcassets in Resources */,
 				6B2F710A20214B2A003812DB /* DocumentIcon-fmear-44x58px.png in Resources */,
 				6BA3AAC61F4F053300CE75E6 /* SceneAssets.scnassets in Resources */,
@@ -528,6 +544,7 @@
 			files = (
 				6BA3AAB81F4EF86100CE75E6 /* SceneExtensions.swift in Sources */,
 				6BA3AB5B1F4F1D4800CE75E6 /* pwd2key.c in Sources */,
+				6BE08D6924CC461B002A1229 /* LabelNode.swift in Sources */,
 				6B9F905C232C2816009FF7E5 /* ScaleOptionsViewModel.swift in Sources */,
 				6BA3AAB41F4EF86100CE75E6 /* VirtualObjectSelectionViewController.swift in Sources */,
 				6BA3AB571F4F1D4800CE75E6 /* aestab.c in Sources */,
@@ -536,6 +553,7 @@
 				6BA3AB621F4F1D4800CE75E6 /* unzip.c in Sources */,
 				6BA3AB5E1F4F1D4800CE75E6 /* ioapi.c in Sources */,
 				6B5162D5235A4F9B003CEC8C /* OverlaySKScene.swift in Sources */,
+				6BF22FDE24D1948B00632222 /* PointyLabelNode.swift in Sources */,
 				6BF718C3234D5C1A0050434D /* Settings.swift in Sources */,
 				6BA3AAB51F4EF86100CE75E6 /* VirtualObjectManager.swift in Sources */,
 				6BA3AAB71F4EF86100CE75E6 /* ARSCNView+HitTests.swift in Sources */,
@@ -546,12 +564,14 @@
 				6BA3AB631F4F1D4800CE75E6 /* zip.c in Sources */,
 				6BA3AAB31F4EF86100CE75E6 /* SettingsViewController.swift in Sources */,
 				6BA3AAC81F4F0CAD00CE75E6 /* ViewController+Document.swift in Sources */,
+				6BF22FDC24D16A7F00632222 /* Colors.swift in Sources */,
 				6BA3AB5F1F4F1D4800CE75E6 /* ioapi_buf.c in Sources */,
 				6BA3AAC21F4EF8C700CE75E6 /* ViewController+ARSCNViewDelegate.swift in Sources */,
 				6BA3AB611F4F1D4800CE75E6 /* minishared.c in Sources */,
 				6BA3AB601F4F1D4800CE75E6 /* ioapi_mem.c in Sources */,
 				6BA3AAB21F4EF86100CE75E6 /* Plane.swift in Sources */,
 				6BA3AAAF1F4EF86100CE75E6 /* Gesture.swift in Sources */,
+				6BA973CC24B489E100EE9F83 /* DesignSystem.swift in Sources */,
 				6BA3AB5A1F4F1D4800CE75E6 /* prng.c in Sources */,
 				6B5162D323594D77003CEC8C /* GeolocationMarkerNode.swift in Sources */,
 				6BA3AA681F4EF66F00CE75E6 /* Document.swift in Sources */,

@@ -113,7 +113,11 @@ class GeolocationMarkerNode: SCNNode {
     }
     
     func move(to location: SCNVector3) {
-        let action = SCNAction.move(to: location, duration: 0.0)
+        // If the position is still at the initialized position (0.0, 0.0, 0.0),
+        // we don't want to apply an animation since it may move away so fast
+        // that it makes the user confused.
+        let duration = (SCNVector3EqualToVector3(position, SCNVector3Zero)) ? 0.0 : 1.0
+        let action = SCNAction.move(to: location, duration: duration)
         action.timingMode = .easeInEaseOut
         runAction(action)
     }

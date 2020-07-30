@@ -71,7 +71,6 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, AssetVie
     }
     
     func virtualObjectManager(_ manager: VirtualObjectManager, didTranslate object: VirtualObject) {
-        self.isModelAtGeolocation = false
     }
     
     // MARK: - VirtualObjectSelectionViewControllerDelegate
