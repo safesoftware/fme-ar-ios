@@ -33,6 +33,12 @@ class LabelNode: SKNode {
         }
     }
     
+    var callToActionText: String = "" {
+        didSet {
+            updateLabelNode()
+        }
+    }
+    
     func updateLabelNode() {
         // 2020-07-10: As of today, SKLabelNode is not able to properly
         // center the text. Attributed string can workaround the issue
@@ -49,6 +55,12 @@ class LabelNode: SKNode {
             }
         }
         
+        if str.isEmpty {
+            str = callToActionText
+        } else {
+            str = "\(str)\(newline)\(callToActionText)"
+        }
+        
         if !str.isEmpty {
             let attrString = NSMutableAttributedString(string: str)
             
@@ -57,32 +69,43 @@ class LabelNode: SKNode {
             paragraphStyle.paragraphSpacing = 3
             
             var textLocation = 0
+            
+            // Secondary Text first
             if !secondaryText.isEmpty {
-                // Text
-                let textRange = NSRange(location: 0, length: secondaryText.count)
+                let textRange = NSRange(location: textLocation, length: secondaryText.count)
                 attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle,
                                         range: textRange)
                 attrString.addAttributes([
                     NSAttributedString.Key.foregroundColor : Colors.secondaryText,
                     NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .caption2)],
                     range: textRange)
+                
+                textLocation = textLocation + secondaryText.count + newline.count
             }
             
+            // Primary Text next
             if !primaryText.isEmpty {
-                if !secondaryText.isEmpty {
-                    textLocation = secondaryText.count + newline.count
-                } else {
-                    textLocation = 0
-                }
-            
-                // Primary Text
-                let secondaryTextRange = NSRange(location: textLocation, length: primaryText.count)
+                let textRange = NSRange(location: textLocation, length: primaryText.count)
                 attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle,
-                                        range: secondaryTextRange)
+                                        range: textRange)
                 attrString.addAttributes([
                     NSAttributedString.Key.foregroundColor : Colors.primaryText,
                     NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .footnote)],
-                    range: secondaryTextRange)
+                    range: textRange)
+                
+                textLocation = textLocation + primaryText.count + newline.count
+            }
+            
+            if !callToActionText.isEmpty {
+                let textRange = NSRange(location: textLocation, length: callToActionText.count)
+                attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle,
+                                        range: textRange)
+                attrString.addAttributes([
+                    NSAttributedString.Key.foregroundColor : Colors.callToActionText,
+                    NSAttributedString.Key.font : UIFont.preferredFont(forTextStyle: .footnote)],
+                    range: textRange)
+                
+                textLocation = textLocation + callToActionText.count + newline.count
             }
         
             labelNode.attributedText = attrString

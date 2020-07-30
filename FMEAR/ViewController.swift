@@ -11,8 +11,8 @@ import UIKit
 import CoreLocation
 
 struct Texts {
-    static let moveModelHere = "Move model here"
-    static let rescan = "Rescan"
+    static let moveModel = "Move model there"
+    static let rescan = "Rescan location"
 }
 
 class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelegate {

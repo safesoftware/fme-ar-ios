@@ -178,7 +178,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                     let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
                         self.moveModelToGeolocation()
                         let geomarkerLabelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
-                        //geomarkerLabelNode.text = Texts.rescan
+                        geomarkerLabelNode.callToActionText = Texts.rescan
                     })
                     
                     // Create Cancel button with action handlder
@@ -201,7 +201,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                         geolocationNode.userLocation = self.latestLocation
                         self.updateUserLocationEnabled = true
                         let geomarkerLabelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
-                        //geomarkerLabelNode.label.primaryText = Texts.moveModelHere
+                        geomarkerLabelNode.callToActionText = Texts.moveModel
                     })
                     
                     let cancel = UIAlertAction(title: "No", style: .cancel) { (action) -> Void in

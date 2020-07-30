@@ -41,6 +41,15 @@ class PointyLabelNode: SKNode {
         }
     }
     
+    var callToActionText: String = "" {
+        didSet {
+            if label.callToActionText != callToActionText {
+                label.callToActionText = callToActionText
+                updateLabelNodePosition()
+            }
+        }
+    }
+    
     var callToAction: Bool {
         set {
             button.callToAction = newValue

@@ -22,7 +22,7 @@ extension SCNVector3 {
 
 extension ViewController: ARSCNViewDelegate {
     // MARK: - ARSCNViewDelegate
-    
+
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         updateFocusSquare()
         updateLights()
@@ -102,6 +102,7 @@ extension ViewController: ARSCNViewDelegate {
                         labelNode!.secondaryText = "GEOLOCATION ANCHOR"
                         labelNode!.alwaysVisibleOnScreen = true
                         labelNode!.callToAction = true
+                        labelNode!.callToActionText = Texts.moveModel
                         labelNode!.isHidden = !(UserDefaults.standard.bool(for: .drawGeomarker))
                     }
 
