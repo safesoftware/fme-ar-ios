@@ -26,7 +26,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     var location: CLLocation?
     var heading: CLHeading?
     var authorizationStatus: CLAuthorizationStatus?
-    var error: Error?
+    var error: CLError?
     
     override init() {
         super.init()
@@ -76,60 +76,48 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     
     func description() -> String {
         var d = ""
-        var locationNotAvailable = false
-        var headingNotAvailable = false
         
-        if let location = location {
+        var locationAvailable = true
+        var headingAvailable = true
+        if let error = error {
+            switch error.code {
+            case .headingFailure:
+                headingAvailable = false
+            case .denied:
+                locationAvailable = false
+                headingAvailable = false
+            default:
+                locationAvailable = false
+            }
+        }
+        
+        if let status = authorizationStatus {
+            switch status {
+            case .denied: fallthrough
+            case .notDetermined: fallthrough
+            case .restricted:
+                locationAvailable = false
+                headingAvailable = false
+            default:
+                break
+            }
+        }
+        
+        if let location = location, locationAvailable {
             let latitude = String(format: "%.6f", location.coordinate.latitude)
             let longitude = String(format: "%.6f", location.coordinate.longitude)
             let accuracy = String(format: "%.0f", location.horizontalAccuracy)
             d += " ⍋ \(latitude), \(longitude) ± \(accuracy)m"
         } else {
-            d += " ⍋ ---, --- "
-            locationNotAvailable = true
+            d += " ⍋ Location Not Available "
         }
         
-        if let heading = heading {
+        if let heading = heading, headingAvailable {
             let trueHeading = String(format: "%.0f", heading.trueHeading)
             let direction = directionText(degree: heading.trueHeading)
             d += " 🧭 \(trueHeading)° \(direction) "
         } else {
-            d += " 🧭 ---° "
-            headingNotAvailable = true
-        }
-        
-        if let status = authorizationStatus {
-            switch (status) {
-            case .notDetermined:
-                d += " (Not Determined) "
-            case .restricted:
-                d += " (Restricted Access) "
-            case .denied:
-                d += " (Denied Access) "
-            case .authorizedAlways:
-                break;
-            case .authorizedWhenInUse:
-                break;
-            @unknown default:
-                break;
-            }
-        }
-        
-        if let error = error {
-            switch (error) {
-            case CLError.Code.locationUnknown:
-                d += " (Determining) "
-            case CLError.Code.headingFailure:
-                d += " (Interference) "
-            case CLError.Code.denied:
-                d += " (Denied Access) "
-            default:
-                d += " (Unknown Error) "
-            }
-        }
-
-        if (locationNotAvailable || headingNotAvailable) {
-            d += " (Not Available) "
+            d += " 🧭 Heading Not Available "
         }
 
         return d
@@ -157,14 +145,36 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         authorizationStatus = status
+        
+        switch status {
+            case .denied: fallthrough
+            case .notDetermined: fallthrough
+            case .restricted:
+                stopLocationService()
+        default:
+            break
+        }
+        
         self.error = nil
         notifyDelegateNewDescription()
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        self.error = error
         print("ERROR: \(error)")
-        stopLocationService()
+        
+        // If the user denies your app's use of the location service,
+        // this method reports a CLError.Code.denied error.
+        // Upon receiving such an error, you should stop the location service.
+        // https://developer.apple.com/documentation/corelocation/cllocationmanagerdelegate/1423786-locationmanager
+        if let error = error as? CLError {
+            self.error = error
+            if error.code == CLError.Code.denied {
+                stopLocationService()
+            }
+        } else {
+            // We don't know what error we receive. Stop the service to be safe
+            stopLocationService()
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
