@@ -265,6 +265,7 @@ extension ViewController: FileManagerDelegate {
                 self.serialQueue.async {
                     let viewpointLabelNode = self.overlayView.labelNode(labelName: self.viewpointLabelName)
                     viewpointLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
+                    viewpointLabelNode.callToAction = false
 
                     if isDefaultAnchor {
                         viewpointLabelNode.text = "❂ Anchor (Default)"
