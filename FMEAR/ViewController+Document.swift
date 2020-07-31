@@ -262,15 +262,17 @@ extension ViewController: FileManagerDelegate {
             
             // json.settings version 3
             if viewpoints.isEmpty {
-                let viewpointLabelNode = self.overlayView.labelNode(labelName: self.viewpointLabelName)
-                viewpointLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
-                
-                if isDefaultAnchor {
-                    viewpointLabelNode.text = "❂ Anchor (Default)"
-                } else {
-                    viewpointLabelNode.text = "❂ Anchor (Custom)"
-                }
+                self.serialQueue.async {
+                    let viewpointLabelNode = self.overlayView.labelNode(labelName: self.viewpointLabelName)
+                    viewpointLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
 
+                    if isDefaultAnchor {
+                        viewpointLabelNode.text = "❂ Anchor (Default)"
+                    } else {
+                        viewpointLabelNode.text = "❂ Anchor (Custom)"
+                    }
+                }
+                
                 // Position the container node, including the model and the anchor
                 // node, to the anchor location.
                 // The FME coordinate z axis = ARKit y axis

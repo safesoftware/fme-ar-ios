@@ -193,9 +193,6 @@ class ButtonNode: SKNode {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        print("TOUCHES BEGAN")
-        
         if !callToAction {
             return
         }
