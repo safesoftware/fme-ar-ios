@@ -177,8 +177,10 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                     // Create OK button with action handler
                     let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
                         self.moveModelToGeolocation()
-                        let geomarkerLabelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
-                        geomarkerLabelNode.callToActionText = Texts.rescan
+                        self.serialQueue.async {
+                            let geomarkerLabelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
+                            geomarkerLabelNode.callToActionText = Texts.rescan
+                        }
                     })
                     
                     // Create Cancel button with action handlder
@@ -200,8 +202,10 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                     let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
                         geolocationNode.userLocation = self.latestLocation
                         self.updateUserLocationEnabled = true
-                        let geomarkerLabelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
-                        geomarkerLabelNode.callToActionText = Texts.moveModel
+                        self.serialQueue.async {
+                            let geomarkerLabelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
+                            geomarkerLabelNode.callToActionText = Texts.moveModel
+                        }
                     })
                     
                     let cancel = UIAlertAction(title: "No", style: .cancel) { (action) -> Void in
@@ -230,18 +234,22 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                             // Restore the original viewpoint label
                             if let currentViewpointId = model.currentViewpoint {
                                 if let currentViewpoint = model.viewpoint(id: currentViewpointId) {
-                                    if let currentViewpointNode = overlayView.labelNodeOrNil(labelName: currentViewpoint.id.uuidString) {
-                                        currentViewpointNode.secondaryText = ""
-                                        currentViewpointNode.callToAction = true
+                                    self.serialQueue.async {
+                                        if let currentViewpointNode = overlayView.labelNodeOrNil(labelName: currentViewpoint.id.uuidString) {
+                                            currentViewpointNode.secondaryText = ""
+                                            currentViewpointNode.callToAction = true
+                                        }
                                     }
                                 }
                             }
                             
                             model.anchorAtViewpoint(viewpointId: viewpoint.id)
-                            
-                            if let newCurrentViewpointNode = overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString) {
-                                newCurrentViewpointNode.secondaryText = "CURRENT VIEWPOINT"
-                                newCurrentViewpointNode.callToAction = false
+    
+                            self.serialQueue.async {
+                                if let newCurrentViewpointNode = overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString) {
+                                    newCurrentViewpointNode.secondaryText = "CURRENT VIEWPOINT"
+                                    newCurrentViewpointNode.callToAction = false
+                                }
                             }
                         })
                         
@@ -334,8 +342,10 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     func setViewpointsVisible(visible: Bool) {
         if let virtualObject = virtualObject() {
             for viewpoint in virtualObject.viewpoints {
-                if let viewpointLabelNode = self.overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString) {
-                    viewpointLabelNode.isHidden = !visible
+                self.serialQueue.async {
+                    if let viewpointLabelNode = self.overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString) {
+                        viewpointLabelNode.isHidden = !visible
+                    }
                 }
             }
         }
