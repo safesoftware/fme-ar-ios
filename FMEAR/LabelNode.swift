@@ -14,6 +14,7 @@ class LabelNode: SKNode {
         
     var iconNode: SKSpriteNode?
     let iconSize = CGSize(width: 20.0, height: 20.0)
+    let iconOffset = CGPoint(x: 5.0, y: -1.0)
 
     var labelNode: SKLabelNode
     var shapeNode: SKShapeNode
@@ -161,6 +162,7 @@ class LabelNode: SKNode {
         shapeNode.strokeColor =  Colors.labelBorder
         self.addChild(shapeNode)
 
-        iconNode?.position = CGPoint(x: 0.0, y: buttonSize.height - padding - (iconHeight * 0.5))
+        iconNode?.position = CGPoint(x: iconOffset.x,
+                                     y: buttonSize.height - padding - (iconHeight * 0.5) - iconOffset.y)
     }
 }

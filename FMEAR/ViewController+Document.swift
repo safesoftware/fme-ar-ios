@@ -264,14 +264,14 @@ extension ViewController: FileManagerDelegate {
             if viewpoints.isEmpty {
                 self.serialQueue.async {
                     let viewpointLabelNode = self.overlayView.labelNode(labelName: self.viewpointLabelName,
-                                                                        iconNamed: LabelIcons.viewpoint.rawValue)
+                                                                        iconNamed: LabelIcons.geolocationAnchor.rawValue)
                     viewpointLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
                     viewpointLabelNode.callToAction = false
 
                     if isDefaultAnchor {
-                        viewpointLabelNode.text = "❂ Anchor (Default)"
+                        viewpointLabelNode.text = "Anchor (Default)"
                     } else {
-                        viewpointLabelNode.text = "❂ Anchor (Custom)"
+                        viewpointLabelNode.text = "Anchor (Custom)"
                     }
                 }
                 
