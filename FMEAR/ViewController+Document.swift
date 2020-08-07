@@ -263,7 +263,8 @@ extension ViewController: FileManagerDelegate {
             // json.settings version 3
             if viewpoints.isEmpty {
                 self.serialQueue.async {
-                    let viewpointLabelNode = self.overlayView.labelNode(labelName: self.viewpointLabelName)
+                    let viewpointLabelNode = self.overlayView.labelNode(labelName: self.viewpointLabelName,
+                                                                        iconNamed: LabelIcons.viewpoint.rawValue)
                     viewpointLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
                     viewpointLabelNode.callToAction = false
 
@@ -327,12 +328,13 @@ extension ViewController: FileManagerDelegate {
             if object.parent == nil {
                 self.serialQueue.async {
                     self.sceneView.scene.rootNode.addChildNode(object)
-
+                    
                     // Add Viewpoint labels
                     for index in object.viewpoints.indices {
                         let viewpoint = object.viewpoints[index]
                         
-                        let viewpointLabelNode = self.overlayView.labelNode(labelName: viewpoint.id.uuidString)
+                        let viewpointLabelNode = self.overlayView.labelNode(labelName: viewpoint.id.uuidString,
+                                                                            iconNamed: LabelIcons.viewpoint.rawValue)
                         
                         if (object.currentViewpoint == viewpoint.id) {
                             viewpointLabelNode.secondaryText = "CURRENT VIEWPOINT"

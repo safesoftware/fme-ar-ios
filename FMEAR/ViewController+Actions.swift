@@ -178,8 +178,9 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                     let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
                         self.moveModelToGeolocation()
                         self.serialQueue.async {
-                            let geomarkerLabelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
-                            geomarkerLabelNode.callToActionText = Texts.rescan
+                            if let geomarkerLabelNode = self.overlayView.labelNodeOrNil(labelName: self.geomarkerLabelName) {
+                                geomarkerLabelNode.callToActionText = Texts.rescan
+                            }
                         }
                     })
                     
@@ -203,8 +204,9 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                         geolocationNode.userLocation = self.latestLocation
                         self.updateUserLocationEnabled = true
                         self.serialQueue.async {
-                            let geomarkerLabelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
-                            geomarkerLabelNode.callToActionText = Texts.moveModel
+                            if let geomarkerLabelNode = self.overlayView.labelNodeOrNil(labelName: self.geomarkerLabelName) {
+                                geomarkerLabelNode.callToActionText = Texts.moveModel
+                            }
                         }
                     })
                     

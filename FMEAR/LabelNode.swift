@@ -13,12 +13,12 @@ import SpriteKit
 class LabelNode: SKNode {
         
     var iconNode: SKSpriteNode?
-    
+    let iconSize = CGSize(width: 20.0, height: 20.0)
+
     var labelNode: SKLabelNode
     var shapeNode: SKShapeNode
     let cornerRadius: CGFloat = 10.0
     let maxWidth: CGFloat = 150
-    private(set) var size: CGSize = CGSize()
     let padding: CGFloat = 20.0
     
     var primaryText: String = "" {
@@ -113,7 +113,7 @@ class LabelNode: SKNode {
         }
     }
         
-    override init() {
+    init(iconNamed: String? = nil) {
         
         labelNode = SKLabelNode()
         
@@ -128,33 +128,39 @@ class LabelNode: SKNode {
         labelNode.position = CGPoint(x: padding, y: padding)
 
         shapeNode = SKShapeNode()
-        
+
         super.init()
         
-        if let iconNode = iconNode {
-            self.addChild(iconNode)
-        }
         self.addChild(labelNode)
         self.addChild(shapeNode)
-        
+
+        if let iconNamed = iconNamed {
+            let texture = SKTexture(imageNamed: iconNamed)
+            iconNode = SKSpriteNode(texture: texture, size: iconSize)
+            iconNode?.zPosition = 1
+            self.addChild(iconNode!)
+        }
     }
-    
+        
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     func updateShape() {
         self.removeChildren(in: [shapeNode])
-
-        let buttonOrigin = CGPoint.zero // CGPoint(x: -padding, y: -padding)
-        let buttonSize = CGSize(width: labelNode.frame.size.width + (padding * 2),
+        
+        let iconWidth = (iconNode == nil) ? 0.0 : iconSize.width
+        let iconHeight = (iconNode == nil) ? 0.0 : iconSize.height
+        
+        let buttonOrigin = CGPoint(x: -iconWidth, y: 0.0)
+        let buttonSize = CGSize(width: labelNode.frame.size.width + (padding * 2) + iconWidth,
                                 height: labelNode.frame.size.height + (padding * 2))
         let rect = CGRect(origin: buttonOrigin, size: buttonSize)
         shapeNode = SKShapeNode(rect: rect, cornerRadius: cornerRadius)
         shapeNode.fillColor =  Colors.labelFill
         shapeNode.strokeColor =  Colors.labelBorder
         self.addChild(shapeNode)
-        
-        self.size = calculateAccumulatedFrame().size
+
+        iconNode?.position = CGPoint(x: 0.0, y: buttonSize.height - padding - (iconHeight * 0.5))
     }
 }

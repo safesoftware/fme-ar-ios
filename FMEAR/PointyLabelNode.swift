@@ -66,19 +66,18 @@ class PointyLabelNode: SKNode {
         }
     }
     
-    override init() {
+    init(iconNamed: String? = nil) {
         super.init()
         
         self.lineNode = SKShapeNode()
         lineNode.strokeColor =  Colors.labelFill
         self.addChild(self.lineNode)
         
-        self.label = LabelNode()
+        self.label = LabelNode(iconNamed: iconNamed)
         self.addChild(self.label)
         
         self.button = ButtonNode()
         self.addChild(self.button)
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -103,14 +102,14 @@ class PointyLabelNode: SKNode {
         // from the horizontal or vertical side of the button border.
         let sceneWidth = scene.size.width
         let sceneHeight = scene.size.height
-        let cornerRadius = label.cornerRadius
-        let buttonWidth = label.size.width
-        let buttonHeight = label.size.height
+        let labelFrame = label.calculateAccumulatedFrame()
+        let buttonWidth = labelFrame.size.width
+        let buttonHeight = labelFrame.size.height
         let lineHeight: CGFloat = 100.0
         let ratioX = (sceneWidth <= 0.0) ? 0.0 : (point.x / sceneWidth)
         
         // Button position
-        var buttonX = point.x - cornerRadius - (ratioX * (buttonWidth - (cornerRadius * 2)))
+        var buttonX = point.x - (ratioX * buttonWidth)
         var buttonY = point.y + lineHeight
         if alwaysVisibleOnScreen {
             buttonX = min(max(50.0, buttonX), sceneWidth - 50.0 - buttonWidth)
@@ -118,7 +117,7 @@ class PointyLabelNode: SKNode {
         }
         label.position = CGPoint(x: buttonX, y: buttonY)
         
-        let secondEndPoint = CGPoint(x: label.position.x + (label.size.width * 0.5),
+        let secondEndPoint = CGPoint(x: labelFrame.origin.x + (labelFrame.size.width * 0.5), // label.position.x + (label.size.width * 0.5),
                                      y: buttonY)
 
         

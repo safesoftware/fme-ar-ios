@@ -15,6 +15,12 @@ struct Texts {
     static let rescan = "Rescan location"
 }
 
+enum LabelIcons: String {
+    case geolocationAnchor = "mappin.circle"
+    case viewpoint = "eye.circle"
+    case information = "info.circle"
+}
+
 class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelegate {
     
     let geomarkerLabelName = "Geomarker Label"

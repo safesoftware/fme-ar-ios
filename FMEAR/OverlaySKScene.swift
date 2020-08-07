@@ -38,11 +38,11 @@ class OverlaySKScene: SKScene {
         }
     }
     
-    func labelNode(labelName: String) -> PointyLabelNode {
+    func labelNode(labelName: String, iconNamed: String?) -> PointyLabelNode {
         if let node = childNode(withName: labelName) as? PointyLabelNode {
             return node
         } else {
-            let newLabelNode = PointyLabelNode()
+            let newLabelNode = PointyLabelNode(iconNamed: iconNamed)
             newLabelNode.name = labelName
             addChild(newLabelNode)
             return newLabelNode

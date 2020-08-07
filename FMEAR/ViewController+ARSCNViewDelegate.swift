@@ -99,7 +99,7 @@ extension ViewController: ARSCNViewDelegate {
 
                         var labelNode = self.overlayView.labelNodeOrNil(labelName: self.geomarkerLabelName)
                         if labelNode == nil {
-                            labelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName)
+                            labelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName, iconNamed: LabelIcons.geolocationAnchor.rawValue)
                             labelNode!.secondaryText = "GEOLOCATION ANCHOR"
                             labelNode!.alwaysVisibleOnScreen = true
                             labelNode!.callToAction = true
