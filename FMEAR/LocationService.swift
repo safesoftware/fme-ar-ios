@@ -113,8 +113,9 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         }
         
         if let heading = heading, headingAvailable {
-            let trueHeading = String(format: "%.0f", heading.trueHeading)
-            let direction = directionText(degree: heading.trueHeading)
+            let roundedHeading = (heading.trueHeading).truncatingRemainder(dividingBy: 360.0).rounded(.down)
+            let trueHeading = String(format: "%.0f", roundedHeading)
+            let direction = directionText(degree: roundedHeading)
             d += " 🧭 \(trueHeading)° \(direction) "
         } else {
             d += " 🧭 Heading Not Available "
