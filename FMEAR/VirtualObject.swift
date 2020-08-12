@@ -177,9 +177,6 @@ class VirtualObject: SCNReferenceNode, ReactsToScale {
             let centerX = (minCoord.x + maxCoord.x) * 0.5
             let centerY = (minCoord.y + maxCoord.y) * 0.5
             let groundZ = 0.0
-//            return SCNVector3Make(Float(viewpoint.x ?? Double(centerX)),
-//                                  Float(viewpoint.z ?? groundZ),
-//                                  -Float(viewpoint.y ?? Double(centerY)))
             return SCNVector3Make(Float(viewpoint.x ?? Double(centerX)),
                                   Float(viewpoint.y ?? Double(centerY)),
                                   Float(viewpoint.z ?? groundZ))

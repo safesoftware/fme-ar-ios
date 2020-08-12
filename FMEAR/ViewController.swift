@@ -16,7 +16,7 @@ struct Texts {
 }
 
 enum LabelIcons: String {
-    case geolocationAnchor = "mappin.circle"
+    case geolocationAnchor = "pin.circle"
     case viewpoint = "eye.circle"
     case information = "info.circle"
 }
@@ -61,7 +61,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     var standardConfiguration: ARWorldTrackingConfiguration = {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
-        configuration.worldAlignment = ARConfiguration.WorldAlignment.gravityAndHeading // This gravityAndHeading keeps updating the heading causing the model to rotate
+        configuration.worldAlignment = ARConfiguration.WorldAlignment.gravity // This gravityAndHeading keeps updating the heading causing the model to rotate
         configuration.isLightEstimationEnabled = true
         initSceneReconstruction(configuration: configuration)
         return configuration
@@ -151,9 +151,71 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         if !updateUserLocationEnabled {
             return   // Skip the location
         }
-        
+     
+        updateGeolocationAnchor()
+    }
+    
+    func updateGeolocationAnchor() {
         if let geomarker = geolocationNode() {
-            geomarker.userLocation = location
+            
+            geomarker.userLocation = latestLocation
+            
+            // Calculate the new geolocation anchor position
+            if let anchorLocation = geomarker.geolocation {
+                // Calculate bearing from the user location to the geolocation anchor
+                let lat1 = latestLocation.coordinate.latitude * Double.pi / 180.0
+                let lng1 = latestLocation.coordinate.longitude * Double.pi / 180.0
+                let lat2 = anchorLocation.coordinate.latitude * Double.pi / 180.0
+                let lng2 = anchorLocation.coordinate.longitude * Double.pi / 180.0
+                let dLon = (lng2 - lng1);
+                let x = sin(dLon) * cos(lat2);
+                let y = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+                var bearing = atan2(x, y) * 180.0 / Double.pi;
+                bearing = (bearing + 360).truncatingRemainder(dividingBy: 360.0);
+                
+                // Calculate the heading of the device
+                let userHeading = self.locationService?.heading?.trueHeading
+                
+                // Calculate the roll (rotation around the y axis) of the device
+                // relative to the startup orientation. If we are using the
+                // gravity world alignment configuration, the startup orientation
+                // doesn't align with the True North.
+                var roll: Float?
+                var userPosition: SCNVector3?
+                if let currentFrame = self.sceneView.session.currentFrame {
+                    roll = currentFrame.camera.eulerAngles.y * 180.0 / Float.pi
+                    
+                    // Calculate the user position
+                    let c = currentFrame.camera.transform.columns.3
+                    userPosition = SCNVector3(c.x, c.y, c.z)
+                }
+                
+                // Calculate the distance between the anchor and the user
+                let distance = latestLocation.distance(from: anchorLocation)
+                
+                
+                if let userHeading = userHeading, let roll = roll, let userPosition = userPosition {
+                    // Calculate the angle between the negative z-axis and the
+                    // anchor with the user location as the center.
+                    // The roll is -ve when clockwise, so we need to negate it
+                    // to match the compass rotation.
+                    let angle = (bearing - (userHeading - Double(-roll))) * Double.pi / 180.0
+                    
+                    // Calculate the relative anchor position from the user
+                    // location
+                    let deltaX = distance * sin(angle)
+                    let deltaZ = -distance * cos(angle)
+                    
+                    // Calculate the anchor position relative to the current
+                    // coordinate system
+                    let x = userPosition.x + Float(deltaX)
+                    let z = userPosition.z + Float(deltaZ)
+                    
+                    self.serialQueue.async {
+                        self.geolocationNode()?.move(to: SCNVector3(x, 0.0, z))
+                    }
+                }
+            }
         }
     }
     
@@ -241,7 +303,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         
         // If the model content is not at the zero position, we should offset
         // it back to zero (center), and then we move to the anchor position.
-        let newPosition = geomarker.calculatePosition() ?? SCNVector3Zero
+        let newPosition = geomarker.position
         if let modelContent = virtualObjectContent() {
             let (minCoord, maxCoord) = modelContent.boundingBox
             let centerX = (minCoord.x + maxCoord.x) * 0.5
@@ -368,13 +430,13 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 		//sceneView.scene.enableEnvironmentMapWithIntensity(25, queue: serialQueue)
 
         // Debug visualizations
-        //        sceneView.debugOptions =  [
-        //            SCNDebugOptions.showBoundingBoxes,
-        //            SCNDebugOptions.showWireframe,
-        //            SCNDebugOptions.showLightExtents,
-        //            ARSCNDebugOptions.showWorldOrigin,
-        //            ARSCNDebugOptions.showFeaturePoints
-        //        ]
+//        sceneView.debugOptions =  [
+//            SCNDebugOptions.showBoundingBoxes,
+//            SCNDebugOptions.showWireframe,
+//            SCNDebugOptions.showLightExtents,
+//            ARSCNDebugOptions.showWorldOrigin,
+//            ARSCNDebugOptions.showFeaturePoints
+//        ]
         
 		setupFocusSquare()
 		
@@ -492,6 +554,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         planes.removeValue(forKey: anchor)
     }
 	
+    func updateFrameSemantics() {
+        setFrameSemantics(configuration: standardConfiguration)
+        session.run(standardConfiguration)
+    }
+    
 	func resetTracking() {
         setFrameSemantics(configuration: standardConfiguration)
 		session.run(standardConfiguration, options: [.resetTracking, .removeExistingAnchors])

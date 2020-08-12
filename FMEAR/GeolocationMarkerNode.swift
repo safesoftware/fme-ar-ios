@@ -70,55 +70,31 @@ class GeolocationMarkerNode: SCNNode {
         }
     }
     
-    var geolocation: CLLocation? {
-        didSet {
-            updatePosition()
-        }
-    }
-
-    var userLocation: CLLocation? {
-        didSet {
-            updatePosition()
-        }
-    }
+    var geolocation: CLLocation?
+    var userLocation: CLLocation?
     
-    func calculatePosition() -> SCNVector3? {
-        if let userLocation = self.userLocation, let geolocation = self.geolocation {
-            
-            // Latitude: geomarker - user location
-            let deltaLatitude = CLLocation(latitude: geolocation.coordinate.latitude, longitude: userLocation.coordinate.longitude).distance(from: userLocation)
-            
-            // Longitude: geomarker - user location
-            let deltaLongitude = CLLocation(latitude: userLocation.coordinate.latitude, longitude: geolocation.coordinate.longitude).distance(from: userLocation)
-
-            // North: -Z, South: +Z, East: +X, West: -X, Up: +Y, Down: -Y
-            return SCNVector3(Float(deltaLongitude), self.position.y, -Float(deltaLatitude))
-        } else {
-            return nil
-        }
-    }
-    
-    func updatePosition() {
-        if let userLocation = self.userLocation, let geolocation = self.geolocation {
-            let newLocation = calculatePosition()
-            if let newLocation = newLocation {
-                move(to: newLocation)
-            }
-            
-            let shouldDrawGeomarker = !(UserDefaults.standard.bool(for: .drawGeomarker))
-            isHidden = shouldDrawGeomarker
-        } else {
+    func updateVisibility() {
+         if let _ = self.userLocation, let _ = self.geolocation {
+            isHidden = !(UserDefaults.standard.bool(for: .drawGeomarker))
+         } else {
             isHidden = true
         }
     }
     
     func move(to location: SCNVector3) {
-        // If the position is still at the initialized position (0.0, 0.0, 0.0),
-        // we don't want to apply an animation since it may move away so fast
-        // that it makes the user confused.
-        let duration = (SCNVector3EqualToVector3(position, SCNVector3Zero)) ? 0.0 : 1.0
-        let action = SCNAction.move(to: location, duration: duration)
-        action.timingMode = .easeInEaseOut
-        runAction(action)
+        updateVisibility()
+        if let _ = self.userLocation, let _ = self.geolocation, !isHidden {
+            // If the position is still at the initialized position (0.0, 0.0, 0.0),
+            // we don't want to apply an animation since it may move away so fast
+            // that it makes the user confused.
+            if SCNVector3EqualToVector3(position, SCNVector3Zero) {
+                self.position = location
+            } else {
+                let duration = 1.0
+                let action = SCNAction.move(to: location, duration: duration)
+                action.timingMode = .easeInEaseOut
+                runAction(action)
+            }
+        }
     }
 }

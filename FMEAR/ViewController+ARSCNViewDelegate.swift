@@ -104,12 +104,13 @@ extension ViewController: ARSCNViewDelegate {
                             labelNode!.alwaysVisibleOnScreen = true
                             labelNode!.callToAction = true
                             labelNode!.callToActionText = Texts.moveModel
-                            labelNode!.isHidden = !(UserDefaults.standard.bool(for: .drawGeomarker))
                         }
+
+                        labelNode!.isHidden = geomarker.isHidden
     
                         if let node = labelNode {
                             node.text = "\(distance)m"
-    
+                            
                             if node.point != geomarkerScreenPosition {
                                 node.point = geomarkerScreenPosition
                             }

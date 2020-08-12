@@ -287,7 +287,12 @@ extension ViewController: FileManagerDelegate {
             
             // Rotate to Y up
             modelNode.eulerAngles.x = -Float.pi / 2
-                        
+            
+            // Rotate to face True North
+            if let trueHeading = self.locationService?.heading?.trueHeading {
+                modelNode.eulerAngles.y = Float(trueHeading) * Float.pi / 180.0
+            }
+                                    
             let modelDimension = self.dimension(modelNode)
             let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
             let definition = VirtualObjectDefinition(modelName: "model", displayName: "model", particleScaleInfo: [:])
@@ -360,9 +365,10 @@ extension ViewController: FileManagerDelegate {
                         if geomarker == nil {
                             geomarker = self.addGeolocationNode()
                         }
-                        geomarker?.geolocation = geolocation
-                        geomarker?.simdPosition = position
-                        geomarker?.anchor = self.settings?.anchors.first
+                        geomarker!.geolocation = geolocation
+                        geomarker!.simdPosition = position
+                        geomarker!.anchor = self.settings?.anchors.first
+                        geomarker!.isHidden = true
                         
                         // If there is a geolocation, we should always show
                         // the geolocation at the beginning

@@ -102,7 +102,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     }
     
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawGeomarker on: Bool) {
-        geolocationNode()?.isHidden = !on
+        geolocationNode()?.updateVisibility()
         overlayView.childNode(withName: self.geomarkerLabelName)?.isHidden = !on
     }
     
@@ -112,7 +112,7 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     }
     
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleEnablePeopleOcclusion on: Bool) {
-        self.resetTracking()
+        self.updateFrameSemantics()
     }
 
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float) {
