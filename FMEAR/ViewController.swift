@@ -156,63 +156,65 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     }
     
     func updateGeolocationAnchor() {
-        if let geomarker = geolocationNode() {
-            
-            geomarker.userLocation = latestLocation
-            
-            // Calculate the new geolocation anchor position
-            if let anchorLocation = geomarker.geolocation {
-                // Calculate bearing from the user location to the geolocation anchor
-                let lat1 = latestLocation.coordinate.latitude * Double.pi / 180.0
-                let lng1 = latestLocation.coordinate.longitude * Double.pi / 180.0
-                let lat2 = anchorLocation.coordinate.latitude * Double.pi / 180.0
-                let lng2 = anchorLocation.coordinate.longitude * Double.pi / 180.0
-                let dLon = (lng2 - lng1);
-                let x = sin(dLon) * cos(lat2);
-                let y = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
-                var bearing = atan2(x, y) * 180.0 / Double.pi;
-                bearing = (bearing + 360).truncatingRemainder(dividingBy: 360.0);
+        self.serialQueue.async {
+            if let geomarker = self.geolocationNode() {
                 
-                // Calculate the heading of the device
-                let userHeading = self.locationService?.heading?.trueHeading
+                geomarker.userLocation = self.latestLocation
                 
-                // Calculate the roll (rotation around the y axis) of the device
-                // relative to the startup orientation. If we are using the
-                // gravity world alignment configuration, the startup orientation
-                // doesn't align with the True North.
-                var roll: Float?
-                var userPosition: SCNVector3?
-                if let currentFrame = self.sceneView.session.currentFrame {
-                    roll = currentFrame.camera.eulerAngles.y * 180.0 / Float.pi
+                // Calculate the new geolocation anchor position
+                if let anchorLocation = geomarker.geolocation {
+                    // Calculate bearing from the user location to the geolocation anchor
+                    let lat1 = self.latestLocation.coordinate.latitude * Double.pi / 180.0
+                    let lng1 = self.latestLocation.coordinate.longitude * Double.pi / 180.0
+                    let lat2 = anchorLocation.coordinate.latitude * Double.pi / 180.0
+                    let lng2 = anchorLocation.coordinate.longitude * Double.pi / 180.0
+                    let dLon = (lng2 - lng1);
+                    let x = sin(dLon) * cos(lat2);
+                    let y = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+                    var bearing = atan2(x, y) * 180.0 / Double.pi;
+                    bearing = (bearing + 360).truncatingRemainder(dividingBy: 360.0);
                     
-                    // Calculate the user position
-                    let c = currentFrame.camera.transform.columns.3
-                    userPosition = SCNVector3(c.x, c.y, c.z)
-                }
-                
-                // Calculate the distance between the anchor and the user
-                let distance = latestLocation.distance(from: anchorLocation)
-                
-                
-                if let userHeading = userHeading, let roll = roll, let userPosition = userPosition {
-                    // Calculate the angle between the negative z-axis and the
-                    // anchor with the user location as the center.
-                    // The roll is -ve when clockwise, so we need to negate it
-                    // to match the compass rotation.
-                    let angle = (bearing - (userHeading - Double(-roll))) * Double.pi / 180.0
+                    // Calculate the heading of the device
+                    let userHeading = self.locationService?.heading?.trueHeading
                     
-                    // Calculate the relative anchor position from the user
-                    // location
-                    let deltaX = distance * sin(angle)
-                    let deltaZ = -distance * cos(angle)
+                    // Calculate the roll (rotation around the y axis) of the device
+                    // relative to the startup orientation. If we are using the
+                    // gravity world alignment configuration, the startup orientation
+                    // doesn't align with the True North.
+                    var roll: Float?
+                    var userPosition: SCNVector3?
+                    if let currentFrame = self.sceneView.session.currentFrame {
+                        roll = currentFrame.camera.eulerAngles.y * 180.0 / Float.pi
+                        
+                        // Calculate the user position
+                        let c = currentFrame.camera.transform.columns.3
+                        userPosition = SCNVector3(c.x, c.y, c.z)
+                    }
                     
-                    // Calculate the anchor position relative to the current
-                    // coordinate system
-                    let x = userPosition.x + Float(deltaX)
-                    let z = userPosition.z + Float(deltaZ)
+                    // Calculate the distance between the anchor and the user
+                    let distance = self.latestLocation.distance(from: anchorLocation)
                     
-                    self.serialQueue.async {
-                        self.geolocationNode()?.move(to: SCNVector3(x, 0.0, z))
+                    
+                    if let userHeading = userHeading, let roll = roll, let userPosition = userPosition {
+                        // Calculate the angle between the negative z-axis and the
+                        // anchor with the user location as the center.
+                        // The roll is -ve when clockwise, so we need to negate it
+                        // to match the compass rotation.
+                        let angle = (bearing - (userHeading - Double(-roll))) * Double.pi / 180.0
+                        
+                        // Calculate the relative anchor position from the user
+                        // location
+                        let deltaX = distance * sin(angle)
+                        let deltaZ = -distance * cos(angle)
+                        
+                        // Calculate the anchor position relative to the current
+                        // coordinate system
+                        let x = userPosition.x + Float(deltaX)
+                        let z = userPosition.z + Float(deltaZ)
+                        
+                        self.virtualObjectManager.updateQueue.async {
+                            self.geolocationNode()?.move(to: SCNVector3(x, 0.0, z))
+                        }
                     }
                 }
             }
@@ -586,31 +588,27 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 	func updateFocusSquare() {
 		guard let screenCenter = screenCenter else { return }
 		
-		DispatchQueue.main.async {
-			var objectVisible = false
-			for object in self.virtualObjectManager.virtualObjects {
-				if self.sceneView.isNode(object, insideFrustumOf: self.sceneView.pointOfView!) {
-					objectVisible = true
-					break
-				}
-			}
-			
-			if objectVisible {
-				self.focusSquare?.hide()
-			} else {
-				self.focusSquare?.unhide()
-			}
-			
-            let (worldPos, planeAnchor, _) = self.virtualObjectManager.worldPositionFromScreenPosition(screenCenter,
-                                                                                                       in: self.sceneView,
-                                                                                                       objectPos: self.focusSquare?.simdPosition)
-			if let worldPos = worldPos {
-				self.serialQueue.async {
-					self.focusSquare?.update(for: worldPos, planeAnchor: planeAnchor, camera: self.session.currentFrame?.camera)
-				}
-				self.textManager.cancelScheduledMessage(forType: .focusSquare)
-			}
-		}
+        var objectVisible = false
+        for object in self.virtualObjectManager.virtualObjects {
+            if self.sceneView.isNode(object, insideFrustumOf: self.sceneView.pointOfView!) {
+                objectVisible = true
+                break
+            }
+        }
+        
+        if objectVisible {
+            self.focusSquare?.hide()
+        } else {
+            self.focusSquare?.unhide()
+        }
+        
+        let (worldPos, planeAnchor, _) = self.virtualObjectManager.worldPositionFromScreenPosition(screenCenter,
+                                                                                                   in: self.sceneView,
+                                                                                                   objectPos: self.focusSquare?.simdPosition)
+        if let worldPos = worldPos {
+            self.focusSquare?.update(for: worldPos, planeAnchor: planeAnchor, camera: self.session.currentFrame?.camera)
+            self.textManager.cancelScheduledMessage(forType: .focusSquare)
+        }
 	}
     
 	// MARK: - Error handling
