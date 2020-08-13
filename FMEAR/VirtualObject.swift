@@ -131,7 +131,20 @@ class VirtualObject: SCNReferenceNode, ReactsToScale {
         // The FME coordinate y axis = ARKit -z axis
         // We need to offset/subtract the position from the model position to
         // make the position appear as the center of the anchor.
-        let newPosition = SCNVector3Make(-position.x, -position.z, position.y)
+        
+        let rotationAngle = modelNode?.eulerAngles.y ?? 0.0
+
+        let x = -position.x
+        let y = -position.z
+        let z = position.y
+        
+        // Since we rotated the model to face True North, we also need to calculate
+        // the rotated position of the viewpoint.
+        let position = simd_float3(x: x, y: y, z: z)
+        let quaternion = simd_quatf(angle: rotationAngle, axis: simd_float3(x: 0, y: 1, z: 0))
+        let rotatedPosition = quaternion.act(position)
+        let newPosition = SCNVector3(rotatedPosition.x, rotatedPosition.y, rotatedPosition.z)
+        
         let action = SCNAction.move(to: newPosition, duration: 1.0)
         action.timingMode = .easeInEaseOut
         modelNode?.runAction(action)
