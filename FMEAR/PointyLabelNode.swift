@@ -146,21 +146,31 @@ class ButtonNode: SKNode {
             anim.isRemovedOnCompletion  = false
             
             if callToAction {
-                self.ellipseNode.fillColor = Colors.callToActionFill
-                self.ellipseNode.strokeColor = Colors.callToActionStroke
-                self.pointNode.fillColor = DesignSystem.Colour.ExtendedPalette.orange
-                self.pointNode.strokeColor = self.pointNode.fillColor
+                // Update colours before the button becomes larger
+                updateColours()
                 let scaleAction = SKAction.scale(to: 1.0, duration: 1)
                 ellipseNode.run(scaleAction)
             } else {
                 let scaleAction = SKAction.scale(to: 0.1, duration: 1)
                 ellipseNode.run(scaleAction) {
-                    self.ellipseNode.fillColor = Colors.labelFill
-                    self.ellipseNode.strokeColor = self.ellipseNode.fillColor
-                    self.pointNode.fillColor = Colors.labelFill
-                    self.pointNode.strokeColor = self.pointNode.fillColor
+                    // Update colours after the button becomes smaller
+                    self.updateColours()
                 }
             }
+        }
+    }
+    
+    func updateColours() {
+        if callToAction {
+            self.ellipseNode.fillColor = Colors.callToActionFill
+            self.ellipseNode.strokeColor = Colors.callToActionStroke
+            self.pointNode.fillColor = DesignSystem.Colour.ExtendedPalette.orange
+            self.pointNode.strokeColor = self.pointNode.fillColor
+        } else {
+            self.ellipseNode.fillColor = Colors.labelFill
+            self.ellipseNode.strokeColor = self.ellipseNode.fillColor
+            self.pointNode.fillColor = Colors.labelFill
+            self.pointNode.strokeColor = self.pointNode.fillColor
         }
     }
     
@@ -168,14 +178,12 @@ class ButtonNode: SKNode {
         super.init()
         
         self.pointNode = SKShapeNode(ellipseOf: CGSize(width: 6.0, height: 3.0))
-        pointNode.fillColor = DesignSystem.Colour.ExtendedPalette.orange
-        pointNode.strokeColor = pointNode.fillColor
         self.addChild(self.pointNode)
         
         self.ellipseNode = SKShapeNode(ellipseOf: CGSize(width: 60.0, height: 30.0))
-        ellipseNode.fillColor = DesignSystem.Colour.ExtendedPalette.orangeLight20.withAlphaComponent(0.5)
-        ellipseNode.strokeColor = DesignSystem.Colour.ExtendedPalette.orange
         self.addChild(self.ellipseNode)
+        
+        updateColours()
     }
     
     required init?(coder aDecoder: NSCoder) {
