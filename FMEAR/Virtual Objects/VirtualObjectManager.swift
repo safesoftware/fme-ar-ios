@@ -72,7 +72,7 @@ class VirtualObjectManager {
 	
 	// MARK: - Loading object
 	
-	func loadVirtualObject(_ object: VirtualObject, to position: float3, cameraTransform: matrix_float4x4) {
+	func loadVirtualObject(_ object: VirtualObject, to position: SIMD3<Float>, cameraTransform: matrix_float4x4) {
 		self.virtualObjects.append(object)
 		self.delegate?.virtualObjectManager(self, willLoad: object)
 		
@@ -174,7 +174,7 @@ class VirtualObjectManager {
 		}
 	}
 	
-	func setPosition(for object: VirtualObject, position: float3, instantly: Bool, filterPosition: Bool, cameraTransform: matrix_float4x4) {
+	func setPosition(for object: VirtualObject, position: SIMD3<Float>, instantly: Bool, filterPosition: Bool, cameraTransform: matrix_float4x4) {
 		if instantly {
 			setNewVirtualObjectPosition(object, to: position, cameraTransform: cameraTransform)
 		} else {
@@ -182,31 +182,16 @@ class VirtualObjectManager {
 		}
 	}
 	
-	private func setNewVirtualObjectPosition(_ object: VirtualObject, to pos: float3, cameraTransform: matrix_float4x4) {
+	private func setNewVirtualObjectPosition(_ object: VirtualObject, to pos: SIMD3<Float>, cameraTransform: matrix_float4x4) {
 		let cameraWorldPos = cameraTransform.translation
-		var cameraToPosition = pos - cameraWorldPos
-
-        // We want to place the object without the 10 meter limit.
-//		// Limit the distance of the object from the camera to a maximum of 10 meters.
-//        if simd_length(cameraToPosition) > 10 {
-//            cameraToPosition = simd_normalize(cameraToPosition)
-//            cameraToPosition *= 10
-//        }
-
+		let cameraToPosition = pos - cameraWorldPos
 		object.simdPosition = cameraWorldPos + cameraToPosition
 		object.recentVirtualObjectDistances.removeAll()
 	}
 	
-	private func updateVirtualObjectPosition(_ object: VirtualObject, to pos: float3, filterPosition: Bool, cameraTransform: matrix_float4x4) {
+	private func updateVirtualObjectPosition(_ object: VirtualObject, to pos: SIMD3<Float>, filterPosition: Bool, cameraTransform: matrix_float4x4) {
 		let cameraWorldPos = cameraTransform.translation
-		var cameraToPosition = pos - cameraWorldPos
-
-        // We want to place the object without the 10 meter limit.
-//		// Limit the distance of the object from the camera to a maximum of 10 meters.
-//        if simd_length(cameraToPosition) > 10 {
-//            cameraToPosition = simd_normalize(cameraToPosition)
-//            cameraToPosition *= 10
-//        }
+		let cameraToPosition = pos - cameraWorldPos
 
 		// Compute the average distance of the object from the camera over the last ten
 		// updates. If filterPosition is true, compute a new position for the object
@@ -279,8 +264,8 @@ class VirtualObjectManager {
 	
 	func worldPositionFromScreenPosition(_ position: CGPoint,
 	                                     in sceneView: ARSCNView,
-	                                     objectPos: float3?,
-	                                     infinitePlane: Bool = false) -> (position: float3?, planeAnchor: ARPlaneAnchor?, hitAPlane: Bool) {
+	                                     objectPos: SIMD3<Float>?,
+	                                     infinitePlane: Bool = false) -> (position: SIMD3<Float>?, planeAnchor: ARPlaneAnchor?, hitAPlane: Bool) {
 		
 		//let dragOnInfinitePlanesEnabled = UserDefaults.standard.bool(for: .dragOnInfinitePlanes)
         let dragOnInfinitePlanesEnabled = false
@@ -303,7 +288,7 @@ class VirtualObjectManager {
 		// 2. Collect more information about the environment by hit testing against
 		//    the feature point cloud, but do not return the result yet.
 		
-		var featureHitTestPosition: float3?
+		var featureHitTestPosition: SIMD3<Float>?
 		var highQualityFeatureHitTestResult = false
 		
 		let highQualityfeatureHitTestResults = sceneView.hitTestWithFeatures(position, coneOpeningAngleInDegrees: 18, minDistance: 0.2, maxDistance: 2.0)

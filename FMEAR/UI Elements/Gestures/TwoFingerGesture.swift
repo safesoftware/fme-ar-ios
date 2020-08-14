@@ -246,7 +246,7 @@ class TwoFingerGesture: Gesture {
                  newScale = 1.0 // Snap scale to 100% when getting close.
                  }*/
                 
-                virtualObject.simdScale = float3(repeating: newScale)
+                virtualObject.simdScale = SIMD3<Float>(repeating: newScale)
                 lastUsedObject = virtualObject
                 
 //                ViewController.serialQueue.async {

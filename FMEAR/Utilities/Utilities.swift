@@ -22,13 +22,13 @@ extension Array where Iterator.Element == Float {
 	}
 }
 
-extension Array where Iterator.Element == float3 {
-	var average: float3? {
+extension Array where Iterator.Element == SIMD3<Float> {
+	var average: SIMD3<Float>? {
 		guard !self.isEmpty else {
 			return nil
 		}
   
-        let sum = self.reduce(float3(repeating: 0.0)) { current, next in
+        let sum = self.reduce(SIMD3<Float>(repeating: 0.0)) { current, next in
             return current + next
         }
 		return sum / Float(self.count)
@@ -48,7 +48,7 @@ extension RangeReplaceableCollection {
 extension SCNNode {
 	
 	func setUniformScale(_ scale: Float) {
-		self.simdScale = float3(scale, scale, scale)
+		self.simdScale = SIMD3<Float>(scale, scale, scale)
 	}
 	
 	func renderOnTop(_ enable: Bool) {
@@ -69,9 +69,9 @@ extension SCNNode {
 extension float4x4 {
     /// Treats matrix as a (right-hand column-major convention) transform matrix
     /// and factors out the translation component of the transform.
-    var translation: float3 {
+    var translation: SIMD3<Float> {
         let translation = self.columns.3
-        return float3(translation.x, translation.y, translation.z)
+        return SIMD3<Float>(translation.x, translation.y, translation.z)
     }
 }
 
@@ -185,7 +185,7 @@ extension CGRect {
 	}
 }
 
-func rayIntersectionWithHorizontalPlane(rayOrigin: float3, direction: float3, planeY: Float) -> float3? {
+func rayIntersectionWithHorizontalPlane(rayOrigin: SIMD3<Float>, direction: SIMD3<Float>, planeY: Float) -> SIMD3<Float>? {
 	
     let direction = simd_normalize(direction)
 

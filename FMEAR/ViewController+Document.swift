@@ -327,7 +327,7 @@ extension ViewController: FileManagerDelegate {
             
             //logSceneNode(object, level: 0)
             
-            let position = (self.focusSquare?.lastPosition ?? float3(0, 0, -5))
+            let position = (self.focusSquare?.lastPosition ?? SIMD3<Float>(0, 0, -5))
             
             self.virtualObjectManager.loadVirtualObject(object, to: position, cameraTransform: cameraTransform)
             if object.parent == nil {

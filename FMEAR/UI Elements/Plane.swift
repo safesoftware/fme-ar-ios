@@ -54,7 +54,7 @@ class Plane: SCNNode {
         // Also set the rendering order of the detected plane slightly higher
         // than the virtual object so that the semi-transparent detected plane
         // will be rendered after the virtual object.
-        self.simdPosition = float3(0.0, /*1cm below the ground*/ -0.01, 0)
+        self.simdPosition = SIMD3<Float>(0.0, /*1cm below the ground*/ -0.01, 0)
         self.renderingOrder = 1
         
         self.name = "Detected Plane"
@@ -119,7 +119,7 @@ class Plane: SCNNode {
         
         let textNode = SCNNode(geometry: textGeometry)
         // scale down the size of the text
-        textNode.simdScale = float3(repeating: 0.0005)
+        textNode.simdScale = SIMD3<Float>(repeating: 0.0005)
         
         return textNode
     }
