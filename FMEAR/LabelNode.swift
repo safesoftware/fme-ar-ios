@@ -148,7 +148,6 @@ class LabelNode: SKNode {
     }
     
     func updateShape() {
-        self.removeChildren(in: [shapeNode])
         
         let iconWidth = (iconNode == nil) ? 0.0 : iconSize.width
         let iconHeight = (iconNode == nil) ? 0.0 : iconSize.height
@@ -157,10 +156,13 @@ class LabelNode: SKNode {
         let buttonSize = CGSize(width: labelNode.frame.size.width + (padding * 2) + iconWidth,
                                 height: labelNode.frame.size.height + (padding * 2))
         let rect = CGRect(origin: buttonOrigin, size: buttonSize)
-        shapeNode = SKShapeNode(rect: rect, cornerRadius: cornerRadius)
+  
+        shapeNode.path = CGPath(roundedRect: rect,
+                                cornerWidth: cornerRadius,
+                                cornerHeight: cornerRadius,
+                                transform: nil)
         shapeNode.fillColor =  Colors.labelFill
         shapeNode.strokeColor =  Colors.labelBorder
-        self.addChild(shapeNode)
 
         iconNode?.position = CGPoint(x: iconOffset.x,
                                      y: buttonSize.height - padding - (iconHeight * 0.5) - iconOffset.y)
