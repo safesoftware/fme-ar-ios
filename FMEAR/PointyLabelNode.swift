@@ -139,12 +139,8 @@ class ButtonNode: SKNode {
     
     var id: String?
     
-    var callToAction: Bool = false {
+    var callToAction: Bool = true {
         didSet {
-            let anim = CABasicAnimation.init(keyPath: "path")
-            anim.duration = 10.0
-            anim.isRemovedOnCompletion  = false
-            
             if callToAction {
                 // Update colours before the button becomes larger
                 updateColours()
