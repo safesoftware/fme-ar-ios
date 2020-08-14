@@ -77,44 +77,6 @@
             </objects>
             <point key="canvasLocation" x="1031" y="654"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="1dv-Ol-Qcm">
-            <objects>
-                <viewController id="3lH-1j-aSX" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="kqs-YV-qnh">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qxF-Kc-2QK">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                <items>
-                                    <navigationItem id="jDS-fl-JQw">
-                                        <nil key="title"/>
-                                        <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="Eiw-Bi-6eR">
-                                            <rect key="frame" x="112.66666666666669" y="5.6666666666666679" width="150" height="33"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <segments>
-                                                <segment title="Location"/>
-                                                <segment title="Altitude"/>
-                                            </segments>
-                                        </segmentedControl>
-                                    </navigationItem>
-                                </items>
-                            </navigationBar>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="LAR-wU-DlB">
-                                <rect key="frame" x="0.0" y="222" width="375" height="590"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                            </mapView>
-                        </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <viewLayoutGuide key="safeArea" id="c6B-hu-3rO"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="i6V-kK-UTs" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-5890.3999999999996" y="-789.35532233883066"/>
-        </scene>
         <!--Scale Options View Controller-->
         <scene sceneID="zmv-kY-BLu">
             <objects>
