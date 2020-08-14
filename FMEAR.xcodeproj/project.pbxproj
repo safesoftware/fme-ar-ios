@@ -28,7 +28,6 @@
 		6BA3AAB11F4EF86100CE75E6 /* TwoFingerGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AAA01F4EF86100CE75E6 /* TwoFingerGesture.swift */; };
 		6BA3AAB21F4EF86100CE75E6 /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AAA11F4EF86100CE75E6 /* Plane.swift */; };
 		6BA3AAB31F4EF86100CE75E6 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AAA31F4EF86100CE75E6 /* SettingsViewController.swift */; };
-		6BA3AAB41F4EF86100CE75E6 /* VirtualObjectSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AAA41F4EF86100CE75E6 /* VirtualObjectSelectionViewController.swift */; };
 		6BA3AAB51F4EF86100CE75E6 /* VirtualObjectManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AAA61F4EF86100CE75E6 /* VirtualObjectManager.swift */; };
 		6BA3AAB61F4EF86100CE75E6 /* VirtualObjects.json in Resources */ = {isa = PBXBuildFile; fileRef = 6BA3AAA71F4EF86100CE75E6 /* VirtualObjects.json */; };
 		6BA3AAB71F4EF86100CE75E6 /* ARSCNView+HitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AAA91F4EF86100CE75E6 /* ARSCNView+HitTests.swift */; };
@@ -110,7 +109,6 @@
 		6BA3AAA01F4EF86100CE75E6 /* TwoFingerGesture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoFingerGesture.swift; sourceTree = "<group>"; };
 		6BA3AAA11F4EF86100CE75E6 /* Plane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
 		6BA3AAA31F4EF86100CE75E6 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		6BA3AAA41F4EF86100CE75E6 /* VirtualObjectSelectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VirtualObjectSelectionViewController.swift; sourceTree = "<group>"; };
 		6BA3AAA61F4EF86100CE75E6 /* VirtualObjectManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VirtualObjectManager.swift; sourceTree = "<group>"; };
 		6BA3AAA71F4EF86100CE75E6 /* VirtualObjects.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = VirtualObjects.json; sourceTree = "<group>"; };
 		6BA3AAA91F4EF86100CE75E6 /* ARSCNView+HitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ARSCNView+HitTests.swift"; sourceTree = "<group>"; };
@@ -315,7 +313,6 @@
 			children = (
 				6BAAA9162320454400E95C6B /* ScaleOptionsViewController.swift */,
 				6BA3AAA31F4EF86100CE75E6 /* SettingsViewController.swift */,
-				6BA3AAA41F4EF86100CE75E6 /* VirtualObjectSelectionViewController.swift */,
 				6BA85198204A3610009D26B4 /* AssetTableViewController.swift */,
 			);
 			path = "Additional View Controllers";
@@ -546,7 +543,6 @@
 				6BA3AB5B1F4F1D4800CE75E6 /* pwd2key.c in Sources */,
 				6BE08D6924CC461B002A1229 /* LabelNode.swift in Sources */,
 				6B9F905C232C2816009FF7E5 /* ScaleOptionsViewModel.swift in Sources */,
-				6BA3AAB41F4EF86100CE75E6 /* VirtualObjectSelectionViewController.swift in Sources */,
 				6BA3AB571F4F1D4800CE75E6 /* aestab.c in Sources */,
 				6BA3AB5D1F4F1D4800CE75E6 /* crypt.c in Sources */,
 				6BA3AAC11F4EF8C700CE75E6 /* ViewController+Actions.swift in Sources */,

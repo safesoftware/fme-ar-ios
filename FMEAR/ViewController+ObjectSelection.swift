@@ -8,7 +8,7 @@ Methods on the main view controller for handling virtual object loading and move
 import UIKit
 import SceneKit
 
-extension ViewController: VirtualObjectSelectionViewControllerDelegate, AssetViewControllerDelegate, VirtualObjectManagerDelegate {
+extension ViewController: AssetViewControllerDelegate, VirtualObjectManagerDelegate {
     
     // MARK: - assetViewControllerDelegate
     func assetViewControllerDelegate(_: AssetViewController, didSelectAsset asset: Asset) {
@@ -72,29 +72,4 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, AssetVie
     
     func virtualObjectManager(_ manager: VirtualObjectManager, didTranslate object: VirtualObject) {
     }
-    
-    // MARK: - VirtualObjectSelectionViewControllerDelegate
-    
-    func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didSelectObjectAt index: Int) {
-        guard let cameraTransform = session.currentFrame?.camera.transform else {
-            return
-        }
-        
-        let definition = VirtualObjectManager.availableObjects[index]
-        let object = VirtualObject(definition: definition)
-        let position = focusSquare?.lastPosition ?? SIMD3<Float>(repeating: 0.0)
-        virtualObjectManager.loadVirtualObject(object, to: position, cameraTransform: cameraTransform)
-        if object.parent == nil {
-            serialQueue.async {
-                self.sceneView.scene.rootNode.addChildNode(object)
-            }
-        }
-    }
-    
-    func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didDeselectObjectAt index: Int) {
-        virtualObjectManager.removeVirtualObject(at: index)
-    }
-
-
-
 }
