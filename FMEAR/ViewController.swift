@@ -213,7 +213,9 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
                         let z = userPosition.z + Float(deltaZ)
                         
                         self.virtualObjectManager.updateQueue.async {
-                            self.geolocationNode()?.move(to: SCNVector3(x, 0.0, z))
+                            // Put the geolocation anchor at the same altitude as the model.
+                            let altitude = self.virtualObject()?.position.y ?? 0.0
+                            self.geolocationNode()?.move(to: SCNVector3(x, altitude, z))
                         }
                     }
                 }
