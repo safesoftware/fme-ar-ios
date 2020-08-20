@@ -23,8 +23,8 @@ class TwoFingerGesture: Gesture {
     var dragOffset = CGPoint()
     var initialMidPoint = CGPoint(x: 0, y: 0)
     
-    let rotationThreshold: Float = .pi / 15 // (12°)
-    let rotationThresholdHarder: Float = .pi / 10 // (18°)
+    let rotationThreshold: Float = .pi / 60 // (3°)
+    let rotationThresholdHarder: Float = .pi / 30 // 6°)
     var rotationThresholdPassed = false
     var allowRotation = false
     var initialFingerAngle: Float = 0
@@ -208,9 +208,14 @@ class TwoFingerGesture: Gesture {
                 deltaAngle = min(0, currentAngleToInitialFingerAngle + threshold)
             }
             
-            // Update the yaw angle
-            virtualObject.eulerAngles.y = initialObjectAngle - deltaAngle
+            // Update the yaw angle. We want to snap the model to 0.0 if it's close enough
+            var newAngle = (initialObjectAngle - deltaAngle).remainder(dividingBy: Float.pi * 2)
+            print("NEW ANGLE = \(newAngle)")
+            if abs(newAngle) < (Float.pi / 180.0) {
+                newAngle = 0.0
+            }
             
+            virtualObject.eulerAngles.y = newAngle
             lastUsedObject = virtualObject
         }
     }

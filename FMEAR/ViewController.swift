@@ -140,9 +140,22 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     // MARK: - Location Service
     var locationService: LocationService?
+    var initialHeading: CLLocationDirection?
     
     func didUpdateDescription(_ locationService: LocationService, description: String) {
         headingLabel.text = description
+        
+        if let trueHeading = locationService.heading?.trueHeading {
+            if initialHeading == nil {
+                print("Initial Heading = \(trueHeading)")
+                initialHeading = trueHeading
+                
+                if let modelNode = virtualObjectContent() {
+                    print("Also setting model heading to \(trueHeading)")
+                    modelNode.eulerAngles.y = Float(trueHeading) * Float.pi / 180.0
+                }
+            }
+        }
     }
     
     func didUpdateLocation(_ locationService: LocationService, location: CLLocation) {
@@ -235,7 +248,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         Setting.registerDefaults()
         
         locationService = LocationService()
-        locationService?.delegate = self
+        locationService?.delegates.append(self)
 
 		setupUIControls()
         setupScene()
@@ -384,6 +397,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         self.viewSize = size
+        self.overlayView.updateCompassPosition()
     }
 	
     // MARK: - Setup
@@ -429,6 +443,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         // set up overlay view
         overlayView = OverlaySKScene(size: self.view.bounds.size)
         overlayView.overlaySKSceneDelegate = self
+        locationService?.delegates.append(overlayView)
         sceneView.overlaySKScene = overlayView
         
 		//sceneView.scene.enableEnvironmentMapWithIntensity(25, queue: serialQueue)

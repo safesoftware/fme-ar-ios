@@ -10,17 +10,17 @@
 import UIKit
 import CoreLocation
 
-protocol LocationServiceDelegate {
+@objc protocol LocationServiceDelegate {
     // This function is called when the description text is updated because of
     // one of the location, heading, authorization status, or error has changed.
-    func didUpdateDescription(_ locationService: LocationService, description: String)
-    
-    func didUpdateLocation(_ locationService: LocationService, location: CLLocation)
+    @objc optional func didUpdateDescription(_ locationService: LocationService, description: String)
+    @objc optional func didUpdateLocation(_ locationService: LocationService, location: CLLocation)
+    @objc optional func didUpdateHeading(_ locationService: LocationService, heading: CLHeading)
 }
 
 class LocationService: NSObject, CLLocationManagerDelegate {
     
-    var delegate: LocationServiceDelegate?
+    var delegates: [LocationServiceDelegate] = []
     
     var locationManager: CLLocationManager?
     var location: CLLocation?
@@ -125,14 +125,20 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     }
     
     func notifyDelegateNewDescription() {
-        if delegate != nil {
-            delegate?.didUpdateDescription(self, description: description())
+        for delegate in delegates {
+            delegate.didUpdateDescription?(self, description: description())
         }
     }
     
     func notifyDelegateNewLocation(location: CLLocation) {
-        if delegate != nil {
-            delegate?.didUpdateLocation(self, location: location)
+        for delegate in delegates {
+            delegate.didUpdateLocation?(self, location: location)
+        }
+    }
+    
+    func notifyDelegateNewHeading(heading: CLHeading) {
+        for delegate in delegates {
+            delegate.didUpdateHeading?(self, heading: heading)
         }
     }
     
@@ -183,6 +189,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
 //        print("new heading: \(newHeading)")
         self.error = nil
         notifyDelegateNewDescription()
+        notifyDelegateNewHeading(heading: newHeading)
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

@@ -13,6 +13,8 @@
 		6B2F710A20214B2A003812DB /* DocumentIcon-fmear-44x58px.png in Resources */ = {isa = PBXBuildFile; fileRef = 6B2F710620214B29003812DB /* DocumentIcon-fmear-44x58px.png */; };
 		6B5162D323594D77003CEC8C /* GeolocationMarkerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5162D223594D77003CEC8C /* GeolocationMarkerNode.swift */; };
 		6B5162D5235A4F9B003CEC8C /* OverlaySKScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5162D4235A4F9B003CEC8C /* OverlaySKScene.swift */; };
+		6B69BA9624ECB69E0026764D /* SCNNode+Snapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B69BA9524ECB69E0026764D /* SCNNode+Snapshot.swift */; };
+		6B69BA9824EE105B0026764D /* Compass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B69BA9724EE105B0026764D /* Compass.swift */; };
 		6B9F905C232C2816009FF7E5 /* ScaleOptionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9F905B232C2816009FF7E5 /* ScaleOptionsViewModel.swift */; };
 		6BA3AA621F4EF66F00CE75E6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AA611F4EF66F00CE75E6 /* AppDelegate.swift */; };
 		6BA3AA641F4EF66F00CE75E6 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA3AA631F4EF66F00CE75E6 /* DocumentBrowserViewController.swift */; };
@@ -92,6 +94,8 @@
 		6B2F710620214B29003812DB /* DocumentIcon-fmear-44x58px.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DocumentIcon-fmear-44x58px.png"; sourceTree = "<group>"; };
 		6B5162D223594D77003CEC8C /* GeolocationMarkerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeolocationMarkerNode.swift; sourceTree = "<group>"; };
 		6B5162D4235A4F9B003CEC8C /* OverlaySKScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlaySKScene.swift; sourceTree = "<group>"; };
+		6B69BA9524ECB69E0026764D /* SCNNode+Snapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SCNNode+Snapshot.swift"; sourceTree = "<group>"; };
+		6B69BA9724EE105B0026764D /* Compass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Compass.swift; path = Overlay/Compass.swift; sourceTree = "<group>"; };
 		6B9F905B232C2816009FF7E5 /* ScaleOptionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScaleOptionsViewModel.swift; sourceTree = "<group>"; };
 		6BA3AA5E1F4EF66F00CE75E6 /* FME AR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FME AR.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BA3AA611F4EF66F00CE75E6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -274,6 +278,7 @@
 				6BF22FDD24D1948B00632222 /* PointyLabelNode.swift */,
 				6BA973CB24B489E100EE9F83 /* DesignSystem.swift */,
 				6BF22FDB24D16A7F00632222 /* Colors.swift */,
+				6B69BA9724EE105B0026764D /* Compass.swift */,
 			);
 			path = FMEAR;
 			sourceTree = "<group>";
@@ -334,6 +339,7 @@
 				6BA3AAAA1F4EF86100CE75E6 /* SceneExtensions.swift */,
 				6BA3AAAB1F4EF86100CE75E6 /* TextManager.swift */,
 				6BA3AAAC1F4EF86100CE75E6 /* Utilities.swift */,
+				6B69BA9524ECB69E0026764D /* SCNNode+Snapshot.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -544,6 +550,7 @@
 				6BE08D6924CC461B002A1229 /* LabelNode.swift in Sources */,
 				6B9F905C232C2816009FF7E5 /* ScaleOptionsViewModel.swift in Sources */,
 				6BA3AB571F4F1D4800CE75E6 /* aestab.c in Sources */,
+				6B69BA9624ECB69E0026764D /* SCNNode+Snapshot.swift in Sources */,
 				6BA3AB5D1F4F1D4800CE75E6 /* crypt.c in Sources */,
 				6BA3AAC11F4EF8C700CE75E6 /* ViewController+Actions.swift in Sources */,
 				6BA3AB621F4F1D4800CE75E6 /* unzip.c in Sources */,
@@ -573,6 +580,7 @@
 				6BA3AA681F4EF66F00CE75E6 /* Document.swift in Sources */,
 				6BA3AABA1F4EF86100CE75E6 /* Utilities.swift in Sources */,
 				6BA3AAAE1F4EF86100CE75E6 /* FocusSquareSegment.swift in Sources */,
+				6B69BA9824EE105B0026764D /* Compass.swift in Sources */,
 				6BA3AA661F4EF66F00CE75E6 /* DocumentViewController.swift in Sources */,
 				6BAAA915231F21FD00E95C6B /* RoundButton.swift in Sources */,
 				6BA3AB5C1F4F1D4800CE75E6 /* sha1.c in Sources */,

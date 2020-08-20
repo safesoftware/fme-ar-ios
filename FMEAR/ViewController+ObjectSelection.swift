@@ -68,6 +68,9 @@ extension ViewController: AssetViewControllerDelegate, VirtualObjectManagerDeleg
     func virtualObjectManager(_ manager: VirtualObjectManager, transformDidChangeFor object: VirtualObject) {
         // Update UI for the new scale        
         self.scaleLabel.text = dimensionAndScaleText(scale: object.scale.x, node: object)
+        
+        // Update model orientation image in the compass
+        self.overlayView.compass().imageRotation = CGFloat(object.eulerAngles.y) // CGFloat(Float(trueHeading) + modelRotation)
     }
     
     func virtualObjectManager(_ manager: VirtualObjectManager, didTranslate object: VirtualObject) {

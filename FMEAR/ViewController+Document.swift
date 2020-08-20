@@ -227,6 +227,10 @@ extension ViewController: FileManagerDelegate {
         self.textManager.showMessage("\(numObjFiles) Assets Found")
         
         if (numObjFiles > 0) {
+            
+            self.overlayView.compass().image
+                = modelNode.snapshot(size: CGSize(width: 512.0, height: 512.0))
+            
             let (minCoord, maxCoord) = modelNode.boundingBox
             let centerX = (minCoord.x + maxCoord.x) * 0.5
             let centerY = (minCoord.y + maxCoord.y) * 0.5
@@ -289,8 +293,9 @@ extension ViewController: FileManagerDelegate {
             modelNode.eulerAngles.x = -Float.pi / 2
             
             // Rotate to face True North
-            if let trueHeading = self.locationService?.heading?.trueHeading {
-                modelNode.eulerAngles.y = Float(trueHeading) * Float.pi / 180.0
+            if let initialHeading = self.initialHeading {
+                print("Setting model heading to \(initialHeading)")
+                modelNode.eulerAngles.y = Float(initialHeading) * Float.pi / 180.0
             }
                                     
             let modelDimension = self.dimension(modelNode)
@@ -333,7 +338,7 @@ extension ViewController: FileManagerDelegate {
             if object.parent == nil {
                 self.serialQueue.async {
                     self.sceneView.scene.rootNode.addChildNode(object)
-                    
+                                        
                     // Add Viewpoint labels
                     for index in object.viewpoints.indices {
                         let viewpoint = object.viewpoints[index]

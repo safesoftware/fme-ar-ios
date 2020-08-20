@@ -241,6 +241,10 @@ extension Double {
     func format(f: String) -> String {
         return String(format: "%\(f)f", self)
     }
+    
+    func toRadian() -> Double {
+        return self * Double.pi / 180.0
+    }
 }
 
 extension UIColor {
