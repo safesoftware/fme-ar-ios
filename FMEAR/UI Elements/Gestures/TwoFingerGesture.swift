@@ -25,6 +25,7 @@ class TwoFingerGesture: Gesture {
     
     let rotationThreshold: Float = .pi / 60 // (3°)
     let rotationThresholdHarder: Float = .pi / 30 // 6°)
+    let snapThreshold: Float = .pi / 60 // (6° = +/- 3°)
     var rotationThresholdPassed = false
     var allowRotation = false
     var initialFingerAngle: Float = 0
@@ -210,8 +211,7 @@ class TwoFingerGesture: Gesture {
             
             // Update the yaw angle. We want to snap the model to 0.0 if it's close enough
             var newAngle = (initialObjectAngle - deltaAngle).remainder(dividingBy: Float.pi * 2)
-            print("NEW ANGLE = \(newAngle)")
-            if abs(newAngle) < (Float.pi / 180.0) {
+            if abs(newAngle) < snapThreshold {
                 newAngle = 0.0
             }
             
