@@ -8,6 +8,7 @@
 
 import Foundation
 import SpriteKit
+import UIKit
 
 class Compass: SKNode {
     
@@ -33,13 +34,19 @@ class Compass: SKNode {
     
     var imageRotation: CGFloat = 0.0 {
         didSet {
-            imageNode.zRotation = imageRotation
-            axes.zRotation = imageRotation
-            
-            if imageRotation == 0.0 {
-                indicator.strokeColor = outerRing.strokeColor
-            } else {
-                indicator.strokeColor = .clear
+            if imageNode.zRotation != imageRotation {
+                if imageRotation == 0.0 {
+                    indicator.strokeColor = outerRing.strokeColor
+                    
+                    let impactFeedbackgenerator = UIImpactFeedbackGenerator(style: .light)
+                    impactFeedbackgenerator.prepare()
+                    impactFeedbackgenerator.impactOccurred()
+                } else {
+                    indicator.strokeColor = .clear
+                }
+                
+                imageNode.zRotation = imageRotation
+                axes.zRotation = imageRotation
             }
         }
     }
