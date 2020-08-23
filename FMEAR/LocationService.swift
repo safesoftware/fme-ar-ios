@@ -42,12 +42,12 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     }
     
     func startLocationService() {
-        if CLLocationManager.headingAvailable() {
-            locationManager?.startUpdatingHeading()
-        }
-        
         if CLLocationManager.locationServicesEnabled() {
             locationManager?.startUpdatingLocation()
+        }
+        
+        if CLLocationManager.headingAvailable() {
+            locationManager?.startUpdatingHeading()
         }
         
         NotificationCenter.default.addObserver(self,
@@ -59,12 +59,12 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     }
     
     func stopLocationService() {
-        if CLLocationManager.headingAvailable() {
-            locationManager?.stopUpdatingHeading()
-        }
-        
         if CLLocationManager.locationServicesEnabled() {
             locationManager?.stopUpdatingLocation()
+        }
+        
+        if CLLocationManager.headingAvailable() {
+            locationManager?.stopUpdatingHeading()
         }
         
         NotificationCenter.default.removeObserver(self,
@@ -186,7 +186,8 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         heading = newHeading
-//        print("new heading: \(newHeading)")
+        //print("new heading: \(newHeading)")
+        //print("heading accuracy: \(newHeading.headingAccuracy)")
         self.error = nil
         notifyDelegateNewDescription()
         notifyDelegateNewHeading(heading: newHeading)
