@@ -75,7 +75,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         // covering the full screen, but our AR view should take up the whole
         // screen.
         documentViewController.modalPresentationStyle = .fullScreen
-        present(documentViewController, animated: true, completion: nil)
+        present(documentViewController, animated: true)
     }
 }
 
