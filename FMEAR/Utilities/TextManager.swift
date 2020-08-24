@@ -51,7 +51,7 @@ class TextManager {
     
     // MARK: - Properties
     
-    private var viewController: ViewController!
+    weak private var viewController: ViewController?
     
     // Timer for hiding messages
     private var messageHideTimer: Timer?
@@ -82,7 +82,7 @@ class TextManager {
 			self.messageHideTimer?.invalidate()
 			
 			// set text
-			self.viewController.messageLabel.text = "  \(text)"
+			self.viewController?.messageLabel.text = "  \(text)"
 			
 			// make sure status is showing
 			self.showHideMessage(hide: false, animated: true)
@@ -195,7 +195,7 @@ class TextManager {
 			alertController!.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
 		}
 		DispatchQueue.main.async {
-			self.viewController.present(self.alertController!, animated: true, completion: nil)
+			self.viewController?.present(self.alertController!, animated: true, completion: nil)
 		}
 	}
 	
@@ -208,27 +208,31 @@ class TextManager {
     // MARK: - Background Blur
 	
 	func blurBackground() {
-		let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.light)
-		let blurEffectView = UIVisualEffectView(effect: blurEffect)
-		blurEffectView.frame = viewController.view.bounds
-		blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-		blurEffectView.tag = blurEffectViewTag
-		viewController.view.addSubview(blurEffectView)
+        if let viewController = viewController {
+            let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.light)
+            let blurEffectView = UIVisualEffectView(effect: blurEffect)
+            blurEffectView.frame = viewController.view.bounds
+            blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            blurEffectView.tag = blurEffectViewTag
+            viewController.view.addSubview(blurEffectView)
+        }
 	}
 	
 	func unblurBackground() {
-		for view in viewController.view.subviews {
-			if let blurView = view as? UIVisualEffectView, blurView.tag == blurEffectViewTag {
-				blurView.removeFromSuperview()
-			}
-		}
+        if let viewController = viewController {
+            for view in viewController.view.subviews {
+                if let blurView = view as? UIVisualEffectView, blurView.tag == blurEffectViewTag {
+                    blurView.removeFromSuperview()
+                }
+            }
+        }
 	}
 	
 	// MARK: - Panel Visibility
     
 	private func showHideMessage(hide: Bool, animated: Bool) {
 		if !animated {
-			viewController.messageLabel.isHidden = hide
+			viewController?.messageLabel.isHidden = hide
 			return
 		}
 		
@@ -236,7 +240,7 @@ class TextManager {
 		               delay: 0,
 		               options: [.allowUserInteraction, .beginFromCurrentState],
 		               animations: {
-						self.viewController.messageLabel.isHidden = hide
+						self.viewController?.messageLabel.isHidden = hide
 		}, completion: nil)
 	}
 }
