@@ -54,6 +54,11 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             self.scaleLabel.isHidden = true
             self.expirationDateLabel.isHidden = true
             
+            // Reset heading
+            self.initialHeading = nil
+            self.numHeadingUpdates = 0
+            self.firstHeadings = []
+            
             // Remove overlay labels
             self.sceneView.overlaySKScene?.removeAllChildren()
             

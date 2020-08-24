@@ -140,22 +140,30 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     // MARK: - Location Service
     var locationService: LocationService?
+    
+    // We try to get the best heading for the camera pointing to the -z axis of the AR
+    // coordinate system (i.e. pointing forward initially). Since the heading is more
+    // accurate when the device is pointing forward instead of facing up, we will try to
+    // update the initial heading until the model needs it. We keep track of the camera
+    // euler angles when we record the initial heading. The x value of the camera euler
+    // angles represents whether the camera is pointing forward (0.0), face up (-90.0), or
+    // face down (90.0). Pointing backward is also (0.0) but I am not sure if it's because
+    // we don't allow the app to be upside down.
     var initialHeading: CLLocationDirection?
+    
+    // In debug, we saw that the first few camera orientation readings are fluctuating a
+    // lot, even when the tracking is normal. We should drop the first few readings. We
+    // will calculate the median of the first few headings to eliminate the abnormal readings.
+    // We will use an odd number to simplify the median calculation. We cannot use a very
+    // large collection (e.g. 101) since it's possible that the camera already detects an
+    // anchor plane. If we apply the heading AFTER the anchor plane is added, the plane
+    // will be rotated around the new origin and will appear out of place.
+    var numHeadingUpdates: UInt32 = 0
+    let numHeadingsToCollect: UInt32 = 11
+    var firstHeadings: [Double] = []
     
     func didUpdateDescription(_ locationService: LocationService, description: String) {
         headingLabel.text = description
-        
-        if let trueHeading = locationService.heading?.trueHeading {
-            if initialHeading == nil {
-                print("Initial Heading = \(trueHeading)")
-                initialHeading = trueHeading
-                
-                if let modelNode = virtualObjectContent() {
-                    print("Also setting model heading to \(trueHeading)")
-                    modelNode.eulerAngles.y = Float(trueHeading) * Float.pi / 180.0
-                }
-            }
-        }
     }
     
     func didUpdateLocation(_ locationService: LocationService, location: CLLocation) {
@@ -166,6 +174,41 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         }
      
         updateGeolocationAnchor()
+    }
+    
+    func didUpdateHeading(_ locationService: LocationService, heading: CLHeading) {
+        // Initialize the initialHeading based on the current camera orientation and
+        // match that to the current true heading
+        if initialHeading == nil {
+            if let currentFrame = self.sceneView.session.currentFrame, let trueHeading = locationService.heading?.trueHeading {
+                switch currentFrame.camera.trackingState {
+                    case .normal:
+                        if numHeadingUpdates < numHeadingsToCollect {
+                            // Set the initial heading based on the current true heading
+                            // and the angle between the world orientation and the
+                            // camera. Then we rotate the world origin so that we hope
+                            // the negative z axis is pointing toward the True North.
+                            // However, since the camera orientation is changing a lot,s
+                            // the calculation may be inaccurate sometimes. We will try
+                            // to use the median of the first few headings to eliminate
+                            // abnormal readings.
+                            let heading = trueHeading + Double(currentFrame.camera.eulerAngles.y * 180.0 / Float.pi)
+                            firstHeadings.append(heading)
+                            numHeadingUpdates += 1
+                        } else {
+                            // Calculate the median
+                            let median = firstHeadings.sorted(by: <)[firstHeadings.count / 2]
+                            initialHeading = median
+                            let rotationMatrix = SCNMatrix4MakeRotation(Float(initialHeading! * Double.pi / 180.0), 0.0, 1.0, 0.0)
+                            sceneView.session.setWorldOrigin(relativeTransform: simd_float4x4(rotationMatrix))
+                        }
+                case .notAvailable:
+                    break
+                case .limited(_):
+                    break
+                }
+            }
+        }
     }
     
     func updateGeolocationAnchor() {
@@ -244,12 +287,10 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        Setting.registerDefaults()
-        
         locationService = LocationService()
         locationService?.delegates.append(self)
 
+        Setting.registerDefaults()
 		setupUIControls()
         setupScene()
     }
@@ -359,9 +400,9 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
-		
-        locationService?.startLocationService()
         
+        locationService?.startLocationService()
+
         // Get the current view size
         self.viewSize = self.sceneView.bounds.size
         

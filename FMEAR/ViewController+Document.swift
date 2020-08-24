@@ -291,12 +291,12 @@ extension ViewController: FileManagerDelegate {
             
             // Rotate to Y up
             modelNode.eulerAngles.x = -Float.pi / 2
-            
-            // Rotate to face True North
-            if let initialHeading = self.initialHeading {
-                print("Setting model heading to \(initialHeading)")
-                modelNode.eulerAngles.y = Float(initialHeading) * Float.pi / 180.0
-            }
+
+//            // Rotate to face True North
+//            if let initialHeading = self.initialHeading {
+//                print("Setting model heading to \(initialHeading)")
+//                modelNode.eulerAngles.y = Float(initialHeading) * Float.pi / 180.0
+//            }
                                     
             let modelDimension = self.dimension(modelNode)
             let maxLength = max(modelDimension.x, modelDimension.y, modelDimension.z)
@@ -312,7 +312,7 @@ extension ViewController: FileManagerDelegate {
             
             // Set a cteagory bit mask to include the virtual object in the hit test.
             object.categoryBitMask = HitTestOptionCategoryBitMasks.virtualObject.rawValue
-
+            
             // Scale the virtual object
             if maxLength > 0 {
                 // By default, scale the model to be within a 0.5 meter cube.
