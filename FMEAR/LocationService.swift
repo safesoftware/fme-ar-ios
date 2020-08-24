@@ -20,7 +20,7 @@ import CoreLocation
 
 class LocationService: NSObject, CLLocationManagerDelegate {
     
-    var delegates: [LocationServiceDelegate] = []
+    var delegates: [WeakRef<LocationServiceDelegate>] = []
     
     var locationManager: CLLocationManager?
     var location: CLLocation?
@@ -126,19 +126,19 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     
     func notifyDelegateNewDescription() {
         for delegate in delegates {
-            delegate.didUpdateDescription?(self, description: description())
+            delegate.value?.didUpdateDescription?(self, description: description())
         }
     }
     
     func notifyDelegateNewLocation(location: CLLocation) {
         for delegate in delegates {
-            delegate.didUpdateLocation?(self, location: location)
+            delegate.value?.didUpdateLocation?(self, location: location)
         }
     }
     
     func notifyDelegateNewHeading(heading: CLHeading) {
         for delegate in delegates {
-            delegate.didUpdateHeading?(self, heading: heading)
+            delegate.value?.didUpdateHeading?(self, heading: heading)
         }
     }
     

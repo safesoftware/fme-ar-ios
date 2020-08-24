@@ -287,14 +287,15 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         locationService = LocationService()
-        locationService?.delegates.append(self)
+        locationService?.delegates.append(WeakRef(value: self))
 
         Setting.registerDefaults()
 		setupUIControls()
         setupScene()
     }
-    
+
     func setARWorldTrackingConfiguration(worldAlignment: ARConfiguration.WorldAlignment) {
         standardConfiguration = {
             let configuration = ARWorldTrackingConfiguration()
@@ -484,7 +485,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         // set up overlay view
         overlayView = OverlaySKScene(size: self.view.bounds.size)
         overlayView.overlaySKSceneDelegate = self
-        locationService?.delegates.append(overlayView)
+        locationService?.delegates.append(WeakRef(value: overlayView))
         sceneView.overlaySKScene = overlayView
         
 		//sceneView.scene.enableEnvironmentMapWithIntensity(25, queue: serialQueue)
