@@ -198,22 +198,18 @@ extension ViewController: FileManagerDelegate {
                         
                         if let scene = src?.scene(options: loadingOptions, statusHandler:  statusHandler) {
                             
-                            // Since SceneKit gives an error (Removing the root node
-                            // of a scene from its scene is not allowed), we need to
-                            // move all the nodes to a new container node.
-                            let containerNode = SCNNode()
-                            for node in scene.rootNode.childNodes {
-                                containerNode.addChildNode(node)
-                            }
-                            
-                            adjustMaterialProperties(sceneNode: containerNode)
+                            // TODO: SceneKit gives an error (Removing the root node
+                            // of a scene from its scene is not allowed), but cloning
+                            // doesn't work. The clone seems to lose the material colours
+                            let rootNode = scene.rootNode
+                            adjustMaterialProperties(sceneNode: rootNode)
                             
                             // Set the node name as the OBJ file name, which should
                             // be the asset/feature type name from the FME AR writer
-                            containerNode.name = element
-                            containerNode.name?.removeLast(/*.obj*/ 4)
+                            rootNode.name = element
+                            rootNode.name?.removeLast(/*.obj*/ 4)
                             //self.logSceneNode(containerNode, level: 0)
-                            modelNode.addChildNode(containerNode)
+                            modelNode.addChildNode(rootNode)
                             numObjFiles += 1
                         }
                     } else if element.hasSuffix("settings.json") {
