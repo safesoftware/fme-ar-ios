@@ -588,11 +588,18 @@ extension ViewController: FileManagerDelegate {
     // MARK: FileManagerDelegate
     
     func fileManager(_ fileManager: FileManager, shouldRemoveItemAt URL: URL) -> Bool {
-        if fileManager.fileExists(atPath: URL.absoluteString) {
-            return true
-        } else {
-            return false
-        }
+        
+        // For some unknown reasons, the follow commented code caused some textures not
+        // being able to be removed from the previous model and incorrectly apply the
+        // textures to the next model. We reverted back to always return true, but this
+        // causes an error if the user opens a file without anchoring the model on a
+        // plane before closing the file.
+        //if fileManager.fileExists(atPath: URL.absoluteString) {
+        //    return true
+        //} else {
+        //    return false
+        //}
+        return true
     }
     
     func dimension(_ sceneNode: SCNNode) -> SCNVector3 {
