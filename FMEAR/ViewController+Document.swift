@@ -198,14 +198,22 @@ extension ViewController: FileManagerDelegate {
                         
                         if let scene = src?.scene(options: loadingOptions, statusHandler:  statusHandler) {
                             
-                            adjustMaterialProperties(sceneNode: scene.rootNode)
+                            // Since SceneKit gives an error (Removing the root node
+                            // of a scene from its scene is not allowed), we need to
+                            // move all the nodes to a new container node.
+                            let containerNode = SCNNode()
+                            for node in scene.rootNode.childNodes {
+                                containerNode.addChildNode(node)
+                            }
+                            
+                            adjustMaterialProperties(sceneNode: containerNode)
                             
                             // Set the node name as the OBJ file name, which should
                             // be the asset/feature type name from the FME AR writer
-                            scene.rootNode.name = element
-                            scene.rootNode.name?.removeLast(/*.obj*/ 4)
-                            //self.logSceneNode(scene.rootNode, level: 0)
-                            modelNode.addChildNode(scene.rootNode)
+                            containerNode.name = element
+                            containerNode.name?.removeLast(/*.obj*/ 4)
+                            //self.logSceneNode(containerNode, level: 0)
+                            modelNode.addChildNode(containerNode)
                             numObjFiles += 1
                         }
                     } else if element.hasSuffix("settings.json") {
