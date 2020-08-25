@@ -592,8 +592,11 @@ extension ViewController: FileManagerDelegate {
     // MARK: FileManagerDelegate
     
     func fileManager(_ fileManager: FileManager, shouldRemoveItemAt URL: URL) -> Bool {
-        print("Should remove item at '\(URL)'")
-        return true
+        if fileManager.fileExists(atPath: URL.absoluteString) {
+            return true
+        } else {
+            return false
+        }
     }
     
     func dimension(_ sceneNode: SCNNode) -> SCNVector3 {
