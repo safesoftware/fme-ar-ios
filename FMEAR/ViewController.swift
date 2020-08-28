@@ -28,8 +28,20 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     let viewpointLabelName = "Viewpoint Label"
     
     var document: UIDocument?
-    var documentOpened = false
-    var modelPath: URL?
+//    var documentOpened = false
+    
+    // Datasets
+    var datasets: [URL: Dataset] = [:]
+    
+    // When the dataset is ready to be added to the scene, we add the dataset url to
+    // this array. When it's time to update the frame, we look at this array and add
+    // the dataset model to the scene.
+    var datasetsReady: [URL] = []
+    
+    // Error queue
+    var errors: [Error] = []
+    
+    //var modelPath: URL?
     var lights = [SCNLight]()
     var lightIntensity: CGFloat = 1000
     var lightTemperature: CGFloat = 6500
@@ -42,7 +54,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     var viewSize = CGSize()
     
     // Settings from JSON settings file
-    var settings: Settings?
+    //var settings: Settings?
     
     // Scale properties
     var scaleMode: ScaleMode = .customScale
@@ -287,6 +299,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("viewDidLoad")
         
         locationService = LocationService()
         locationService?.delegates.append(WeakRef(value: self))
@@ -432,9 +445,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         
 		session.pause()
 
-        if let document = self.document {
-            closeDocument(document: document)
-        }
+//        if let document = self.document {
+//            closeDocument(document: document)
+//        }
+        
+//        documentOpened = false
 	}
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -573,12 +588,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 		textManager.cancelScheduledMessage(forType: .planeEstimation)
 		textManager.showMessage("SURFACE DETECTED")
 
-        if let document = self.document {
-            if !documentOpened {
-                openDocument(document: document)
-                documentOpened = true
-            }
-        }
+//        if let document = self.document {
+//            if !documentOpened {
+//                openDocument(document: document)
+//            }
+//        }
 	}
 		
     func updatePlane(node: SCNNode, anchor: ARPlaneAnchor) {
@@ -691,10 +705,10 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     // MARK: - ARSessionDelegate
     
     func session(_ session : ARSession, didUpdate frame: ARFrame) {
-        
-        if let path = modelPath {
-            loadModel(path: path)
-        }
+//        
+//        if let path = modelPath {
+//            loadModel(path: path)
+//        }
      
         updateCenterDistance(frame: frame)
     }

@@ -69,7 +69,9 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
         let documentViewController = storyBoard.instantiateViewController(withIdentifier: "ARViewController") as! ViewController //DocumentViewController
-        documentViewController.document = Document(fileURL: documentURL)
+        
+        documentViewController.openDataset(url: documentURL)
+//        documentViewController.document = Document(fileURL: documentURL)
         
         // iOS 13: By default, view controller is presented as a card not
         // covering the full screen, but our AR view should take up the whole

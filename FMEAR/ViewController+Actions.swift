@@ -33,9 +33,10 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     @IBAction func restartExperience(_ sender: Any) {
         guard restartExperienceButtonIsEnabled, !isLoadingObject else { return }
         
-        if let document = self.document {
-            closeDocument(document: document)
-        }
+//        if let document = self.document {
+//            closeDocument(document: document)
+//        }
+//        documentOpened = false
         
         DispatchQueue.main.async {
             self.restartExperienceButtonIsEnabled = false
@@ -75,6 +76,8 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             DispatchQueue.main.asyncAfter(deadline: .now() + 5.0, execute: {
                 self.restartExperienceButtonIsEnabled = true
             })
+            
+            self.reloadAllDatasets()
         }
     }
     

@@ -6,6 +6,7 @@ ARSCNViewDelegate interactions for `ViewController`.
 */
 
 import ARKit
+import CoreLocation
 
 extension SCNVector3 {
     static func distanceFrom(vector vector1: SCNVector3, toVector vector2: SCNVector3) -> Float {
@@ -24,10 +25,123 @@ extension ViewController: ARSCNViewDelegate {
     // MARK: - ARSCNViewDelegate
 
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+        updateDatasets()
         updateFocusSquare()
         updateLights()
         updateModelIndicators()
         updateOverlay()
+    }
+    
+    func updateDatasets() {
+        guard let cameraTransform = self.session.currentFrame?.camera.transform else {
+            return
+        }
+        
+        if self.planes.isEmpty {
+            return
+        }
+
+        for (i, datasetUrl) in datasetsReady.enumerated().reversed() {
+            guard let dataset = datasets[datasetUrl] else {
+                print("Failed to read the dataset \(datasetUrl)")
+                datasetsReady.remove(at: i)
+                continue
+            }
+            
+            guard let model = dataset.model as? VirtualObject else {
+                print("Failed to read the model from \(datasetUrl)")
+                datasetsReady.remove(at: i)
+                continue
+            }
+            
+            let position = (self.focusSquare?.lastPosition ?? SIMD3<Float>(0, 0, -5))
+            
+            self.virtualObjectManager.loadVirtualObject(model, to: position, cameraTransform: cameraTransform)
+
+            self.sceneView.scene.rootNode.addChildNode(model)
+                                
+            // Add Viewpoint labels
+            for index in model.viewpoints.indices {
+                let viewpoint = model.viewpoints[index]
+                
+                let viewpointLabelNode = self.overlayView.labelNode(labelName: viewpoint.id.uuidString,
+                                                                iconNamed: LabelIcons.viewpoint.rawValue)
+                
+                if (model.currentViewpoint == viewpoint.id) {
+                    viewpointLabelNode.secondaryText = "CURRENT VIEWPOINT"
+                    viewpointLabelNode.callToAction = false
+                } else {
+                    viewpointLabelNode.callToAction = true
+                }
+                
+                if let name = viewpoint.name, !name.isEmpty {
+                    viewpointLabelNode.text = name
+
+                } else {
+                    viewpointLabelNode.text = "❂ Viewpoint \(index)"
+                    model.viewpoints[index].name = viewpointLabelNode.text
+                }
+            }
+            
+            if let anchors = dataset.settings?.anchors {
+                if let firstAnchor = anchors.first {
+                    if let coordinate = firstAnchor.coordinate {
+                        var geomarker = self.geolocationNode()
+                        if geomarker == nil {
+                            geomarker = self.addGeolocationNode()
+                        }
+                        geomarker!.geolocation = CLLocation(latitude: coordinate.latitude,
+                                                         longitude: coordinate.longitude)
+                        geomarker!.simdPosition = position
+                        geomarker!.anchor = dataset.settings?.anchors.first
+                        geomarker!.isHidden = true
+                        
+                        // If there is a geolocation, we should always show
+                        // the geolocation at the beginning
+                        UserDefaults.standard.set(true, for: .drawGeomarker)
+                    }
+                }
+            }
+            
+            // TODO: Move this UI block to somewhere better
+            DispatchQueue.main.async {
+                self.showAssetsButton.isEnabled = true
+                self.showScaleOptionsButton.isHidden = false
+                self.scaleLabel.isHidden = false
+                self.scaleLabel.text = self.dimensionAndScaleText(scale: model.scale.x, node: model)
+                
+                if let date = dataset.settings?.metadata?.modelExpiry {
+
+                    // Create date from components
+                    let userCalendar = Calendar.current // user calendar
+                    let hour = userCalendar.component(.hour, from: date)
+                    let minute = userCalendar.component(.minute, from: date)
+                    let second = userCalendar.component(.second, from: date)
+                    
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.timeZone = .current
+                    if hour == 23 && minute == 59 && second == 59 {
+                        dateFormatter.dateFormat = "MMM d,yyyy"
+                    } else {
+                        dateFormatter.dateFormat = "MMM d,yyyy HH:mm:ss"
+                    }
+                    
+                    let dateString = dateFormatter.string(from: date)
+
+                    self.expirationDateLabel.isHidden = false
+                    
+                    if date < Date() {
+                        self.expirationDateLabel.backgroundColor = .red
+                        self.expirationDateLabel.setTitle("Model expired on \(dateString)", for: .normal)
+                    } else {
+                        self.expirationDateLabel.backgroundColor = .darkGray
+                         self.expirationDateLabel.setTitle("Model will expire on \(dateString)", for: .normal)
+                    }
+                }
+            }
+            
+            datasetsReady.remove(at: i)
+        }
     }
     
     func updateLights() {
