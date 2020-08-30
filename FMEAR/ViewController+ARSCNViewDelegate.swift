@@ -40,7 +40,7 @@ extension ViewController: ARSCNViewDelegate {
         if self.planes.isEmpty {
             return
         }
-
+        
         for (i, datasetUrl) in datasetsReady.enumerated().reversed() {
             guard let dataset = datasets[datasetUrl] else {
                 print("Failed to read the dataset \(datasetUrl)")
@@ -54,6 +54,9 @@ extension ViewController: ARSCNViewDelegate {
                 continue
             }
             
+            // Update the snapshot in the compass
+            self.overlayView.compass().image = dataset.snapshot
+            
             let position = (self.focusSquare?.lastPosition ?? SIMD3<Float>(0, 0, -5))
             
             self.virtualObjectManager.loadVirtualObject(model, to: position, cameraTransform: cameraTransform)
@@ -61,25 +64,33 @@ extension ViewController: ARSCNViewDelegate {
             self.sceneView.scene.rootNode.addChildNode(model)
                                 
             // Add Viewpoint labels
-            for index in model.viewpoints.indices {
-                let viewpoint = model.viewpoints[index]
-                
-                let viewpointLabelNode = self.overlayView.labelNode(labelName: viewpoint.id.uuidString,
-                                                                iconNamed: LabelIcons.viewpoint.rawValue)
-                
-                if (model.currentViewpoint == viewpoint.id) {
-                    viewpointLabelNode.secondaryText = "CURRENT VIEWPOINT"
-                    viewpointLabelNode.callToAction = false
-                } else {
-                    viewpointLabelNode.callToAction = true
-                }
-                
-                if let name = viewpoint.name, !name.isEmpty {
-                    viewpointLabelNode.text = name
+            if model.viewpoints.isEmpty {
+                let viewpointLabelNode = self.overlayView.labelNode(labelName: self.viewpointLabelName,
+                                                                iconNamed: LabelIcons.geolocationAnchor.rawValue)
+                viewpointLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
+                viewpointLabelNode.callToAction = false
+                viewpointLabelNode.text = "Anchor"
+            } else {
+                for index in model.viewpoints.indices {
+                    let viewpoint = model.viewpoints[index]
+                    
+                    let viewpointLabelNode = self.overlayView.labelNode(labelName: viewpoint.id.uuidString,
+                                                                    iconNamed: LabelIcons.viewpoint.rawValue)
+                    
+                    if (model.currentViewpoint == viewpoint.id) {
+                        viewpointLabelNode.secondaryText = "CURRENT VIEWPOINT"
+                        viewpointLabelNode.callToAction = false
+                    } else {
+                        viewpointLabelNode.callToAction = true
+                    }
+                    
+                    if let name = viewpoint.name, !name.isEmpty {
+                        viewpointLabelNode.text = name
 
-                } else {
-                    viewpointLabelNode.text = "❂ Viewpoint \(index)"
-                    model.viewpoints[index].name = viewpointLabelNode.text
+                    } else {
+                        viewpointLabelNode.text = "❂ Viewpoint \(index)"
+                        model.viewpoints[index].name = viewpointLabelNode.text
+                    }
                 }
             }
             
@@ -109,6 +120,17 @@ extension ViewController: ARSCNViewDelegate {
                 self.showScaleOptionsButton.isHidden = false
                 self.scaleLabel.isHidden = false
                 self.scaleLabel.text = self.dimensionAndScaleText(scale: model.scale.x, node: model)
+                
+                // Udate scale
+                var allowScaling = true
+                var scaleMode = ScaleMode.customScale
+                if let scaling = dataset.settings?.scaling {
+                    allowScaling = false
+                    if scaling == 1.0 {
+                        scaleMode = .fullScale
+                    }
+                }
+                self.setShowScaleOptionsButton(mode: scaleMode, lockOn: !allowScaling)
                 
                 if let date = dataset.settings?.metadata?.modelExpiry {
 

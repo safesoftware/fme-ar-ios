@@ -31,14 +31,12 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 //    var documentOpened = false
     
     // Datasets
-    var datasets: [URL: Dataset] = [:]
-    
     // When the dataset is ready to be added to the scene, we add the dataset url to
     // this array. When it's time to update the frame, we look at this array and add
     // the dataset model to the scene.
     var datasetsReady: [URL] = []
-    
-    // Error queue
+    var reader = FMEARReader()
+    var datasets: [URL: Dataset] = [:]
     var errors: [Error] = []
     
     //var modelPath: URL?
@@ -64,6 +62,23 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     // Location properties
     var updateUserLocationEnabled = true
     var latestLocation = CLLocation(latitude: 0.0, longitude: 0.0)
+    
+    // MARK: - Init
+    override init(nibName: String?, bundle: Bundle?) {
+        super.init(nibName: nibName, bundle: bundle)
+        setup()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
+    
+    func setup() {
+        // Synchronize updates via the `serialQueue`.
+        virtualObjectManager = VirtualObjectManager(updateQueue: serialQueue)
+        virtualObjectManager.delegate = self
+    }
     
     // MARK: - ARKit Config Properties
     
@@ -360,7 +375,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     func modelDimension() -> [Float] {
         if let virtualObjectNode = virtualObject() {
-            let d = dimension(virtualObjectNode)
+            let d = virtualObjectNode.dimension()
             return [d.x, d.y, d.z]
         } else {
             return []
@@ -485,10 +500,6 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     }
     
 	func setupScene() {
-        // Synchronize updates via the `serialQueue`.
-        virtualObjectManager = VirtualObjectManager(updateQueue: serialQueue)
-        virtualObjectManager.delegate = self
-		
 		// set up scene view
 		sceneView.setup()
 		sceneView.delegate = self

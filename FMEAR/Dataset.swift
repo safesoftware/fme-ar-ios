@@ -13,4 +13,5 @@ class Dataset {
     var documentURL: URL?
     var settings: Settings?
     var model: SCNNode?
+    var snapshot: UIImage?
 }
