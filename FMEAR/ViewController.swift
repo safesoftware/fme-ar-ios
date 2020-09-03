@@ -27,15 +27,14 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     let geomarkerNodeName = "Geomarker Node"
     let viewpointLabelName = "Viewpoint Label"
     
-    var document: UIDocument?
-//    var documentOpened = false
-    
     // Datasets
     // When the dataset is ready to be added to the scene, we add the dataset url to
     // this array. When it's time to update the frame, we look at this array and add
     // the dataset model to the scene.
-    var datasetsReady: [URL] = []
-    var reader = FMEARReader()
+    var datasetsReady: [URL: Dataset] = [:]
+    
+    // The current reader that opens the current dataset
+    var reader: FMEARReader?
     var datasets: [URL: Dataset] = [:]
     var errors: [Error] = []
     
@@ -360,8 +359,10 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     }
     
     func removeGeolocationNode() {
-        if let node = geolocationNode() {
-            node.removeFromParentNode()
+        serialQueue.async {
+            if let node = self.geolocationNode() {
+                node.removeFromParentNode()
+            }
         }
     }
 

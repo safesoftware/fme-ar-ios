@@ -16,6 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        print("Launching app with options: \(launchOptions ?? [:])")
         return true
     }
 
@@ -42,7 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ app: UIApplication, open openURL: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        print("Launching app with url '\(openURL)'...")
+        print("Launching app with url '\(openURL)' and options \(options)...")
         
         var fileURL : URL
         if !openURL.isFileURL {
@@ -85,14 +86,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return
             }
             
+            guard let revealedDocumentURL = revealedDocumentURL else {
+                return
+            }
+            
             if var topController = app.keyWindow?.rootViewController {
                 while let presentedViewController = topController.presentedViewController {
                     if let arViewController = topController as? ViewController {
                         // The AR view controller is already being presented.
                         // We can open the document directly.
                         arViewController.restartExperience(arViewController)
-                        arViewController.document = Document(fileURL: revealedDocumentURL!)
-
+                        arViewController.openDataset(url: revealedDocumentURL)
                         return
                     } else {
                         topController = presentedViewController
@@ -101,7 +105,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             
             // Present the Document View Controller for the revealed URL
-            documentBrowserViewController.presentDocument(at: revealedDocumentURL!)
+            documentBrowserViewController.presentDocument(at: revealedDocumentURL)
         }
 
         return true

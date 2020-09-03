@@ -32,11 +32,13 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     /// - Tag: restartExperience
     @IBAction func restartExperience(_ sender: Any) {
         guard restartExperienceButtonIsEnabled, !isLoadingObject else { return }
-        
-//        if let document = self.document {
-//            closeDocument(document: document)
-//        }
-//        documentOpened = false
+
+        // TODO: When the app is in the background and back, this function is called.
+        // If we have opened a dataset and then switch to the FME Data Express to
+        // retrieve a new dataset, the first dataset will be reloaded. Since we don't
+        // actually support multiple datasets now, we should close all the datasets
+        // when restarting the experience.
+        self.reloadAllDatasets()
         
         DispatchQueue.main.async {
             self.restartExperienceButtonIsEnabled = false
@@ -76,8 +78,6 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             DispatchQueue.main.asyncAfter(deadline: .now() + 5.0, execute: {
                 self.restartExperienceButtonIsEnabled = true
             })
-            
-            self.reloadAllDatasets()
         }
     }
     

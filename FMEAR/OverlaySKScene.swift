@@ -58,6 +58,23 @@ class OverlaySKScene: SKScene, LocationServiceDelegate {
         return childNode(withName: labelName) as? PointyLabelNode;
     }
     
+    func removeLabel(labelName: String) -> PointyLabelNode? {
+        if let label = labelNodeOrNil(labelName: labelName) {
+            label.removeFromParent()
+            return label
+        } else {
+            return nil
+        }
+    }
+    
+    func removeAllLabels() {
+        for child in self.children {
+            if let label = child as? PointyLabelNode {
+                label.removeFromParent()
+            }
+        }
+    }
+    
     // MARK: Compass
     func compass() -> Compass {
         if let compass = childNode(withName: compassName) as? Compass {

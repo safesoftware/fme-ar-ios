@@ -41,16 +41,9 @@ extension ViewController: ARSCNViewDelegate {
             return
         }
         
-        for (i, datasetUrl) in datasetsReady.enumerated().reversed() {
-            guard let dataset = datasets[datasetUrl] else {
-                print("Failed to read the dataset \(datasetUrl)")
-                datasetsReady.remove(at: i)
-                continue
-            }
-            
+        for (url, dataset) in datasetsReady {
             guard let model = dataset.model as? VirtualObject else {
-                print("Failed to read the model from \(datasetUrl)")
-                datasetsReady.remove(at: i)
+                print("Failed to read the model from \(url)")
                 continue
             }
             
@@ -161,9 +154,9 @@ extension ViewController: ARSCNViewDelegate {
                     }
                 }
             }
-            
-            datasetsReady.remove(at: i)
         }
+        
+        datasetsReady.removeAll()
     }
     
     func updateLights() {
