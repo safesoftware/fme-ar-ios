@@ -21,6 +21,12 @@ class FMEReader: NSObject {
 class FMEARReader: FMEReader, FileManagerDelegate {
 
     weak var delegate: FMEReaderDelegate?
+    let fileManager = FileManager()
+    
+    override init() {
+        super.init()
+        fileManager.delegate = self
+    }
     
     func read(url: URL) {
         print("reading '\(url)'...")
@@ -35,13 +41,9 @@ class FMEARReader: FMEReader, FileManagerDelegate {
                 
                 let documentName = document.fileURL.pathComponents.last ?? ""
                 //self.textManager.showMessage("Opening \(documentName)...")
-
-                // Create a file manager to handle create and remove folders
-                let fileManager = FileManager.default
-                fileManager.delegate = self
                 
                 // Get the document directory path
-                guard let documentDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first as URL? else {
+                guard let documentDirectory = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first as URL? else {
                     self.delegate?.reader(self, didFailWithError: FMEError.failedToOpenDataset(url))
                     return
                 }
@@ -49,7 +51,7 @@ class FMEARReader: FMEReader, FileManagerDelegate {
                 // Create the destination folder for the unzipped content
                 let unzippedFolderUrl = documentDirectory.appendingPathComponent(UUID().uuidString)
                 do {
-                    try fileManager.createDirectory(at: unzippedFolderUrl,
+                    try self.fileManager.createDirectory(at: unzippedFolderUrl,
                                                     withIntermediateDirectories: true,
                                                     attributes: nil)
                 } catch {
@@ -74,7 +76,7 @@ class FMEARReader: FMEReader, FileManagerDelegate {
                 
                 // Remove the unzipped folder
                 do {
-                    try fileManager.removeItem(at: unzippedFolderUrl)
+                    try self.fileManager.removeItem(at: unzippedFolderUrl)
                 } catch let error {
                     print("Failed to remove the unzipped content in \(unzippedFolderUrl.path): \(error)")
                 }
@@ -97,8 +99,6 @@ class FMEARReader: FMEReader, FileManagerDelegate {
     }
     
     func readSettings(folderUrl: URL) -> Settings? {
-        let fileManager = FileManager.default
-        fileManager.delegate = self
         guard let enumerator = fileManager.enumerator(atPath: folderUrl.path) else {
             return nil
         }
@@ -128,8 +128,6 @@ class FMEARReader: FMEReader, FileManagerDelegate {
     }
     
     func readModel(folderUrl: URL, settings: Settings?) -> (SCNNode?, UIImage?)? {
-        let fileManager = FileManager.default
-        fileManager.delegate = self
         guard let enumerator = fileManager.enumerator(atPath: folderUrl.path) else {
             return nil
         }
@@ -327,7 +325,6 @@ class FMEARReader: FMEReader, FileManagerDelegate {
         
     // MARK: FileManagerDelegate
     func fileManager(_ fileManager: FileManager, shouldRemoveItemAt URL: URL) -> Bool {
-        
         // For some unknown reasons, the follow commented code caused some textures not
         // being able to be removed from the previous model and incorrectly apply the
         // textures to the next model. We reverted back to always return true, but this
