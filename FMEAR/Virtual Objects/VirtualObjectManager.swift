@@ -151,6 +151,11 @@ class VirtualObjectManager {
 	// MARK: - Update object position
 	
 	func translate(_ object: VirtualObject, in sceneView: ARSCNView, basedOn screenPos: CGPoint, instantly: Bool, infinitePlane: Bool) {
+        
+        // We should reset the current plane anchor of the virtual object since we are moving
+        // the virtual object manually.
+        object.currentPlaneAnchor = nil
+        
 		DispatchQueue.main.async {
 			let result = self.worldPositionFromScreenPosition(screenPos, in: sceneView, objectPos: object.simdPosition, infinitePlane: infinitePlane)
 			
@@ -219,32 +224,57 @@ class VirtualObjectManager {
 			if objectPos.y == 0 {
 				return; // The object is already on the plane - nothing to do here.
 			}
-			
-			// Add 10% tolerance to the corners of the plane.
-			let tolerance: Float = 0.1
-			
-			let minX: Float = anchor.center.x - anchor.extent.x / 2 - anchor.extent.x * tolerance
-			let maxX: Float = anchor.center.x + anchor.extent.x / 2 + anchor.extent.x * tolerance
-			let minZ: Float = anchor.center.z - anchor.extent.z / 2 - anchor.extent.z * tolerance
-			let maxZ: Float = anchor.center.z + anchor.extent.z / 2 + anchor.extent.z * tolerance
-			
-			if objectPos.x < minX || objectPos.x > maxX || objectPos.z < minZ || objectPos.z > maxZ {
-				return
-			}
-			
-			// Move the object onto the plane if it is near it (within 5 centimeters).
-			let verticalAllowance: Float = 0.05
-			let epsilon: Float = 0.001 // Do not bother updating if the different is less than a mm.
-			let distanceToPlane = abs(objectPos.y)
-			if distanceToPlane > epsilon && distanceToPlane < verticalAllowance {
-				delegate?.virtualObjectManager(self, didMoveObjectOntoNearbyPlane: object)
-				
-				SCNTransaction.begin()
-				SCNTransaction.animationDuration = CFTimeInterval(distanceToPlane * 500) // Move 2 mm per second.
-				SCNTransaction.animationTimingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-				object.position.y = anchor.transform.columns.3.y
-				SCNTransaction.commit()
-			}
+
+            let verticalAllowance: Float = 0.05
+            let distanceToPlane = abs(objectPos.y)
+            
+            // If the object is already tracking this plane anchor but it's not on the
+            // plane yet, we can simply move the object onto the plane.
+            if object.currentPlaneAnchor == anchor.identifier {
+                // If the distance is smaller than 5 centimeters, we will simply set the
+                // object without an animation.
+                
+                print("Updating object position onto plane anchor \(anchor.identifier)")
+                
+                if distanceToPlane < verticalAllowance {
+                    object.position.y = anchor.transform.columns.3.y
+                } else {
+                    SCNTransaction.begin()
+                    SCNTransaction.animationDuration = CFTimeInterval(distanceToPlane * 500) // Move 2 mm per second.
+                    SCNTransaction.animationTimingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+                    object.position.y = anchor.transform.columns.3.y
+                    SCNTransaction.commit()
+                }
+            } else {
+            
+                // Add 10% tolerance to the corners of the plane.
+                let tolerance: Float = 0.1
+                
+                let minX: Float = anchor.center.x - anchor.extent.x / 2 - anchor.extent.x * tolerance
+                let maxX: Float = anchor.center.x + anchor.extent.x / 2 + anchor.extent.x * tolerance
+                let minZ: Float = anchor.center.z - anchor.extent.z / 2 - anchor.extent.z * tolerance
+                let maxZ: Float = anchor.center.z + anchor.extent.z / 2 + anchor.extent.z * tolerance
+                
+                if objectPos.x < minX || objectPos.x > maxX || objectPos.z < minZ || objectPos.z > maxZ {
+                    return
+                }
+                
+                // Move the object onto the plane if it is near it (within 5 centimeters).
+
+                let epsilon: Float = 0.001 // Do not bother updating if the different is less than a mm.
+                if distanceToPlane > epsilon && distanceToPlane < verticalAllowance {
+                    delegate?.virtualObjectManager(self, didMoveObjectOntoNearbyPlane: object)
+                    
+                    SCNTransaction.begin()
+                    SCNTransaction.animationDuration = CFTimeInterval(distanceToPlane * 500) // Move 2 mm per second.
+                    SCNTransaction.animationTimingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+                    object.position.y = anchor.transform.columns.3.y
+                    SCNTransaction.commit()
+                    
+                    print("Moving object onto plane anchor \(anchor.identifier)")
+                    object.currentPlaneAnchor = anchor.identifier
+                }
+            }
 		}
 	}
 	

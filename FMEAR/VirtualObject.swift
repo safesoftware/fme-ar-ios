@@ -58,6 +58,7 @@ class VirtualObject: SCNReferenceNode, ReactsToScale {
     var currentViewpoint: UUID?
     let currentViewpointMarker: SCNNode? = nil
     var viewpointNodes: [UUID:SCNNode] = [:]
+    var currentPlaneAnchor: UUID?
     
     init(definition: VirtualObjectDefinition) {
         self.definition = definition

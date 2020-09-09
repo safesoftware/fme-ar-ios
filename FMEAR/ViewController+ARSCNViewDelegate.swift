@@ -37,6 +37,10 @@ extension ViewController: ARSCNViewDelegate {
             return
         }
         
+        guard let focusSquare = self.focusSquare else {
+            return
+        }
+        
         if self.planes.isEmpty {
             return
         }
@@ -49,8 +53,8 @@ extension ViewController: ARSCNViewDelegate {
             
             // Update the snapshot in the compass
             self.overlayView.compass().image = dataset.snapshot
-            
-            let position = (self.focusSquare?.lastPosition ?? SIMD3<Float>(0, 0, -5))
+
+            let position = focusSquare.lastPosition ?? SIMD3<Float>(0, 0, -5)
             
             self.virtualObjectManager.loadVirtualObject(model, to: position, cameraTransform: cameraTransform)
 
