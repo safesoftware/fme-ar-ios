@@ -112,7 +112,11 @@ extension ViewController: ARSCNViewDelegate {
             }
             
             // TODO: Move this UI block to somewhere better
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else {
+                    return
+                }
+
                 self.showAssetsButton.isEnabled = true
                 self.showScaleOptionsButton.isHidden = false
                 self.scaleLabel.isHidden = false
@@ -196,7 +200,11 @@ extension ViewController: ARSCNViewDelegate {
             }
         }
         
-        DispatchQueue.main.async{
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+
             if let screenPosition = screenPosition {
                 self.modelIndicatorUp.isHidden = (screenPosition.y > Float(self.sceneView.bounds.minY))
                 self.modelIndicatorDown.isHidden = (screenPosition.y < Float(self.sceneView.bounds.maxY))
@@ -302,24 +310,24 @@ extension ViewController: ARSCNViewDelegate {
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
-        serialQueue.async {
-            self.addPlane(node: node, anchor: planeAnchor)
-            self.virtualObjectManager.checkIfObjectShouldMoveOntoPlane(anchor: planeAnchor, planeAnchorNode: node)
+        serialQueue.async { [weak self] in
+            self?.addPlane(node: node, anchor: planeAnchor)
+            self?.virtualObjectManager.checkIfObjectShouldMoveOntoPlane(anchor: planeAnchor, planeAnchorNode: node)
         }
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
-        serialQueue.async {
-            self.updatePlane(node: node, anchor: planeAnchor)
-            self.virtualObjectManager.checkIfObjectShouldMoveOntoPlane(anchor: planeAnchor, planeAnchorNode: node)
+        serialQueue.async { [weak self] in
+            self?.updatePlane(node: node, anchor: planeAnchor)
+            self?.virtualObjectManager.checkIfObjectShouldMoveOntoPlane(anchor: planeAnchor, planeAnchorNode: node)
         }
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didRemove node: SCNNode, for anchor: ARAnchor) {
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
-        serialQueue.async {
-            self.removePlane(node: node, anchor: planeAnchor)
+        serialQueue.async { [weak self] in
+            self?.removePlane(node: node, anchor: planeAnchor)
         }
     }
     

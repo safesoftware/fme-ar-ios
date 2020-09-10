@@ -58,7 +58,11 @@ class VirtualObjectManager {
 	}
 	
 	private func unloadVirtualObject(_ object: VirtualObject) {
-		updateQueue.async {
+		updateQueue.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
 			object.unload()
 			object.removeFromParentNode()
 			if self.lastUsedObject == object {
@@ -81,7 +85,11 @@ class VirtualObjectManager {
             object.load()
             
             // Immediately place the object in 3D space.
-            self.updateQueue.async {
+            self.updateQueue.async { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                
                 self.setNewVirtualObjectPosition(object, to: position, cameraTransform: cameraTransform)
                 self.lastUsedObject = object
                 
@@ -156,7 +164,11 @@ class VirtualObjectManager {
         // the virtual object manually.
         object.currentPlaneAnchor = nil
         
-		DispatchQueue.main.async {
+		DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
 			let result = self.worldPositionFromScreenPosition(screenPos, in: sceneView, objectPos: object.simdPosition, infinitePlane: infinitePlane)
 			
 			guard let newPosition = result.position else {
@@ -168,7 +180,11 @@ class VirtualObjectManager {
 				return
 			}
 			
-			self.updateQueue.async {
+			self.updateQueue.async { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                
 				self.setPosition(for: object,
 									  position: newPosition,
 				                      instantly: instantly,

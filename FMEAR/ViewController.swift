@@ -121,7 +121,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     var isLoadingObject: Bool = false {
         didSet {
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                
                 self.settingsButton.isEnabled = !self.isLoadingObject
                 self.showAssetsButton.isEnabled = !self.isLoadingObject
                 self.restartExperienceButton.isEnabled = !self.isLoadingObject
@@ -238,7 +242,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     }
     
     func updateGeolocationAnchor() {
-        self.serialQueue.async {
+        self.serialQueue.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
             if let geomarker = self.geolocationNode() {
                 
                 geomarker.userLocation = self.latestLocation
@@ -294,11 +302,9 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
                         let x = userPosition.x + Float(deltaX)
                         let z = userPosition.z + Float(deltaZ)
                         
-                        self.virtualObjectManager.updateQueue.async {
-                            // Put the geolocation anchor at the same altitude as the model.
-                            let altitude = self.virtualObject()?.position.y ?? 0.0
-                            self.geolocationNode()?.move(to: SCNVector3(x, altitude, z))
-                        }
+                        // Put the geolocation anchor at the same altitude as the model.
+                        let altitude = self.virtualObject()?.position.y ?? 0.0
+                        self.geolocationNode()?.move(to: SCNVector3(x, altitude, z))
                     }
                 }
             }
@@ -359,8 +365,8 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     }
     
     func removeGeolocationNode() {
-        serialQueue.async {
-            if let node = self.geolocationNode() {
+        serialQueue.async { [weak self] in
+            if let node = self?.geolocationNode() {
                 node.removeFromParentNode()
             }
         }
@@ -528,7 +534,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         
 		setupFocusSquare()
 		
-		DispatchQueue.main.async {
+		DispatchQueue.main.async {[weak self] in
+            guard let self = self else {
+                return
+            }
+
 			self.screenCenter = self.sceneView.bounds.mid
 		}
 	}
@@ -660,7 +670,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     var focusSquare: FocusSquare?
 	
     func setupFocusSquare() {
-		serialQueue.async {
+		serialQueue.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
 			self.focusSquare?.isHidden = true
 			self.focusSquare?.removeFromParentNode()
 			self.focusSquare = FocusSquare()
@@ -859,7 +873,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     // MARK: - UI
     func updateScaleLabel(scale: Float) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+
             if let virtualObjectNode = self.virtualObject() {
                 self.scaleLabel.text = self.dimensionAndScaleText(scale: scale, node: virtualObjectNode)
             } else {

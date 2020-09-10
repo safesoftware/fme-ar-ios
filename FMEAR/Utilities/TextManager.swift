@@ -77,7 +77,11 @@ class TextManager {
     // MARK: - Message Handling
 	
 	func showMessage(_ text: String, autoHide: Bool = true) {
-		DispatchQueue.main.async {
+		DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
 			// cancel any previous hide timer
 			self.messageHideTimer?.invalidate()
 			
@@ -194,14 +198,18 @@ class TextManager {
 		} else {
 			alertController!.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
 		}
-		DispatchQueue.main.async {
+		DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
 			self.viewController?.present(self.alertController!, animated: true, completion: nil)
 		}
 	}
 	
 	func dismissPresentedAlert() {
-		DispatchQueue.main.async {
-			self.alertController?.dismiss(animated: true, completion: nil)
+		DispatchQueue.main.async { [weak self] in
+			self?.alertController?.dismiss(animated: true, completion: nil)
 		}
 	}
 	

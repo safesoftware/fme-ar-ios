@@ -40,7 +40,11 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
         // when restarting the experience.
         self.reloadAllDatasets()
         
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+
             self.restartExperienceButtonIsEnabled = false
             
             self.textManager.cancelAllScheduledMessages()
@@ -70,13 +74,13 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
             self.restartExperienceButton.setImage(#imageLiteral(resourceName: "restart"), for: [])
             
             // Show the focus square after a short delay to ensure all plane anchors have been deleted.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-                self.setupFocusSquare()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: { [weak self] in
+                self?.setupFocusSquare()
             })
             
             // Disable Restart button for a while in order to give the session enough time to restart.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0, execute: {
-                self.restartExperienceButtonIsEnabled = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0, execute: { [weak self] in
+                self?.restartExperienceButtonIsEnabled = true
             })
         }
     }
@@ -184,8 +188,12 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                     
                     // Create OK button with action handler
                     let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
-                        self.moveModelToGeolocation()
-                        self.serialQueue.async {
+                        self.serialQueue.async { [weak self] in
+                            guard let self = self else {
+                                return
+                            }
+                            
+                            self.moveModelToGeolocation()
                             if let geomarkerLabelNode = self.overlayView.labelNodeOrNil(labelName: self.geomarkerLabelName) {
                                 geomarkerLabelNode.callToActionText = Texts.rescan
                             }
@@ -209,9 +217,14 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                     
                     // Create OK button with action handler
                     let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
-                        geolocationNode.userLocation = self.latestLocation
                         self.updateUserLocationEnabled = true
-                        self.serialQueue.async {
+                        self.serialQueue.async { [weak self] in
+                            guard let self = self else {
+                                return
+                            }
+                            
+                            geolocationNode.userLocation = self.latestLocation
+                            
                             if let geomarkerLabelNode = self.overlayView.labelNodeOrNil(labelName: self.geomarkerLabelName) {
                                 geomarkerLabelNode.callToActionText = Texts.moveModel
                             }
@@ -241,21 +254,23 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
                         let ok = UIAlertAction(title: "Yes", style: .default, handler: { (action) -> Void in
                             print("Ok button tapped")
                             
-                            // Restore the original viewpoint label
-                            if let currentViewpointId = model.currentViewpoint {
-                                if let currentViewpoint = model.viewpoint(id: currentViewpointId) {
-                                    self.serialQueue.async {
-                                        if let currentViewpointNode = overlayView.labelNodeOrNil(labelName: currentViewpoint.id.uuidString) {
+                            self.serialQueue.async { [weak self] in
+                                guard let self = self else {
+                                    return
+                                }
+                                
+                                // Restore the original viewpoint label
+                                if let currentViewpointId = model.currentViewpoint {
+                                    if let currentViewpoint = model.viewpoint(id: currentViewpointId) {
+                                        if let currentViewpointNode = self.overlayView.labelNodeOrNil(labelName: currentViewpoint.id.uuidString) {
                                             currentViewpointNode.secondaryText = ""
                                             currentViewpointNode.callToAction = true
                                         }
                                     }
                                 }
-                            }
-                            
-                            model.anchorAtViewpoint(viewpointId: viewpoint.id)
-    
-                            self.serialQueue.async {
+                                
+                                model.anchorAtViewpoint(viewpointId: viewpoint.id)
+        
                                 if let newCurrentViewpointNode = overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString) {
                                     newCurrentViewpointNode.secondaryText = "CURRENT VIEWPOINT"
                                     newCurrentViewpointNode.callToAction = false
@@ -350,9 +365,13 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
     
     // MARK: - Viewpoints
     func setViewpointsVisible(visible: Bool) {
-        if let virtualObject = virtualObject() {
-            for viewpoint in virtualObject.viewpoints {
-                self.serialQueue.async {
+        self.serialQueue.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+
+            if let virtualObject = self.virtualObject() {
+                for viewpoint in virtualObject.viewpoints {
                     if let viewpointLabelNode = self.overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString) {
                         viewpointLabelNode.isHidden = !visible
                     }

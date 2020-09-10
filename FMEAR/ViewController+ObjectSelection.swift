@@ -37,7 +37,11 @@ extension ViewController: AssetViewControllerDelegate, VirtualObjectManagerDeleg
     // MARK: - VirtualObjectManager delegate callbacks
     
     func virtualObjectManager(_ manager: VirtualObjectManager, willLoad object: VirtualObject) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
             // Show progress indicator
             self.spinner = UIActivityIndicatorView()
             self.spinner!.center = self.showAssetsButton.center
@@ -51,7 +55,11 @@ extension ViewController: AssetViewControllerDelegate, VirtualObjectManagerDeleg
     }
     
     func virtualObjectManager(_ manager: VirtualObjectManager, didLoad object: VirtualObject) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
             self.isLoadingObject = false
             
             // Remove progress indicator
