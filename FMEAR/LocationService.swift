@@ -39,6 +39,7 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         locationManager?.requestWhenInUseAuthorization()
         locationManager?.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager?.headingFilter = kCLHeadingFilterNone
+        handleDeviceOrientationDidChange()
     }
     
     func startLocationService() {
