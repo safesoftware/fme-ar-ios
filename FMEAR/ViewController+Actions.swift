@@ -118,6 +118,10 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
         overlayView.childNode(withName: self.geomarkerLabelName)?.isHidden = !on
     }
     
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawCompass on: Bool) {
+        overlayView.compass().isHidden = !on
+    }
+    
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleShowCenterDistance on: Bool) {
         self.centerObjectDistanceLabel.isHidden = !on
         self.centerMarker.isHidden = !on
@@ -127,18 +131,6 @@ extension ViewController: UIPopoverPresentationControllerDelegate, SettingsViewC
         self.updateFrameSemantics()
     }
 
-    func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float) {
-        if let virtualObjectNode = virtualObject() {
-
-            let duration = max(3.0, min(5.0, scale / virtualObjectNode.scale.x))
-            print("Animating scale from '\(virtualObjectNode.scale)' to '\(scale)' in a duration of '\(duration)'")
-            print("Pivot = \(virtualObjectNode.pivot)")
-
-            let scaleAction = SCNAction.scale(to: CGFloat(scale), duration: Double(duration))
-
-            virtualObjectNode.runAction(scaleAction)
-        }
-    }
     
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeIntensity intensity: Float) {
         setLightIntensity(intensity: CGFloat(intensity))

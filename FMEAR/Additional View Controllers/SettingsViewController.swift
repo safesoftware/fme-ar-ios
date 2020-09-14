@@ -15,6 +15,7 @@ enum Setting: String {
     case drawDetectedPlane
     case drawAnchor
     case drawGeomarker
+    case drawCompass
     case showCenterDistance
     case enablePeopleOcclusion
     case labelFontSize
@@ -27,6 +28,7 @@ enum Setting: String {
             Setting.drawDetectedPlane.rawValue: true,
             Setting.drawAnchor.rawValue: true,
             Setting.drawGeomarker.rawValue: true,
+            Setting.drawCompass.rawValue: true,
             Setting.showCenterDistance.rawValue: true,
             Setting.enablePeopleOcclusion.rawValue: true,
             Setting.labelFontSize.rawValue: 12.0
@@ -55,9 +57,9 @@ protocol SettingsViewControllerDelegate: class {
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawDetectedPlane on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawAnchor on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawGeomarker on: Bool)
+    func settingsViewControllerDelegate(_: SettingsViewController, didToggleDrawCompass on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleShowCenterDistance on: Bool)
     func settingsViewControllerDelegate(_: SettingsViewController, didToggleEnablePeopleOcclusion on: Bool)
-    func settingsViewControllerDelegate(_: SettingsViewController, didChangeScale scale: Float)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeIntensity intensity: Float)
     func settingsViewControllerDelegate(_: SettingsViewController, didChangeTemperature temperature: Float)
 }
@@ -69,8 +71,6 @@ class SettingsViewController: UITableViewController {
 //	@IBOutlet weak var scaleWithPinchGestureSwitch: UISwitch!
 //	@IBOutlet weak var dragOnInfinitePlanesSwitch: UISwitch!
     @IBOutlet weak var lightEstimationSwitch: UISwitch!
-    @IBOutlet weak var scaleLabel: UILabel!
-    @IBOutlet weak var fullScaleButton: UIButton!
     @IBOutlet weak var intensitySlider: UISlider!
     @IBOutlet weak var temperatureSlider: UISlider!
     @IBOutlet weak var drawDetectedPlaneSwitch: UISwitch!
@@ -79,6 +79,7 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var showCenterDistanceSwitch: UISwitch!
     @IBOutlet weak var enablePeopleOcclusionSwitch: UISwitch!
     @IBOutlet weak var enablePeopleOcclusionLabel: UILabel!
+    @IBOutlet weak var drawCompassSwitch: UISwitch!
     
     
     weak var delegate: SettingsViewControllerDelegate?
@@ -89,7 +90,6 @@ class SettingsViewController: UITableViewController {
     // Sections
     let kLightEstimationSection = 0
     let kRenderingSection = 1
-    let kScaleSection = 2
     
     // Section: Light Estimation
     let kLightEstimationRow = 0
@@ -119,6 +119,7 @@ class SettingsViewController: UITableViewController {
         drawDetectedPlaneSwitch.isOn = defaults.bool(for: .drawDetectedPlane)
         drawAnchorSwitch.isOn = defaults.bool(for: .drawAnchor)
         drawGeomarkerSwitch.isOn = defaults.bool(for: .drawGeomarker)
+        drawCompassSwitch.isOn = defaults.bool(for: .drawCompass)
         showCenterDistanceSwitch.isOn = defaults.bool(for: .showCenterDistance)
         enablePeopleOcclusionSwitch.isOn = defaults.bool(for: .enablePeopleOcclusion)
         
@@ -137,8 +138,6 @@ class SettingsViewController: UITableViewController {
             enablePeopleOcclusionLabel.text = "People Occlusion (N/A)"
             enablePeopleOcclusionSwitch.isOn = false
         }
-        
-        updateScaleSettings()
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -156,21 +155,7 @@ class SettingsViewController: UITableViewController {
         // the correct origin
         return 2
     }
-    
-    func updateScaleSettings() {
-        scaleLabel.text = String(format: "%.3f", scale)
-
-        if (scaleLabel.text == "1.000") {
-            scaleLabel.text = "Full Scale"
-            fullScaleButton.isEnabled = false
-        } else if (scaleLabel.text == "0.000") {
-            scaleLabel.text = "< 0.001"
-            fullScaleButton.isEnabled = true
-        } else {
-            fullScaleButton.isEnabled = true
-        }
-    }
-    
+        
     override func viewWillLayoutSubviews() {
         preferredContentSize.height = tableView.contentSize.height
     }
@@ -208,6 +193,12 @@ class SettingsViewController: UITableViewController {
                 if delegate != nil {
                     delegate?.settingsViewControllerDelegate(self, didToggleDrawGeomarker: sender.isOn)
                 }
+            case drawCompassSwitch:
+                defaults.set(sender.isOn, for: .drawCompass)
+                tableView.reloadData()
+                if delegate != nil {
+                    delegate?.settingsViewControllerDelegate(self, didToggleDrawCompass: sender.isOn)
+                }
             case showCenterDistanceSwitch:
                 defaults.set(sender.isOn, for: .showCenterDistance)
                 tableView.reloadData()
@@ -241,12 +232,6 @@ class SettingsViewController: UITableViewController {
 
     @IBAction func clicked(_ sender: UIButton) {
         switch sender {
-        case fullScaleButton:
-            scale = 1.0
-            updateScaleSettings()
-            if delegate != nil {
-                delegate?.settingsViewControllerDelegate(self, didChangeScale: scale)
-            }
         default:
             break   // Do nothing
         }
