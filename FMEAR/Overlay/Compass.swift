@@ -26,8 +26,10 @@ class Compass: SKNode {
             if let image = image {
                 let texture = SKTexture(image: image)
                 imageNode.texture = texture
+                axes.isHidden = false
             } else {
                 imageNode.texture = nil
+                axes.isHidden = true
             }
         }
     }
@@ -36,18 +38,25 @@ class Compass: SKNode {
         didSet {
             if imageNode.zRotation != imageRotation {
                 if imageRotation == 0.0 {
-                    indicator.strokeColor = outerRing.strokeColor
-                    
                     let impactFeedbackgenerator = UIImpactFeedbackGenerator(style: .light)
                     impactFeedbackgenerator.prepare()
                     impactFeedbackgenerator.impactOccurred()
-                } else {
-                    indicator.strokeColor = .clear
                 }
                 
                 imageNode.zRotation = imageRotation
                 axes.zRotation = imageRotation
+                updateColor()
             }
+        }
+    }
+    
+    func updateColor() {
+        if imageNode.zRotation == 0.0 {
+            indicator.strokeColor = outerRing.strokeColor
+            indicator.fillColor = DesignSystem.Colour.SemanticPalette.redLight10
+        } else {
+            indicator.strokeColor = outerRing.strokeColor
+            indicator.fillColor = .clear
         }
     }
 
@@ -78,8 +87,6 @@ class Compass: SKNode {
         path.addLine(to: CGPoint(x: -4.0, y: 30.0))
         path.addLine(to: CGPoint(x: 4.0, y: 30.0))
         indicator = SKShapeNode(path: path)
-        indicator.fillColor = DesignSystem.Colour.SemanticPalette.redLight10
-        indicator.strokeColor = outerRing.strokeColor
         indicator.zPosition = 2
         self.addChild(indicator)
 
@@ -96,6 +103,7 @@ class Compass: SKNode {
         
         axes = SKNode()
         self.addChild(axes)
+        axes.isHidden = true
         let axisLength = 28.0
         let southPath = CGMutablePath()
         southPath.move(to: CGPoint(x: 0.0, y: 0.0))
@@ -119,7 +127,7 @@ class Compass: SKNode {
         northPath.move(to: CGPoint(x: 0.0, y: 0.0))
         northPath.addLine(to: CGPoint(x: 0.0, y: axisLength))
         let northAxis = SKShapeNode(path: northPath)
-        northAxis.strokeColor = DesignSystem.Colour.SemanticPalette.greenLight10.withAlphaComponent(0.8)
+        northAxis.strokeColor = DesignSystem.Colour.SemanticPalette.redLight10.withAlphaComponent(0.8)
         northAxis.zPosition = 1
         northAxis.lineWidth = 2
         axes.addChild(northAxis)
@@ -128,10 +136,12 @@ class Compass: SKNode {
         eastPath.move(to: CGPoint(x: 0.0, y: 0.0))
         eastPath.addLine(to: CGPoint(x: axisLength, y: 0.0))
         let eastAxis = SKShapeNode(path: eastPath)
-        eastAxis.strokeColor = DesignSystem.Colour.SemanticPalette.redLight10.withAlphaComponent(0.8)
+        eastAxis.strokeColor = DesignSystem.Colour.SemanticPalette.greenLight10.withAlphaComponent(0.8)
         eastAxis.zPosition = 1
         eastAxis.lineWidth = 2
         axes.addChild(eastAxis)
+        
+        updateColor()
     }
     
     required init?(coder aDecoder: NSCoder) {
