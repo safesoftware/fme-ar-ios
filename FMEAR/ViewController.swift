@@ -466,6 +466,9 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         locationService?.stopLocationService()
         
 		session.pause()
+        
+        // Stop getting renderer callback
+        sceneView.delegate = nil
 
 //        if let document = self.document {
 //            closeDocument(document: document)
