@@ -157,6 +157,47 @@ class VirtualObjectManager {
 	}
 	
 	// MARK: - Update object position
+    
+    func translate(_ object: VirtualObject, in sceneView: ARSCNView, screenStartPos: CGPoint, screenEndPos: CGPoint, instantly: Bool, infinitePlane: Bool) {
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
+            let startPos = self.worldPositionFromScreenPosition(
+                screenStartPos,
+                in: sceneView,
+                objectPos: object.simdPosition,
+                infinitePlane: infinitePlane)
+
+            let endPos = self.worldPositionFromScreenPosition(
+                screenEndPos,
+                in: sceneView,
+                objectPos: object.simdPosition,
+                infinitePlane: infinitePlane)
+            
+            guard let worldStartPos = startPos.position, let worldEndPos = endPos.position else {
+                self.delegate?.virtualObjectManager(self, couldNotPlace: object)
+                return
+            }
+            
+            guard let cameraTransform = sceneView.session.currentFrame?.camera.transform else {
+                return
+            }
+            
+            // Calculate the distance
+            let moveDistance = worldEndPos - worldStartPos
+            self.updateQueue.async { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                
+                // Offset the object
+                object.simdPosition += moveDistance
+            }
+        }
+    }
 	
 	func translate(_ object: VirtualObject, in sceneView: ARSCNView, basedOn screenPos: CGPoint, instantly: Bool, infinitePlane: Bool) {
         

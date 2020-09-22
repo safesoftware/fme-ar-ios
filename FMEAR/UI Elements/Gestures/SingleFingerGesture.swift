@@ -46,25 +46,40 @@ class SingleFingerGesture: Gesture {
         
         latestTouchLocation = currentTouches.first!.location(in: sceneView)
         
-        if !translationThresholdPassed {
-            let initialLocationToCurrentLocation = latestTouchLocation - initialTouchLocation
-            let distanceFromStartLocation = initialLocationToCurrentLocation.length()
-            if distanceFromStartLocation >= translationThreshold {
-                translationThresholdPassed = true
-                
-                let currentObjectLocation = CGPoint(sceneView.projectPoint(virtualObject.position))
-                dragOffset = latestTouchLocation - currentObjectLocation
-            }
-        }
-        
-        // A single finger drag will occur if the drag started on the object and the threshold has been passed.
-        if translationThresholdPassed {
-            
-            let offsetPos = latestTouchLocation - dragOffset
-            objectManager.translate(virtualObject, in: sceneView, basedOn: offsetPos, instantly: false, infinitePlane: true)
-            hasMovedObject = true
-            lastUsedObject = virtualObject
-        }
+        objectManager.translate(
+            virtualObject,
+            in: sceneView,
+            screenStartPos: initialTouchLocation,
+            screenEndPos: latestTouchLocation,
+            instantly: false,
+            infinitePlane: true)
+        hasMovedObject = true
+        lastUsedObject = virtualObject
+        initialTouchLocation = latestTouchLocation
+
+//        let initialLocationToCurrentLocation = latestTouchLocation - initialTouchLocation
+//        let distanceFromStartLocation = initialLocationToCurrentLocation.length()
+//        if !translationThresholdPassed {
+//
+//            if distanceFromStartLocation >= translationThreshold {
+//                translationThresholdPassed = true
+//                
+//                let currentObjectLocation = CGPoint(sceneView.projectPoint(virtualObject.position))
+//                dragOffset = latestTouchLocation - currentObjectLocation
+//                print("new dragOffset = \(dragOffset)")
+//            }
+//        }
+//        
+//        // A single finger drag will occur if the drag started on the object and the threshold has been passed.
+//        if translationThresholdPassed {
+//            print("dragOffset = \(dragOffset)")
+//            print("latestTouchLocation = \(latestTouchLocation)")
+//            let offsetPos = latestTouchLocation - dragOffset
+//            print("translate: \(offsetPos)")
+//            objectManager.translate(virtualObject, in: sceneView, basedOn: offsetPos, instantly: false, infinitePlane: true)
+//            hasMovedObject = true
+//            lastUsedObject = virtualObject
+//        }
     }
     
     func finishGesture() {
