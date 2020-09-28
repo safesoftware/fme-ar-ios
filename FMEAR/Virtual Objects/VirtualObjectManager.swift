@@ -181,18 +181,10 @@ class VirtualObjectManager {
                 self.delegate?.virtualObjectManager(self, couldNotPlace: object)
                 return
             }
-            
-            guard let cameraTransform = sceneView.session.currentFrame?.camera.transform else {
-                return
-            }
-            
+
             // Calculate the distance
             let moveDistance = worldEndPos - worldStartPos
-            self.updateQueue.async { [weak self] in
-                guard let self = self else {
-                    return
-                }
-                
+            self.updateQueue.async {
                 // Offset the object
                 object.simdPosition += moveDistance
             }

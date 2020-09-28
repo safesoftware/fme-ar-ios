@@ -173,32 +173,19 @@ class FMEARReader: FMEReader, FileManagerDelegate {
             
             // json.settings version 4 - Viewpoints
             // ----------
-            let viewpoints = settings?.viewpoints ?? []
-                        
-            // json.settings version 3 - Anchor
-            // ------
-            // By default, set the anchor to the center of the model, with the
-            // 0.0 height as the ground
-            var anchor: SCNVector3 = SCNVector3(centerX, Float(groundZ), centerY) // default
-            if let anchors = settings?.anchors {
-                if let firstAnchor = anchors.first {
-                    anchor = SCNVector3(firstAnchor.x ?? Double(centerX),
-                                       firstAnchor.z ?? groundZ,
-                                       firstAnchor.y ?? Double(centerY))
-                }
+            var viewpoints = settings?.viewpoints ?? []
+            if viewpoints.isEmpty {
+                var defaultViewpoint = Viewpoint()
+                defaultViewpoint.name = "Default Viewpoint"
+                defaultViewpoint.x = Double(centerX)
+                defaultViewpoint.y = Double(centerY)
+                defaultViewpoint.z = groundZ
+                
+                viewpoints.append(defaultViewpoint)
             }
             
-            // json.settings version 3
-            if viewpoints.isEmpty {
-                // Position the container node, including the model and the anchor
-                // node, to the anchor location.
-                // The FME coordinate z axis = ARKit y axis
-                // The FME coordinate y axis = ARKit z axis
-                model.position = SCNVector3(-anchor.x, -anchor.y, anchor.z)
-            } else {
-                // If we have a viewpont, we should always show it at the beginning
-                UserDefaults.standard.set(true, for: .drawAnchor)
-            }
+            // we should always show viewpoints at the beginning
+            UserDefaults.standard.set(true, for: .drawAnchor)
             
             // Rotate to Y up
             model.eulerAngles.x = -Float.pi / 2

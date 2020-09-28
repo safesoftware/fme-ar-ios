@@ -85,7 +85,7 @@ extension ViewController: ARSCNViewDelegate {
                         viewpointLabelNode.text = name
 
                     } else {
-                        viewpointLabelNode.text = "❂ Viewpoint \(index)"
+                        viewpointLabelNode.text = "Viewpoint \(index)"
                         model.viewpoints[index].name = viewpointLabelNode.text
                     }
                 }
@@ -264,22 +264,30 @@ extension ViewController: ARSCNViewDelegate {
             
             // json.settings version 4
             for viewpoint in virtualObject.viewpoints {
-                if let vPos = virtualObject.viewpointWorldPosition(viewpointId: viewpoint.id) {
-                    let screenCoord = self.sceneView.projectPoint(vPos)
+                if let vPos = virtualObject.viewpointWorldPosition(viewpointId: viewpoint.id),
+                   let labelNode = self.overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString),
+                   let pointOfView = self.sceneView.pointOfView,
+                   let viewpointNode = virtualObject.viewpointNode(viewpointId: viewpoint.id) {
+                    
+                    // See if we the viewpoint is within the point of view. If yes,
+                    // we update it's position. If not, we hide the label.
+                    if self.sceneView.isNode(viewpointNode, insideFrustumOf: pointOfView) {
+                        let screenCoord = self.sceneView.projectPoint(vPos)
+                        if viewSize.width > 0 && viewSize.height > 0 {
+                            // When the z is larger than 1, the geomarker is actually at
+                            // the opposite direction or invalid, and the screenCoord.x is wrong.
+                            // We can simply use a very large screen value, such as 10000,
+                            // to make the geolocation offscreen.
+                            let screenPosition = CGPoint(
+                                x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
+                                y: viewSize.height - CGFloat(screenCoord.y))
 
-                    if viewSize.width > 0 && viewSize.height > 0 {
-                        // When the z is larger than 1, the geomarker is actually at
-                        // the opposite direction or invalid, and the screenCoord.x is wrong.
-                        // We can simply use a very large screen value, such as 10000,
-                        // to make the geolocation offscreen.
-                        let screenPosition = CGPoint(
-                            x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
-                            y: viewSize.height - CGFloat(screenCoord.y))
-
-                        if let labelNode = self.overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString) {
                             labelNode.point = screenPosition
                             labelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
                         }
+                    }
+                    else {
+                        labelNode.isHidden = true
                     }
                 }
             }
@@ -391,6 +399,14 @@ extension ViewController: ARSCNViewDelegate {
             title = "Object Merge Failed"
         case .fileIOFailed:
             title = "File IO Failed"
+        case .locationUnauthorized:
+            title = "Location Unauthorized"
+        case .geoTrackingNotAvailableAtLocation:
+            title = "Geo-Tracking Not Available At Location"
+        case .geoTrackingFailed:
+            title = "Geo-Tracking Failed"
+        case .requestFailed:
+            title = "Request Failed"
         @unknown default:
             title = "Unknown Error"
         }

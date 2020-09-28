@@ -199,6 +199,10 @@ class VirtualObject: SCNReferenceNode, ReactsToScale {
         }
     }
 
+    func viewpointNode(viewpointId: UUID) -> SCNNode? {
+        return viewpointNodes[viewpointId]
+    }
+    
     // This function returns the world position of the viewpoint in the scene
     func viewpointWorldPosition(viewpointId: UUID) -> SCNVector3? {
         if let node = viewpointNodes[viewpointId] {
