@@ -10,17 +10,17 @@
 import UIKit
 import CoreLocation
 
-protocol LocationServiceDelegate {
+@objc protocol LocationServiceDelegate {
     // This function is called when the description text is updated because of
     // one of the location, heading, authorization status, or error has changed.
-    func didUpdateDescription(_ locationService: LocationService, description: String)
-    
-    func didUpdateLocation(_ locationService: LocationService, location: CLLocation)
+    @objc optional func didUpdateDescription(_ locationService: LocationService, description: String)
+    @objc optional func didUpdateLocation(_ locationService: LocationService, location: CLLocation)
+    @objc optional func didUpdateHeading(_ locationService: LocationService, heading: CLHeading)
 }
 
 class LocationService: NSObject, CLLocationManagerDelegate {
     
-    var delegate: LocationServiceDelegate?
+    var delegates: [WeakRef<LocationServiceDelegate>] = []
     
     var locationManager: CLLocationManager?
     var location: CLLocation?
@@ -39,15 +39,16 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         locationManager?.requestWhenInUseAuthorization()
         locationManager?.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager?.headingFilter = kCLHeadingFilterNone
+        handleDeviceOrientationDidChange()
     }
     
     func startLocationService() {
-        if CLLocationManager.headingAvailable() {
-            locationManager?.startUpdatingHeading()
-        }
-        
         if CLLocationManager.locationServicesEnabled() {
             locationManager?.startUpdatingLocation()
+        }
+        
+        if CLLocationManager.headingAvailable() {
+            locationManager?.startUpdatingHeading()
         }
         
         NotificationCenter.default.addObserver(self,
@@ -59,12 +60,12 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     }
     
     func stopLocationService() {
-        if CLLocationManager.headingAvailable() {
-            locationManager?.stopUpdatingHeading()
-        }
-        
         if CLLocationManager.locationServicesEnabled() {
             locationManager?.stopUpdatingLocation()
+        }
+        
+        if CLLocationManager.headingAvailable() {
+            locationManager?.stopUpdatingHeading()
         }
         
         NotificationCenter.default.removeObserver(self,
@@ -113,8 +114,9 @@ class LocationService: NSObject, CLLocationManagerDelegate {
         }
         
         if let heading = heading, headingAvailable {
-            let trueHeading = String(format: "%.0f", heading.trueHeading)
-            let direction = directionText(degree: heading.trueHeading)
+            let roundedHeading = (heading.trueHeading).truncatingRemainder(dividingBy: 360.0).rounded(.down)
+            let trueHeading = String(format: "%.0f", roundedHeading)
+            let direction = directionText(degree: roundedHeading)
             d += " 🧭 \(trueHeading)° \(direction) "
         } else {
             d += " 🧭 Heading Not Available "
@@ -124,14 +126,20 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     }
     
     func notifyDelegateNewDescription() {
-        if delegate != nil {
-            delegate?.didUpdateDescription(self, description: description())
+        for delegate in delegates {
+            delegate.value?.didUpdateDescription?(self, description: description())
         }
     }
     
     func notifyDelegateNewLocation(location: CLLocation) {
-        if delegate != nil {
-            delegate?.didUpdateLocation(self, location: location)
+        for delegate in delegates {
+            delegate.value?.didUpdateLocation?(self, location: location)
+        }
+    }
+    
+    func notifyDelegateNewHeading(heading: CLHeading) {
+        for delegate in delegates {
+            delegate.value?.didUpdateHeading?(self, heading: heading)
         }
     }
     
@@ -179,9 +187,11 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         heading = newHeading
-//        print("new heading: \(newHeading)")
+        //print("new heading: \(newHeading)")
+        //print("heading accuracy: \(newHeading.headingAccuracy)")
         self.error = nil
         notifyDelegateNewDescription()
+        notifyDelegateNewHeading(heading: newHeading)
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

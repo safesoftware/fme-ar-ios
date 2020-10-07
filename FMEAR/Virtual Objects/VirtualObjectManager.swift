@@ -58,7 +58,11 @@ class VirtualObjectManager {
 	}
 	
 	private func unloadVirtualObject(_ object: VirtualObject) {
-		updateQueue.async {
+		updateQueue.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
 			object.unload()
 			object.removeFromParentNode()
 			if self.lastUsedObject == object {
@@ -72,7 +76,7 @@ class VirtualObjectManager {
 	
 	// MARK: - Loading object
 	
-	func loadVirtualObject(_ object: VirtualObject, to position: float3, cameraTransform: matrix_float4x4) {
+	func loadVirtualObject(_ object: VirtualObject, to position: SIMD3<Float>, cameraTransform: matrix_float4x4) {
 		self.virtualObjects.append(object)
 		self.delegate?.virtualObjectManager(self, willLoad: object)
 		
@@ -81,7 +85,11 @@ class VirtualObjectManager {
             object.load()
             
             // Immediately place the object in 3D space.
-            self.updateQueue.async {
+            self.updateQueue.async { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                
                 self.setNewVirtualObjectPosition(object, to: position, cameraTransform: cameraTransform)
                 self.lastUsedObject = object
                 
@@ -149,9 +157,51 @@ class VirtualObjectManager {
 	}
 	
 	// MARK: - Update object position
+    
+    func translate(_ object: VirtualObject, in sceneView: ARSCNView, screenStartPos: CGPoint, screenEndPos: CGPoint, instantly: Bool, infinitePlane: Bool) {
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
+            let startPos = self.worldPositionFromScreenPosition(
+                screenStartPos,
+                in: sceneView,
+                objectPos: object.simdPosition,
+                infinitePlane: infinitePlane)
+
+            let endPos = self.worldPositionFromScreenPosition(
+                screenEndPos,
+                in: sceneView,
+                objectPos: object.simdPosition,
+                infinitePlane: infinitePlane)
+            
+            guard let worldStartPos = startPos.position, let worldEndPos = endPos.position else {
+                self.delegate?.virtualObjectManager(self, couldNotPlace: object)
+                return
+            }
+
+            // Calculate the distance
+            let moveDistance = worldEndPos - worldStartPos
+            self.updateQueue.async {
+                // Offset the object
+                object.simdPosition += moveDistance
+            }
+        }
+    }
 	
 	func translate(_ object: VirtualObject, in sceneView: ARSCNView, basedOn screenPos: CGPoint, instantly: Bool, infinitePlane: Bool) {
-		DispatchQueue.main.async {
+        
+        // We should reset the current plane anchor of the virtual object since we are moving
+        // the virtual object manually.
+        object.currentPlaneAnchor = nil
+        
+		DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
 			let result = self.worldPositionFromScreenPosition(screenPos, in: sceneView, objectPos: object.simdPosition, infinitePlane: infinitePlane)
 			
 			guard let newPosition = result.position else {
@@ -163,7 +213,11 @@ class VirtualObjectManager {
 				return
 			}
 			
-			self.updateQueue.async {
+			self.updateQueue.async { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                
 				self.setPosition(for: object,
 									  position: newPosition,
 				                      instantly: instantly,
@@ -174,7 +228,7 @@ class VirtualObjectManager {
 		}
 	}
 	
-	func setPosition(for object: VirtualObject, position: float3, instantly: Bool, filterPosition: Bool, cameraTransform: matrix_float4x4) {
+	func setPosition(for object: VirtualObject, position: SIMD3<Float>, instantly: Bool, filterPosition: Bool, cameraTransform: matrix_float4x4) {
 		if instantly {
 			setNewVirtualObjectPosition(object, to: position, cameraTransform: cameraTransform)
 		} else {
@@ -182,31 +236,16 @@ class VirtualObjectManager {
 		}
 	}
 	
-	private func setNewVirtualObjectPosition(_ object: VirtualObject, to pos: float3, cameraTransform: matrix_float4x4) {
+	private func setNewVirtualObjectPosition(_ object: VirtualObject, to pos: SIMD3<Float>, cameraTransform: matrix_float4x4) {
 		let cameraWorldPos = cameraTransform.translation
-		var cameraToPosition = pos - cameraWorldPos
-
-        // We want to place the object without the 10 meter limit.
-//		// Limit the distance of the object from the camera to a maximum of 10 meters.
-//        if simd_length(cameraToPosition) > 10 {
-//            cameraToPosition = simd_normalize(cameraToPosition)
-//            cameraToPosition *= 10
-//        }
-
+		let cameraToPosition = pos - cameraWorldPos
 		object.simdPosition = cameraWorldPos + cameraToPosition
 		object.recentVirtualObjectDistances.removeAll()
 	}
 	
-	private func updateVirtualObjectPosition(_ object: VirtualObject, to pos: float3, filterPosition: Bool, cameraTransform: matrix_float4x4) {
+	private func updateVirtualObjectPosition(_ object: VirtualObject, to pos: SIMD3<Float>, filterPosition: Bool, cameraTransform: matrix_float4x4) {
 		let cameraWorldPos = cameraTransform.translation
-		var cameraToPosition = pos - cameraWorldPos
-
-        // We want to place the object without the 10 meter limit.
-//		// Limit the distance of the object from the camera to a maximum of 10 meters.
-//        if simd_length(cameraToPosition) > 10 {
-//            cameraToPosition = simd_normalize(cameraToPosition)
-//            cameraToPosition *= 10
-//        }
+		let cameraToPosition = pos - cameraWorldPos
 
 		// Compute the average distance of the object from the camera over the last ten
 		// updates. If filterPosition is true, compute a new position for the object
@@ -234,32 +273,57 @@ class VirtualObjectManager {
 			if objectPos.y == 0 {
 				return; // The object is already on the plane - nothing to do here.
 			}
-			
-			// Add 10% tolerance to the corners of the plane.
-			let tolerance: Float = 0.1
-			
-			let minX: Float = anchor.center.x - anchor.extent.x / 2 - anchor.extent.x * tolerance
-			let maxX: Float = anchor.center.x + anchor.extent.x / 2 + anchor.extent.x * tolerance
-			let minZ: Float = anchor.center.z - anchor.extent.z / 2 - anchor.extent.z * tolerance
-			let maxZ: Float = anchor.center.z + anchor.extent.z / 2 + anchor.extent.z * tolerance
-			
-			if objectPos.x < minX || objectPos.x > maxX || objectPos.z < minZ || objectPos.z > maxZ {
-				return
-			}
-			
-			// Move the object onto the plane if it is near it (within 5 centimeters).
-			let verticalAllowance: Float = 0.05
-			let epsilon: Float = 0.001 // Do not bother updating if the different is less than a mm.
-			let distanceToPlane = abs(objectPos.y)
-			if distanceToPlane > epsilon && distanceToPlane < verticalAllowance {
-				delegate?.virtualObjectManager(self, didMoveObjectOntoNearbyPlane: object)
-				
-				SCNTransaction.begin()
-				SCNTransaction.animationDuration = CFTimeInterval(distanceToPlane * 500) // Move 2 mm per second.
-				SCNTransaction.animationTimingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-				object.position.y = anchor.transform.columns.3.y
-				SCNTransaction.commit()
-			}
+
+            let verticalAllowance: Float = 0.05
+            let distanceToPlane = abs(objectPos.y)
+            
+            // If the object is already tracking this plane anchor but it's not on the
+            // plane yet, we can simply move the object onto the plane.
+            if object.currentPlaneAnchor == anchor.identifier {
+                // If the distance is smaller than 5 centimeters, we will simply set the
+                // object without an animation.
+                
+                print("Updating object position onto plane anchor \(anchor.identifier)")
+                
+                if distanceToPlane < verticalAllowance {
+                    object.position.y = anchor.transform.columns.3.y
+                } else {
+                    SCNTransaction.begin()
+                    SCNTransaction.animationDuration = CFTimeInterval(distanceToPlane * 500) // Move 2 mm per second.
+                    SCNTransaction.animationTimingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+                    object.position.y = anchor.transform.columns.3.y
+                    SCNTransaction.commit()
+                }
+            } else {
+            
+                // Add 10% tolerance to the corners of the plane.
+                let tolerance: Float = 0.1
+                
+                let minX: Float = anchor.center.x - anchor.extent.x / 2 - anchor.extent.x * tolerance
+                let maxX: Float = anchor.center.x + anchor.extent.x / 2 + anchor.extent.x * tolerance
+                let minZ: Float = anchor.center.z - anchor.extent.z / 2 - anchor.extent.z * tolerance
+                let maxZ: Float = anchor.center.z + anchor.extent.z / 2 + anchor.extent.z * tolerance
+                
+                if objectPos.x < minX || objectPos.x > maxX || objectPos.z < minZ || objectPos.z > maxZ {
+                    return
+                }
+                
+                // Move the object onto the plane if it is near it (within 5 centimeters).
+
+                let epsilon: Float = 0.001 // Do not bother updating if the different is less than a mm.
+                if distanceToPlane > epsilon && distanceToPlane < verticalAllowance {
+                    delegate?.virtualObjectManager(self, didMoveObjectOntoNearbyPlane: object)
+                    
+                    SCNTransaction.begin()
+                    SCNTransaction.animationDuration = CFTimeInterval(distanceToPlane * 500) // Move 2 mm per second.
+                    SCNTransaction.animationTimingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+                    object.position.y = anchor.transform.columns.3.y
+                    SCNTransaction.commit()
+                    
+                    print("Moving object onto plane anchor \(anchor.identifier)")
+                    object.currentPlaneAnchor = anchor.identifier
+                }
+            }
 		}
 	}
 	
@@ -279,8 +343,8 @@ class VirtualObjectManager {
 	
 	func worldPositionFromScreenPosition(_ position: CGPoint,
 	                                     in sceneView: ARSCNView,
-	                                     objectPos: float3?,
-	                                     infinitePlane: Bool = false) -> (position: float3?, planeAnchor: ARPlaneAnchor?, hitAPlane: Bool) {
+	                                     objectPos: SIMD3<Float>?,
+	                                     infinitePlane: Bool = false) -> (position: SIMD3<Float>?, planeAnchor: ARPlaneAnchor?, hitAPlane: Bool) {
 		
 		//let dragOnInfinitePlanesEnabled = UserDefaults.standard.bool(for: .dragOnInfinitePlanes)
         let dragOnInfinitePlanesEnabled = false
@@ -303,7 +367,7 @@ class VirtualObjectManager {
 		// 2. Collect more information about the environment by hit testing against
 		//    the feature point cloud, but do not return the result yet.
 		
-		var featureHitTestPosition: float3?
+		var featureHitTestPosition: SIMD3<Float>?
 		var highQualityFeatureHitTestResult = false
 		
 		let highQualityfeatureHitTestResults = sceneView.hitTestWithFeatures(position, coneOpeningAngleInDegrees: 18, minDistance: 0.2, maxDistance: 2.0)

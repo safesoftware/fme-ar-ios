@@ -6,6 +6,7 @@ ARSCNViewDelegate interactions for `ViewController`.
 */
 
 import ARKit
+import CoreLocation
 
 extension SCNVector3 {
     static func distanceFrom(vector vector1: SCNVector3, toVector vector2: SCNVector3) -> Float {
@@ -24,10 +25,146 @@ extension ViewController: ARSCNViewDelegate {
     // MARK: - ARSCNViewDelegate
 
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+        updateDatasets()
         updateFocusSquare()
         updateLights()
         updateModelIndicators()
         updateOverlay()
+    }
+    
+    func updateDatasets() {
+        guard let cameraTransform = self.session.currentFrame?.camera.transform else {
+            return
+        }
+        
+        guard let focusSquare = self.focusSquare else {
+            return
+        }
+        
+        if self.planes.isEmpty {
+            return
+        }
+        
+        for (url, dataset) in datasetsReady {
+            guard let model = dataset.model as? VirtualObject else {
+                print("Failed to read the model from \(url)")
+                continue
+            }
+            
+            // Update the snapshot in the compass
+            self.overlayView.compass().image = dataset.snapshot
+
+            let position = focusSquare.lastPosition ?? SIMD3<Float>(0, 0, -5)
+            
+            self.virtualObjectManager.loadVirtualObject(model, to: position, cameraTransform: cameraTransform)
+
+            self.sceneView.scene.rootNode.addChildNode(model)
+                                
+            // Add Viewpoint labels
+            if model.viewpoints.isEmpty {
+                let viewpointLabelNode = self.overlayView.labelNode(labelName: self.viewpointLabelName,
+                                                                iconNamed: LabelIcons.geolocationAnchor.rawValue)
+                viewpointLabelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
+                viewpointLabelNode.callToAction = false
+                viewpointLabelNode.text = "Anchor"
+            } else {
+                for index in model.viewpoints.indices {
+                    let viewpoint = model.viewpoints[index]
+                    
+                    let viewpointLabelNode = self.overlayView.labelNode(labelName: viewpoint.id.uuidString,
+                                                                    iconNamed: LabelIcons.viewpoint.rawValue)
+                    
+                    if (model.currentViewpoint == viewpoint.id) {
+                        viewpointLabelNode.secondaryText = "CURRENT VIEWPOINT"
+                        viewpointLabelNode.callToAction = false
+                    } else {
+                        viewpointLabelNode.callToAction = true
+                    }
+                    
+                    if let name = viewpoint.name, !name.isEmpty {
+                        viewpointLabelNode.text = name
+
+                    } else {
+                        viewpointLabelNode.text = "Viewpoint \(index)"
+                        model.viewpoints[index].name = viewpointLabelNode.text
+                    }
+                }
+            }
+            
+            if let anchors = dataset.settings?.anchors {
+                if let firstAnchor = anchors.first {
+                    if let coordinate = firstAnchor.coordinate {
+                        var geomarker = self.geolocationNode()
+                        if geomarker == nil {
+                            geomarker = self.addGeolocationNode()
+                        }
+                        geomarker!.geolocation = CLLocation(latitude: coordinate.latitude,
+                                                         longitude: coordinate.longitude)
+                        geomarker!.simdPosition = position
+                        geomarker!.anchor = dataset.settings?.anchors.first
+                        geomarker!.isHidden = true
+                        
+                        // If there is a geolocation, we should always show
+                        // the geolocation at the beginning
+                        UserDefaults.standard.set(true, for: .drawGeomarker)
+                    }
+                }
+            }
+            
+            // TODO: Move this UI block to somewhere better
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else {
+                    return
+                }
+
+                self.showAssetsButton.isEnabled = true
+                self.showScaleOptionsButton.isHidden = false
+                self.scaleLabel.isHidden = false
+                self.scaleLabel.text = self.dimensionAndScaleText(scale: model.scale.x, node: model)
+                
+                // Udate scale
+                var allowScaling = true
+                var scaleMode = ScaleMode.customScale
+                if let scaling = dataset.settings?.scaling {
+                    allowScaling = false
+                    if scaling == 1.0 {
+                        scaleMode = .fullScale
+                    }
+                }
+                self.setShowScaleOptionsButton(mode: scaleMode, lockOn: !allowScaling)
+                
+                if let date = dataset.settings?.metadata?.modelExpiry {
+
+                    // Create date from components
+                    let userCalendar = Calendar.current // user calendar
+                    let hour = userCalendar.component(.hour, from: date)
+                    let minute = userCalendar.component(.minute, from: date)
+                    let second = userCalendar.component(.second, from: date)
+                    
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.timeZone = .current
+                    if hour == 23 && minute == 59 && second == 59 {
+                        dateFormatter.dateFormat = "MMM d,yyyy"
+                    } else {
+                        dateFormatter.dateFormat = "MMM d,yyyy HH:mm:ss"
+                    }
+                    
+                    let dateString = dateFormatter.string(from: date)
+
+                    self.expirationDateLabel.isHidden = false
+                    
+                    if date < Date() {
+                        self.expirationDateLabel.backgroundColor = .red
+                        self.expirationDateLabel.setTitle("Model expired on \(dateString)", for: .normal)
+                    } else {
+                        self.expirationDateLabel.backgroundColor = .darkGray
+                         self.expirationDateLabel.setTitle("Model will expire on \(dateString)", for: .normal)
+                    }
+                }
+            }
+        }
+        
+        datasetsReady.removeAll()
     }
     
     func updateLights() {
@@ -63,7 +200,11 @@ extension ViewController: ARSCNViewDelegate {
             }
         }
         
-        DispatchQueue.main.async{
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+
             if let screenPosition = screenPosition {
                 self.modelIndicatorUp.isHidden = (screenPosition.y > Float(self.sceneView.bounds.minY))
                 self.modelIndicatorDown.isHidden = (screenPosition.y < Float(self.sceneView.bounds.maxY))
@@ -82,37 +223,36 @@ extension ViewController: ARSCNViewDelegate {
         if let geomarker = self.geolocationNode() {
             if let userLocation = geomarker.userLocation, let markerLocation = geomarker.geolocation {
 
-                self.serialQueue.async {
-                    let worldPosition = geomarker.position
-                    let geomarkerPosition = SCNVector3(worldPosition.x, worldPosition.y, worldPosition.z)
-                    let screenCoord = self.sceneView.projectPoint(geomarkerPosition)
-                    let distance = String(format: "%.2f", markerLocation.distance(from: userLocation))
+                let worldPosition = geomarker.position
+                let geomarkerPosition = SCNVector3(worldPosition.x, worldPosition.y, worldPosition.z)
+                let screenCoord = self.sceneView.projectPoint(geomarkerPosition)
+                let distance = String(format: "%.2f", markerLocation.distance(from: userLocation))
 
-                    if self.viewSize.width > 0 && self.viewSize.height > 0 {
-                        // When the z is larger than 1, the geomarker is actually at
-                        // the opposite direction or invalid, and the screenCoord.x is wrong.
-                        // We can simply use a very large screen value, such as 10000,
-                        // to make the geolocation offscreen.
-                        let geomarkerScreenPosition = CGPoint(
-                            x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
-                            y: self.viewSize.height - CGFloat(screenCoord.y))
+                if self.viewSize.width > 0 && self.viewSize.height > 0 {
+                    // When the z is larger than 1, the geomarker is actually at
+                    // the opposite direction or invalid, and the screenCoord.x is wrong.
+                    // We can simply use a very large screen value, such as 10000,
+                    // to make the geolocation offscreen.
+                    let geomarkerScreenPosition = CGPoint(
+                        x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
+                        y: self.viewSize.height - CGFloat(screenCoord.y))
 
-                        var labelNode = self.overlayView.labelNodeOrNil(labelName: self.geomarkerLabelName)
-                        if labelNode == nil {
-                            labelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName, iconNamed: LabelIcons.geolocationAnchor.rawValue)
-                            labelNode!.secondaryText = "GEOLOCATION ANCHOR"
-                            labelNode!.alwaysVisibleOnScreen = true
-                            labelNode!.callToAction = true
-                            labelNode!.callToActionText = Texts.moveModel
-                            labelNode!.isHidden = !(UserDefaults.standard.bool(for: .drawGeomarker))
-                        }
-    
-                        if let node = labelNode {
-                            node.text = "\(distance)m"
-    
-                            if node.point != geomarkerScreenPosition {
-                                node.point = geomarkerScreenPosition
-                            }
+                    var labelNode = self.overlayView.labelNodeOrNil(labelName: self.geomarkerLabelName)
+                    if labelNode == nil {
+                        labelNode = self.overlayView.labelNode(labelName: self.geomarkerLabelName, iconNamed: LabelIcons.geolocationAnchor.rawValue)
+                        labelNode!.secondaryText = "GEOLOCATION ANCHOR"
+                        labelNode!.alwaysVisibleOnScreen = true
+                        labelNode!.callToAction = true
+                        labelNode!.callToActionText = Texts.moveModel
+                    }
+
+                    labelNode!.isHidden = geomarker.isHidden
+
+                    if let node = labelNode {
+                        node.text = "\(distance)m"
+                        
+                        if node.point != geomarkerScreenPosition {
+                            node.point = geomarkerScreenPosition
                         }
                     }
                 }
@@ -124,74 +264,78 @@ extension ViewController: ARSCNViewDelegate {
             
             // json.settings version 4
             for viewpoint in virtualObject.viewpoints {
-                if let vPos = virtualObject.viewpointWorldPosition(viewpointId: viewpoint.id) {
-                    let screenCoord = self.sceneView.projectPoint(vPos)
+                if let vPos = virtualObject.viewpointWorldPosition(viewpointId: viewpoint.id),
+                   let labelNode = self.overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString),
+                   let pointOfView = self.sceneView.pointOfView,
+                   let viewpointNode = virtualObject.viewpointNode(viewpointId: viewpoint.id) {
+                    
+                    // See if we the viewpoint is within the point of view. If yes,
+                    // we update it's position. If not, we hide the label.
+                    if self.sceneView.isNode(viewpointNode, insideFrustumOf: pointOfView) {
+                        let screenCoord = self.sceneView.projectPoint(vPos)
+                        if viewSize.width > 0 && viewSize.height > 0 {
+                            // When the z is larger than 1, the geomarker is actually at
+                            // the opposite direction or invalid, and the screenCoord.x is wrong.
+                            // We can simply use a very large screen value, such as 10000,
+                            // to make the geolocation offscreen.
+                            let screenPosition = CGPoint(
+                                x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
+                                y: viewSize.height - CGFloat(screenCoord.y))
 
-                    if viewSize.width > 0 && viewSize.height > 0 {
-                        // When the z is larger than 1, the geomarker is actually at
-                        // the opposite direction or invalid, and the screenCoord.x is wrong.
-                        // We can simply use a very large screen value, such as 10000,
-                        // to make the geolocation offscreen.
-                        let screenPosition = CGPoint(
-                            x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
-                            y: viewSize.height - CGFloat(screenCoord.y))
-
-                        self.serialQueue.async {
-                            if let labelNode = self.overlayView.labelNodeOrNil(labelName: viewpoint.id.uuidString) {
-                                labelNode.point = screenPosition
-                                labelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
-                            }
+                            labelNode.point = screenPosition
+                            labelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
                         }
+                    }
+                    else {
+                        labelNode.isHidden = true
                     }
                 }
             }
             
             // json.settings version 3
-            self.serialQueue.async {
-                if let labelNode = self.overlayView.labelNodeOrNil(labelName: self.viewpointLabelName) {
-                    let modelPosition = SCNVector3(virtualObject.position.x,
-                                                   virtualObject.position.y,
-                                                   virtualObject.position.z)
-                    let screenCoord = self.sceneView.projectPoint(modelPosition)
+            if let labelNode = self.overlayView.labelNodeOrNil(labelName: self.viewpointLabelName) {
+                let modelPosition = SCNVector3(virtualObject.position.x,
+                                               virtualObject.position.y,
+                                               virtualObject.position.z)
+                let screenCoord = self.sceneView.projectPoint(modelPosition)
 
-                    if self.viewSize.width > 0 && self.viewSize.height > 0 {
-                        // When the z is larger than 1, the geomarker is actually at
-                        // the opposite direction or invalid, and the screenCoord.x is wrong.
-                        // We can simply use a very large screen value, such as 10000,
-                        // to make the geolocation offscreen.
-                        let screenPosition = CGPoint(
-                            x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
-                            y: self.viewSize.height - CGFloat(screenCoord.y))
-                        
-                            labelNode.point = screenPosition
-                    }
+                if self.viewSize.width > 0 && self.viewSize.height > 0 {
+                    // When the z is larger than 1, the geomarker is actually at
+                    // the opposite direction or invalid, and the screenCoord.x is wrong.
+                    // We can simply use a very large screen value, such as 10000,
+                    // to make the geolocation offscreen.
+                    let screenPosition = CGPoint(
+                        x: (screenCoord.z <= 1.0) ? CGFloat(screenCoord.x) : 10000,
+                        y: self.viewSize.height - CGFloat(screenCoord.y))
                     
-                    labelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
+                        labelNode.point = screenPosition
                 }
+                
+                labelNode.isHidden = !(UserDefaults.standard.bool(for: .drawAnchor))
             }
         }
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
-        serialQueue.async {
-            self.addPlane(node: node, anchor: planeAnchor)
-            self.virtualObjectManager.checkIfObjectShouldMoveOntoPlane(anchor: planeAnchor, planeAnchorNode: node)
+        serialQueue.async { [weak self] in
+            self?.addPlane(node: node, anchor: planeAnchor)
+            self?.virtualObjectManager.checkIfObjectShouldMoveOntoPlane(anchor: planeAnchor, planeAnchorNode: node)
         }
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
-        serialQueue.async {
-            self.updatePlane(node: node, anchor: planeAnchor)
-            self.virtualObjectManager.checkIfObjectShouldMoveOntoPlane(anchor: planeAnchor, planeAnchorNode: node)
+        serialQueue.async { [weak self] in
+            self?.updatePlane(node: node, anchor: planeAnchor)
+            self?.virtualObjectManager.checkIfObjectShouldMoveOntoPlane(anchor: planeAnchor, planeAnchorNode: node)
         }
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didRemove node: SCNNode, for anchor: ARAnchor) {
         guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
-        serialQueue.async {
-            self.removePlane(node: node, anchor: planeAnchor)
+        serialQueue.async { [weak self] in
+            self?.removePlane(node: node, anchor: planeAnchor)
         }
     }
     
@@ -255,6 +399,14 @@ extension ViewController: ARSCNViewDelegate {
             title = "Object Merge Failed"
         case .fileIOFailed:
             title = "File IO Failed"
+        case .locationUnauthorized:
+            title = "Location Unauthorized"
+        case .geoTrackingNotAvailableAtLocation:
+            title = "Geo-Tracking Not Available At Location"
+        case .geoTrackingFailed:
+            title = "Geo-Tracking Failed"
+        case .requestFailed:
+            title = "Request Failed"
         @unknown default:
             title = "Unknown Error"
         }

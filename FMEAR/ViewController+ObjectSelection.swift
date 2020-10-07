@@ -8,7 +8,7 @@ Methods on the main view controller for handling virtual object loading and move
 import UIKit
 import SceneKit
 
-extension ViewController: VirtualObjectSelectionViewControllerDelegate, AssetViewControllerDelegate, VirtualObjectManagerDelegate {
+extension ViewController: AssetViewControllerDelegate, VirtualObjectManagerDelegate {
     
     // MARK: - assetViewControllerDelegate
     func assetViewControllerDelegate(_: AssetViewController, didSelectAsset asset: Asset) {
@@ -37,7 +37,11 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, AssetVie
     // MARK: - VirtualObjectManager delegate callbacks
     
     func virtualObjectManager(_ manager: VirtualObjectManager, willLoad object: VirtualObject) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
             // Show progress indicator
             self.spinner = UIActivityIndicatorView()
             self.spinner!.center = self.showAssetsButton.center
@@ -51,7 +55,11 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, AssetVie
     }
     
     func virtualObjectManager(_ manager: VirtualObjectManager, didLoad object: VirtualObject) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
             self.isLoadingObject = false
             
             // Remove progress indicator
@@ -68,33 +76,11 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, AssetVie
     func virtualObjectManager(_ manager: VirtualObjectManager, transformDidChangeFor object: VirtualObject) {
         // Update UI for the new scale        
         self.scaleLabel.text = dimensionAndScaleText(scale: object.scale.x, node: object)
+        
+        // Update model orientation image in the compass
+        self.overlayView.compass().imageRotation = CGFloat(object.eulerAngles.y) // CGFloat(Float(trueHeading) + modelRotation)
     }
     
     func virtualObjectManager(_ manager: VirtualObjectManager, didTranslate object: VirtualObject) {
     }
-    
-    // MARK: - VirtualObjectSelectionViewControllerDelegate
-    
-    func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didSelectObjectAt index: Int) {
-        guard let cameraTransform = session.currentFrame?.camera.transform else {
-            return
-        }
-        
-        let definition = VirtualObjectManager.availableObjects[index]
-        let object = VirtualObject(definition: definition)
-        let position = focusSquare?.lastPosition ?? float3(repeating: 0.0)
-        virtualObjectManager.loadVirtualObject(object, to: position, cameraTransform: cameraTransform)
-        if object.parent == nil {
-            serialQueue.async {
-                self.sceneView.scene.rootNode.addChildNode(object)
-            }
-        }
-    }
-    
-    func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didDeselectObjectAt index: Int) {
-        virtualObjectManager.removeVirtualObject(at: index)
-    }
-
-
-
 }

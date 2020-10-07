@@ -13,14 +13,14 @@ import SpriteKit
 class LabelNode: SKNode {
         
     var iconNode: SKSpriteNode?
-    let iconSize = CGSize(width: 20.0, height: 20.0)
-    let iconOffset = CGPoint(x: 5.0, y: -1.0)
+    let iconSize = CGSize(width: 16.0, height: 16.0)
+    let iconOffset = CGPoint(x: 0.0, y: 1.0)
 
     var labelNode: SKLabelNode
     var shapeNode: SKShapeNode
-    let cornerRadius: CGFloat = 10.0
+    let cornerRadius: CGFloat = 8.0
     let maxWidth: CGFloat = 150
-    let padding: CGFloat = 20.0
+    let padding: CGFloat = 10.0
     
     var primaryText: String = "" {
         didSet {
@@ -67,7 +67,7 @@ class LabelNode: SKNode {
             
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.alignment = .center
-            paragraphStyle.paragraphSpacing = 3
+            paragraphStyle.paragraphSpacing = 0
             
             var textLocation = 0
             
@@ -148,7 +148,6 @@ class LabelNode: SKNode {
     }
     
     func updateShape() {
-        self.removeChildren(in: [shapeNode])
         
         let iconWidth = (iconNode == nil) ? 0.0 : iconSize.width
         let iconHeight = (iconNode == nil) ? 0.0 : iconSize.height
@@ -157,10 +156,13 @@ class LabelNode: SKNode {
         let buttonSize = CGSize(width: labelNode.frame.size.width + (padding * 2) + iconWidth,
                                 height: labelNode.frame.size.height + (padding * 2))
         let rect = CGRect(origin: buttonOrigin, size: buttonSize)
-        shapeNode = SKShapeNode(rect: rect, cornerRadius: cornerRadius)
+  
+        shapeNode.path = CGPath(roundedRect: rect,
+                                cornerWidth: cornerRadius,
+                                cornerHeight: cornerRadius,
+                                transform: nil)
         shapeNode.fillColor =  Colors.labelFill
         shapeNode.strokeColor =  Colors.labelBorder
-        self.addChild(shapeNode)
 
         iconNode?.position = CGPoint(x: iconOffset.x,
                                      y: buttonSize.height - padding - (iconHeight * 0.5) - iconOffset.y)

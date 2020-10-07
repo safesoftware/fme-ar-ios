@@ -12,19 +12,19 @@ extension ARSCNView {
     // MARK: - Types
     
     struct HitTestRay {
-        let origin: float3
-        let direction: float3
+        let origin: SIMD3<Float>
+        let direction: SIMD3<Float>
     }
     
     struct FeatureHitTestResult {
-        let position: float3
+        let position: SIMD3<Float>
         let distanceToRayOrigin: Float
-        let featureHit: float3
+        let featureHit: SIMD3<Float>
         let featureDistanceToHitResult: Float
     }
     
-    func unprojectPoint(_ point: float3) -> float3 {
-        return float3(self.unprojectPoint(SCNVector3(point)))
+    func unprojectPoint(_ point: SIMD3<Float>) -> SIMD3<Float> {
+        return SIMD3<Float>(self.unprojectPoint(SCNVector3(point)))
     }
     
     // MARK: - Hit Tests
@@ -38,14 +38,14 @@ extension ARSCNView {
         let cameraPos = frame.camera.transform.translation
         
         // Note: z: 1.0 will unproject() the screen position to the far clipping plane.
-        let positionVec = float3(x: Float(point.x), y: Float(point.y), z: 1.0)
+        let positionVec = SIMD3<Float>(x: Float(point.x), y: Float(point.y), z: 1.0)
         let screenPosOnFarClippingPlane = self.unprojectPoint(positionVec)
         
         let rayDirection = simd_normalize(screenPosOnFarClippingPlane - cameraPos)
         return HitTestRay(origin: cameraPos, direction: rayDirection)
     }
     
-    func hitTestWithInfiniteHorizontalPlane(_ point: CGPoint, _ pointOnPlane: float3) -> float3? {
+    func hitTestWithInfiniteHorizontalPlane(_ point: CGPoint, _ pointOnPlane: SIMD3<Float>) -> SIMD3<Float>? {
         
         guard let ray = hitTestRayFromScreenPos(point) else {
             return nil
@@ -145,7 +145,7 @@ extension ARSCNView {
         return results
     }
     
-    func hitTestFromOrigin(origin: float3, direction: float3) -> FeatureHitTestResult? {
+    func hitTestFromOrigin(origin: SIMD3<Float>, direction: SIMD3<Float>) -> FeatureHitTestResult? {
         
         guard let features = self.session.currentFrame?.rawFeaturePoints else {
             return nil

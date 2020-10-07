@@ -16,7 +16,7 @@ struct Texts {
 }
 
 enum LabelIcons: String {
-    case geolocationAnchor = "mappin.circle"
+    case geolocationAnchor = "pin.circle"
     case viewpoint = "eye.circle"
     case information = "info.circle"
 }
@@ -27,9 +27,18 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     let geomarkerNodeName = "Geomarker Node"
     let viewpointLabelName = "Viewpoint Label"
     
-    var document: UIDocument?
-    var documentOpened = false
-    var modelPath: URL?
+    // Datasets
+    // When the dataset is ready to be added to the scene, we add the dataset url to
+    // this array. When it's time to update the frame, we look at this array and add
+    // the dataset model to the scene.
+    var datasetsReady: [URL: Dataset] = [:]
+    
+    // The current reader that opens the current dataset
+    var reader: FMEARReader?
+    var datasets: [URL: Dataset] = [:]
+    var errors: [Error] = []
+    
+    //var modelPath: URL?
     var lights = [SCNLight]()
     var lightIntensity: CGFloat = 1000
     var lightTemperature: CGFloat = 6500
@@ -42,7 +51,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     var viewSize = CGSize()
     
     // Settings from JSON settings file
-    var settings: Settings?
+    //var settings: Settings?
     
     // Scale properties
     var scaleMode: ScaleMode = .customScale
@@ -53,6 +62,23 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     var updateUserLocationEnabled = true
     var latestLocation = CLLocation(latitude: 0.0, longitude: 0.0)
     
+    // MARK: - Init
+    override init(nibName: String?, bundle: Bundle?) {
+        super.init(nibName: nibName, bundle: bundle)
+        setup()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
+    
+    func setup() {
+        // Synchronize updates via the `serialQueue`.
+        virtualObjectManager = VirtualObjectManager(updateQueue: serialQueue)
+        virtualObjectManager.delegate = self
+    }
+    
     // MARK: - ARKit Config Properties
     
     var screenCenter: CGPoint?
@@ -61,7 +87,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     var standardConfiguration: ARWorldTrackingConfiguration = {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
-        configuration.worldAlignment = ARConfiguration.WorldAlignment.gravityAndHeading // This gravityAndHeading keeps updating the heading causing the model to rotate
+        configuration.worldAlignment = ARConfiguration.WorldAlignment.gravity // This gravityAndHeading keeps updating the heading causing the model to rotate
         configuration.isLightEstimationEnabled = true
         initSceneReconstruction(configuration: configuration)
         return configuration
@@ -95,7 +121,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     var isLoadingObject: Bool = false {
         didSet {
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                
                 self.settingsButton.isEnabled = !self.isLoadingObject
                 self.showAssetsButton.isEnabled = !self.isLoadingObject
                 self.restartExperienceButton.isEnabled = !self.isLoadingObject
@@ -141,6 +171,27 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     // MARK: - Location Service
     var locationService: LocationService?
     
+    // We try to get the best heading for the camera pointing to the -z axis of the AR
+    // coordinate system (i.e. pointing forward initially). Since the heading is more
+    // accurate when the device is pointing forward instead of facing up, we will try to
+    // update the initial heading until the model needs it. We keep track of the camera
+    // euler angles when we record the initial heading. The x value of the camera euler
+    // angles represents whether the camera is pointing forward (0.0), face up (-90.0), or
+    // face down (90.0). Pointing backward is also (0.0) but I am not sure if it's because
+    // we don't allow the app to be upside down.
+    var initialHeading: CLLocationDirection?
+    
+    // In debug, we saw that the first few camera orientation readings are fluctuating a
+    // lot, even when the tracking is normal. We should drop the first few readings. We
+    // will calculate the median of the first few headings to eliminate the abnormal readings.
+    // We will use an odd number to simplify the median calculation. We cannot use a very
+    // large collection (e.g. 101) since it's possible that the camera already detects an
+    // anchor plane. If we apply the heading AFTER the anchor plane is added, the plane
+    // will be rotated around the new origin and will appear out of place.
+    var numHeadingUpdates: UInt32 = 0
+    let numHeadingsToCollect: UInt32 = 11
+    var firstHeadings: [Double] = []
+    
     func didUpdateDescription(_ locationService: LocationService, description: String) {
         headingLabel.text = description
     }
@@ -151,9 +202,112 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         if !updateUserLocationEnabled {
             return   // Skip the location
         }
-        
-        if let geomarker = geolocationNode() {
-            geomarker.userLocation = location
+     
+        updateGeolocationAnchor()
+    }
+    
+    func didUpdateHeading(_ locationService: LocationService, heading: CLHeading) {
+        // Initialize the initialHeading based on the current camera orientation and
+        // match that to the current true heading
+        if initialHeading == nil {
+            if let currentFrame = self.sceneView.session.currentFrame, let trueHeading = locationService.heading?.trueHeading {
+                switch currentFrame.camera.trackingState {
+                    case .normal:
+                        if numHeadingUpdates < numHeadingsToCollect {
+                            // Set the initial heading based on the current true heading
+                            // and the angle between the world orientation and the
+                            // camera. Then we rotate the world origin so that we hope
+                            // the negative z axis is pointing toward the True North.
+                            // However, since the camera orientation is changing a lot,s
+                            // the calculation may be inaccurate sometimes. We will try
+                            // to use the median of the first few headings to eliminate
+                            // abnormal readings.
+                            let heading = trueHeading + Double(currentFrame.camera.eulerAngles.y * 180.0 / Float.pi)
+                            firstHeadings.append(heading)
+                            numHeadingUpdates += 1
+                        } else {
+                            // Calculate the median
+                            let median = firstHeadings.sorted(by: <)[firstHeadings.count / 2]
+                            initialHeading = median
+                            let rotationMatrix = SCNMatrix4MakeRotation(Float(initialHeading! * Double.pi / 180.0), 0.0, 1.0, 0.0)
+                            sceneView.session.setWorldOrigin(relativeTransform: simd_float4x4(rotationMatrix))
+                        }
+                case .notAvailable:
+                    break
+                case .limited(_):
+                    break
+                }
+            }
+        }
+    }
+    
+    func updateGeolocationAnchor() {
+        self.serialQueue.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
+            if let geomarker = self.geolocationNode() {
+                
+                geomarker.userLocation = self.latestLocation
+                
+                // Calculate the new geolocation anchor position
+                if let anchorLocation = geomarker.geolocation {
+                    // Calculate bearing from the user location to the geolocation anchor
+                    let lat1 = self.latestLocation.coordinate.latitude * Double.pi / 180.0
+                    let lng1 = self.latestLocation.coordinate.longitude * Double.pi / 180.0
+                    let lat2 = anchorLocation.coordinate.latitude * Double.pi / 180.0
+                    let lng2 = anchorLocation.coordinate.longitude * Double.pi / 180.0
+                    let dLon = (lng2 - lng1);
+                    let x = sin(dLon) * cos(lat2);
+                    let y = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+                    var bearing = atan2(x, y) * 180.0 / Double.pi;
+                    bearing = (bearing + 360).truncatingRemainder(dividingBy: 360.0);
+                    
+                    // Calculate the heading of the device
+                    let userHeading = self.locationService?.heading?.trueHeading
+                    
+                    // Calculate the roll (rotation around the y axis) of the device
+                    // relative to the startup orientation. If we are using the
+                    // gravity world alignment configuration, the startup orientation
+                    // doesn't align with the True North.
+                    var roll: Float?
+                    var userPosition: SCNVector3?
+                    if let currentFrame = self.sceneView.session.currentFrame {
+                        roll = currentFrame.camera.eulerAngles.y * 180.0 / Float.pi
+                        
+                        // Calculate the user position
+                        let c = currentFrame.camera.transform.columns.3
+                        userPosition = SCNVector3(c.x, c.y, c.z)
+                    }
+                    
+                    // Calculate the distance between the anchor and the user
+                    let distance = self.latestLocation.distance(from: anchorLocation)
+                    
+                    
+                    if let userHeading = userHeading, let roll = roll, let userPosition = userPosition {
+                        // Calculate the angle between the negative z-axis and the
+                        // anchor with the user location as the center.
+                        // The roll is -ve when clockwise, so we need to negate it
+                        // to match the compass rotation.
+                        let angle = (bearing - (userHeading - Double(-roll))) * Double.pi / 180.0
+                        
+                        // Calculate the relative anchor position from the user
+                        // location
+                        let deltaX = distance * sin(angle)
+                        let deltaZ = -distance * cos(angle)
+                        
+                        // Calculate the anchor position relative to the current
+                        // coordinate system
+                        let x = userPosition.x + Float(deltaX)
+                        let z = userPosition.z + Float(deltaZ)
+                        
+                        // Put the geolocation anchor at the same altitude as the model.
+                        let altitude = self.virtualObject()?.position.y ?? 0.0
+                        self.geolocationNode()?.move(to: SCNVector3(x, altitude, z))
+                    }
+                }
+            }
         }
     }
     
@@ -165,16 +319,16 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        Setting.registerDefaults()
+        print("viewDidLoad")
         
         locationService = LocationService()
-        locationService?.delegate = self
+        locationService?.delegates.append(WeakRef(value: self))
 
+        Setting.registerDefaults()
 		setupUIControls()
         setupScene()
     }
-    
+
     func setARWorldTrackingConfiguration(worldAlignment: ARConfiguration.WorldAlignment) {
         standardConfiguration = {
             let configuration = ARWorldTrackingConfiguration()
@@ -211,8 +365,10 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     }
     
     func removeGeolocationNode() {
-        if let node = geolocationNode() {
-            node.removeFromParentNode()
+        serialQueue.async { [weak self] in
+            if let node = self?.geolocationNode() {
+                node.removeFromParentNode()
+            }
         }
     }
 
@@ -226,7 +382,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     func modelDimension() -> [Float] {
         if let virtualObjectNode = virtualObject() {
-            let d = dimension(virtualObjectNode)
+            let d = virtualObjectNode.dimension()
             return [d.x, d.y, d.z]
         } else {
             return []
@@ -241,7 +397,7 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         
         // If the model content is not at the zero position, we should offset
         // it back to zero (center), and then we move to the anchor position.
-        let newPosition = geomarker.calculatePosition() ?? SCNVector3Zero
+        let newPosition = geomarker.position
         if let modelContent = virtualObjectContent() {
             let (minCoord, maxCoord) = modelContent.boundingBox
             let centerX = (minCoord.x + maxCoord.x) * 0.5
@@ -280,9 +436,9 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
-		
-        locationService?.startLocationService()
         
+        locationService?.startLocationService()
+
         // Get the current view size
         self.viewSize = self.sceneView.bounds.size
         
@@ -310,14 +466,20 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         locationService?.stopLocationService()
         
 		session.pause()
+        
+        // Stop getting renderer callback
+        sceneView.delegate = nil
 
-        if let document = self.document {
-            closeDocument(document: document)
-        }
+//        if let document = self.document {
+//            closeDocument(document: document)
+//        }
+        
+//        documentOpened = false
 	}
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         self.viewSize = size
+        self.overlayView.updateCompassPosition()
     }
 	
     // MARK: - Setup
@@ -348,10 +510,6 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     }
     
 	func setupScene() {
-        // Synchronize updates via the `serialQueue`.
-        virtualObjectManager = VirtualObjectManager(updateQueue: serialQueue)
-        virtualObjectManager.delegate = self
-		
 		// set up scene view
 		sceneView.setup()
 		sceneView.delegate = self
@@ -363,22 +521,27 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         // set up overlay view
         overlayView = OverlaySKScene(size: self.view.bounds.size)
         overlayView.overlaySKSceneDelegate = self
+        locationService?.delegates.append(WeakRef(value: overlayView))
         sceneView.overlaySKScene = overlayView
         
 		//sceneView.scene.enableEnvironmentMapWithIntensity(25, queue: serialQueue)
 
         // Debug visualizations
-        //        sceneView.debugOptions =  [
-        //            SCNDebugOptions.showBoundingBoxes,
-        //            SCNDebugOptions.showWireframe,
-        //            SCNDebugOptions.showLightExtents,
-        //            ARSCNDebugOptions.showWorldOrigin,
-        //            ARSCNDebugOptions.showFeaturePoints
-        //        ]
+//        sceneView.debugOptions =  [
+//            SCNDebugOptions.showBoundingBoxes,
+//            SCNDebugOptions.showWireframe,
+//            SCNDebugOptions.showLightExtents,
+//            ARSCNDebugOptions.showWorldOrigin,
+//            ARSCNDebugOptions.showFeaturePoints
+//        ]
         
 		setupFocusSquare()
 		
-		DispatchQueue.main.async {
+		DispatchQueue.main.async {[weak self] in
+            guard let self = self else {
+                return
+            }
+
 			self.screenCenter = self.sceneView.bounds.mid
 		}
 	}
@@ -450,12 +613,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 		textManager.cancelScheduledMessage(forType: .planeEstimation)
 		textManager.showMessage("SURFACE DETECTED")
 
-        if let document = self.document {
-            if !documentOpened {
-                openDocument(document: document)
-                documentOpened = true
-            }
-        }
+//        if let document = self.document {
+//            if !documentOpened {
+//                openDocument(document: document)
+//            }
+//        }
 	}
 		
     func updatePlane(node: SCNNode, anchor: ARPlaneAnchor) {
@@ -492,6 +654,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
         planes.removeValue(forKey: anchor)
     }
 	
+    func updateFrameSemantics() {
+        setFrameSemantics(configuration: standardConfiguration)
+        session.run(standardConfiguration)
+    }
+    
 	func resetTracking() {
         setFrameSemantics(configuration: standardConfiguration)
 		session.run(standardConfiguration, options: [.resetTracking, .removeExistingAnchors])
@@ -506,7 +673,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     var focusSquare: FocusSquare?
 	
     func setupFocusSquare() {
-		serialQueue.async {
+		serialQueue.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            
 			self.focusSquare?.isHidden = true
 			self.focusSquare?.removeFromParentNode()
 			self.focusSquare = FocusSquare()
@@ -519,31 +690,27 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
 	func updateFocusSquare() {
 		guard let screenCenter = screenCenter else { return }
 		
-		DispatchQueue.main.async {
-			var objectVisible = false
-			for object in self.virtualObjectManager.virtualObjects {
-				if self.sceneView.isNode(object, insideFrustumOf: self.sceneView.pointOfView!) {
-					objectVisible = true
-					break
-				}
-			}
-			
-			if objectVisible {
-				self.focusSquare?.hide()
-			} else {
-				self.focusSquare?.unhide()
-			}
-			
-            let (worldPos, planeAnchor, _) = self.virtualObjectManager.worldPositionFromScreenPosition(screenCenter,
-                                                                                                       in: self.sceneView,
-                                                                                                       objectPos: self.focusSquare?.simdPosition)
-			if let worldPos = worldPos {
-				self.serialQueue.async {
-					self.focusSquare?.update(for: worldPos, planeAnchor: planeAnchor, camera: self.session.currentFrame?.camera)
-				}
-				self.textManager.cancelScheduledMessage(forType: .focusSquare)
-			}
-		}
+        var objectVisible = false
+        for object in self.virtualObjectManager.virtualObjects {
+            if self.sceneView.isNode(object, insideFrustumOf: self.sceneView.pointOfView!) {
+                objectVisible = true
+                break
+            }
+        }
+        
+        if objectVisible {
+            self.focusSquare?.hide()
+        } else {
+            self.focusSquare?.unhide()
+        }
+        
+        let (worldPos, planeAnchor, _) = self.virtualObjectManager.worldPositionFromScreenPosition(screenCenter,
+                                                                                                   in: self.sceneView,
+                                                                                                   objectPos: self.focusSquare?.simdPosition)
+        if let worldPos = worldPos {
+            self.focusSquare?.update(for: worldPos, planeAnchor: planeAnchor, camera: self.session.currentFrame?.camera)
+            self.textManager.cancelScheduledMessage(forType: .focusSquare)
+        }
 	}
     
 	// MARK: - Error handling
@@ -567,10 +734,10 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     // MARK: - ARSessionDelegate
     
     func session(_ session : ARSession, didUpdate frame: ARFrame) {
-        
-        if let path = modelPath {
-            loadModel(path: path)
-        }
+//        
+//        if let path = modelPath {
+//            loadModel(path: path)
+//        }
      
         updateCenterDistance(frame: frame)
     }
@@ -709,7 +876,11 @@ class ViewController: UIViewController, ARSessionDelegate, LocationServiceDelega
     
     // MARK: - UI
     func updateScaleLabel(scale: Float) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+
             if let virtualObjectNode = self.virtualObject() {
                 self.scaleLabel.text = self.dimensionAndScaleText(scale: scale, node: virtualObjectNode)
             } else {
